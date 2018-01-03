@@ -2,14 +2,15 @@
 ILA models and synthesis templates for processor/accelerator case studies.
 Note that the models and templates are constructed using the [Python API](https://github.com/PrincetonILA/ILA-Synthesis).
 
-[ALU](https://github.com/PrincetonILA/Modeling-and-Verification/ALU): 
-(1) Synthesis templates for a small ALU,
-(2) Generated instruction-level simulator.
-
 [8051](https://github.com/PrincetonILA/Modeling-and-Verification/8051): 
-(1) Synthesis templates for the 8051 micro-processor, 
-(2) Verification set-up using ABC,
-(3) Generated instruction-level simulator.
+(i) Synthesis templates for the 8051 micro-processor, 
+(ii) Verification set-up using ABC,
+(iii) Generated instruction-level simulator.
+
+
+[ALU](https://github.com/PrincetonILA/Modeling-and-Verification/ALU): 
+(i) Synthesis templates for a small ALU,
+(ii) Generated instruction-level simulator.
 
 [SHA](https://github.com/PrincetonILA/Modeling-and-Verification/SHA): 
 (1) Synthesis templates for the Secure Hash Algorithm (SHA) accelerator, with hierarchy.
