@@ -7,6 +7,10 @@ Note that the models and templates are constructed using the [Python API](https:
 (ii) Verification set-up using ABC,
 (iii) Generated instruction-level simulator.
 
+[GB-Halide](https://github.com/PrincetonILA/Modeling-and-Verification/GB-Halide): 
+(i) High-level ILA of the Gaussian Blur accelerator,
+(ii) Low-level ILA of the Gaussian Blur accelerator,
+(iii) Verification set-up, e.g. Verilog wrapper, JasperGold tcl commands, SVA assumptions/assertions.
 
 [ALU](https://github.com/PrincetonILA/Modeling-and-Verification/ALU): 
 (i) Synthesis templates for a small ALU,
@@ -22,9 +26,6 @@ The verification set-up for equivalence checking between two implementations are
 
 [RBM](https://github.com/PrincetonILA/Modeling-and-Verification/RBM)
 contains the case study where two ILAs of the Restricted Boltzmann machine accelerator are constructed and verified, w.r.t the SystemC and Verilog reference models, via ILA v.s. FSM equivalence checking.
-
-[GB-Halide](https://github.com/PrincetonILA/Modeling-and-Verification/GB-Halide)
-contains the case study where two ILAs of the Gaussian Blur accelerator, with different levels of abstraction, are constructed and verified. Both ILA v.s. ILA and ILA v.s. FSM equivalence checking are performed.
 
 [RISC-V](https://github.com/PrincetonILA/Modeling-and-Verification/RISC-V)
 constains the ILA of the RISC-V ISA and the verification framework that checks the equivalence between the ILA and the Rocket core RTL implementation.
