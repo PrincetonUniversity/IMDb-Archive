@@ -1,11 +1,12 @@
----
+* * *
+
 name: Bug report
 about: Create a report to help us improve
 title: ''
 labels: ''
 assignees: ''
 
----
+* * *
 
 **Describe the bug**
 A clear and concise description of what the bug is.
@@ -23,16 +24,11 @@ A clear and concise description of what you expected to happen.
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
-**Desktop (please complete the following information):**
- - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Version [e.g. 22]
+**Envisonment (please complete the following information):**
 
-**Smartphone (please complete the following information):**
- - Device: [e.g. iPhone6]
- - OS: [e.g. iOS8.1]
- - Browser [e.g. stock browser, safari]
- - Version [e.g. 22]
+-   OS: [e.g. Ubuntu 18.04]
+-   Compiler [e.g. gcc 7.3.0, clang 6.0.0]
+-   Other dependencies [e.g. z3 4.4.1, boost 1.65.0]
 
 **Additional context**
 Add any other context about the problem here.
