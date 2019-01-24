@@ -1,7 +1,5 @@
 #! /bin/bash
 
-mkdir -p asts
-
 regs="PC ACC IRAM PSW SP DPL DPH B XRAM_ADDR XRAM_DATA_OUT P0 P1 P2 P3 PCON TCON TMOD TL0 TH0 TL1 TH1 SCON SBUF IE IP "
 for r in $regs;
 do
