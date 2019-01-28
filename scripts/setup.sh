@@ -3,6 +3,7 @@
 # running tutorial
 cd $TRAVIS_BUILD_DIR
 export AES_ROOT=$(pwd)/tutorials/aes
+mkdir -p $AES_ROOT/build
 cd $AES_ROOT/build
 cmake ..
 make
