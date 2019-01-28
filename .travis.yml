@@ -1,0 +1,66 @@
+branches:
+  only:
+    - master
+    - travis
+    - setup
+
+git:
+  depth: 1
+  submodules: false
+
+sudo: required
+
+language: cpp
+
+matrix:
+  include:
+    - name: "linux"
+      os: linux
+      dist: xenial
+      compiler: gcc
+
+    - name: "osx"
+      os: osx
+      before_install:
+        - brew install bison
+        - export PATH="/usr/local/opt/bison/bin:$PATH"
+        - export LDFLAGS="-L/usr/local/opt/bison/lib"
+
+addons:
+  apt:
+    update: true
+    packages:
+      - flex
+      - bison
+      - libboost-all-dev
+      - z3
+      - libz3-dev
+  homebrew:
+    update: true
+    packages:
+      - flex
+      - python
+      - boost
+      - boost-python
+      - z3
+
+cache:
+  directories:
+    - $HOME/_cache
+
+before_script:
+  - cd $HOME
+  - git clone https://github.com/Bo-Yuan-Huang/ILAng.git
+  - cd ILAng
+  - mkdir -p build
+  - cd build
+  - cmake ..
+  - make -j$(nproc)
+  - sudo make install
+
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - source "scripts/$TRAVIS_CURRENT_BRANCH.sh"
+
+notifications:
+    email: false
