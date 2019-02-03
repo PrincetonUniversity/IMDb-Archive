@@ -1,7 +1,6 @@
 branches:
   only:
     - master
-    - travis
     - setup
 
 git:
@@ -12,19 +11,23 @@ sudo: required
 
 language: cpp
 
+cache:
+  directories:
+    - $HOME/_cache
+
 matrix:
   include:
-    - name: "linux"
+    - name: "linux-gcc"
       os: linux
       dist: xenial
       compiler: gcc
 
-    - name: "osx"
-      os: osx
+    - name: "linux-clang"
+      os: linux
+      dist: xenial
+      compiler: clang
       before_install:
-        - brew install bison
-        - export PATH="/usr/local/opt/bison/bin:$PATH"
-        - export LDFLAGS="-L/usr/local/opt/bison/lib"
+        - export LD_LIBRARY_PATH=/usr/local/clang/lib:$LD_LIBRARY_PATH
 
 addons:
   apt:
@@ -35,25 +38,11 @@ addons:
       - libboost-all-dev
       - z3
       - libz3-dev
-  homebrew:
-    update: true
-    packages:
-      - flex
-      - python
-      - boost
-      - boost-python
-      - z3
-
-cache:
-  directories:
-    - $HOME/_cache
 
 before_script:
-  - cd $HOME
-  - git clone https://github.com/Bo-Yuan-Huang/ILAng.git
-  - cd ILAng
-  - mkdir -p build
-  - cd build
+  - cd $TRAVIS_BUILD_DIR
+  - git clone --depth=1 https://github.com/Bo-Yuan-Huang/ILAng.git
+  - mkdir -p ILAng/build && cd ILAng/build
   - cmake ..
   - make -j$(nproc)
   - sudo make install
@@ -61,8 +50,9 @@ before_script:
 script:
   - cd $TRAVIS_BUILD_DIR
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-  - export BRANCH_TEST="$(find scripts -name $BRANCH.sh | grep -c "$BRANCH.sh")"
-  - if [ $BRANCH_TEST == "0" ] ; then source "scripts/$BRANCH.sh" ; fi
+  - export CITEST_FILE="$BRANCH.sh"
+  - export CITEST_DEFINED="$(find scripts/ci -name $CITEST_FILE | grep -c $CITEST_FILE)"
+  - if [ $CITEST_DEFINED == "0" ] ; then source "scripts/ci/$CITEST_FILE" ; fi
 
 notifications:
     email: false
