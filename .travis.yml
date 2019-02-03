@@ -61,7 +61,8 @@ before_script:
 script:
   - cd $TRAVIS_BUILD_DIR
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
-  - source "scripts/$BRANCH.sh"
+  - export BRANCH_TEST="$(find scripts -name $BRANCH.sh | grep -c "$BRANCH.sh")"
+  - if [ $BRANCH_TEST == "0" ] ; then source "scripts/$BRANCH.sh" ; fi
 
 notifications:
     email: false
