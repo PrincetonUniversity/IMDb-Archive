@@ -43,7 +43,7 @@ install:
   - cd $TRAVIS_BUILD_DIR
   - git clone --depth=1 https://github.com/Bo-Yuan-Huang/ILAng.git
   - mkdir -p ILAng/build && cd ILAng/build
-  - cmake ..
+  - cmake .. -DILANG_INSTALL_DEV=ON
   - make -j$(nproc)
   - sudo make install
 
