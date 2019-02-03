@@ -33,13 +33,13 @@ addons:
   apt:
     update: true
     packages:
-      - flex
       - bison
+      - flex
       - libboost-all-dev
-      - z3
       - libz3-dev
+      - z3
 
-before_script:
+install:
   - cd $TRAVIS_BUILD_DIR
   - git clone --depth=1 https://github.com/Bo-Yuan-Huang/ILAng.git
   - mkdir -p ILAng/build && cd ILAng/build
@@ -52,7 +52,8 @@ script:
   - export BRANCH=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then echo $TRAVIS_BRANCH; else echo $TRAVIS_PULL_REQUEST_BRANCH; fi)
   - export CITEST_FILE="$BRANCH.sh"
   - export CITEST_DEFINED="$(find scripts/ci -name $CITEST_FILE | grep -c $CITEST_FILE)"
-  - if [ $CITEST_DEFINED == "0" ] ; then source "scripts/ci/$CITEST_FILE" ; fi
+  - if [ $CITEST_DEFINED != "0" ] ; then source "scripts/ci/$CITEST_FILE" ; fi
 
 notifications:
     email: false
+
