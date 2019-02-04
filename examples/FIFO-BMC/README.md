@@ -14,9 +14,9 @@ within a given bound.
 ## File Content
 
 ```sh
-* src/main.cc    : the C++ code that provides the commandline interface
-* src/ila_fifo.h : definitions of ILAs of two FIFOs
-* src/util.h 	 : the utility function to use unroller for BMC
+* src/main.cc    # the C++ code that provides the commandline interface
+* src/ila_fifo.h # definitions of ILAs of two FIFOs
+* src/util.h 	   # the utility function to use unroller for BMC
 ```
 
 ## The Design
@@ -29,12 +29,12 @@ There are two instructions for each FIFO, one is `Dequeue` and the other is `Enq
 The I/O interface is listed below
 
 ```sh
-    |   name      | direction| bitwidth|
-    |  ---------  | -------- | --------|
-    |  w_en_in    |  input   | 1 bit   |
-    |  r_en_in    |  input   | 1 bit   |
-    |  w_data_in  |  input   | N bits  |
-    |  r_data_out |  output  | N bits  |
+|   name      | direction| bitwidth|
+|  ---------  | -------- | --------|
+|  w_en_in    |  input   | 1 bit   |
+|  r_en_in    |  input   | 1 bit   |
+|  w_data_in  |  input   | N bits  |
+|  r_data_out |  output  | N bits  |
 ```
 
 ## Property to Check
@@ -55,7 +55,7 @@ It says there should not be the case that the fifo is full and write pointer ste
 mkdir -p build && cd build
 ```
 
-2.  Configure the project and build. 
+2.  Configure and build the project.
 
 ```bash
 cmake ..
@@ -77,4 +77,5 @@ where `N` is the bound, and it should be a positive integer, for example.
 ```
 
 You will find that, if you set `N` to be smaller than or equal to the configured FIFO depth (which is 16 by default), BMC will not find that the `FIFO without protection` can overflow, though it can always find it can underflow. 
-This is understandable, because to trigger the overflow, there has to be at least #Depth+1 (ie. 17) Enqueue operations whereas underflow can be triggered just be a Dequeue operation in the first step, when the FIFO is initiallly empty.
+This is understandable, because to trigger the overflow, there has to be at least #Depth + 1 (i.e., 17) 
+Enqueue operations whereas underflow can be triggered just be a Dequeue operation in the first step, when the FIFO is initiallly empty.
