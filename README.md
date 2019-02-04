@@ -11,6 +11,8 @@ This is the ILA model database, archiving the ILA models synthesized or manually
 
 ### Examples
 
+-   [FIFO-BMC](examples/FIFO-BMC) demonstrates the bounded model checking (BMC) capability of ILAng using a FIFO example. 
+
 ### Cores
 
 The directory [cores](cores) contains the ILA models of general purpose computing components.
