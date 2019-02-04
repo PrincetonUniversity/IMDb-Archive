@@ -14,9 +14,9 @@ within a given bound.
 ## File Content
 
 ```sh
-* src/main.cc    # the C++ code that provides the commandline interface
-* src/ila_fifo.h # definitions of ILAs of two FIFOs
-* src/util.h 	   # the utility function to use unroller for BMC
+* src/main.cc     # the C++ code that provides the commandline interface
+* src/ila_fifo.h  # definitions of ILAs of two FIFOs
+* src/util.h      # the utility function to use unroller for BMC
 ```
 
 ## The Design
@@ -52,7 +52,8 @@ It says there should not be the case that the fifo is full and write pointer ste
 1.  Create a directory for out-of-source build and change to the directory. 
 
 ```bash
-mkdir -p build && cd build
+mkdir -p build
+cd build
 ```
 
 2.  Configure and build the project.
