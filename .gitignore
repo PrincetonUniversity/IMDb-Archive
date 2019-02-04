@@ -104,3 +104,6 @@ ENV/
 
 # verilog debug
 *.vcd
+
+# vim
+*.swp
