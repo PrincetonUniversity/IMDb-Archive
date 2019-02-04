@@ -1,5 +1,5 @@
 #!/bin/bash
-export EXAMPLE_FIFO_BMC_DIR=$TRAVIS_BUILD_DIR/examples/FIFO_BMC
+export EXAMPLE_FIFO_BMC_DIR=$TRAVIS_BUILD_DIR/examples/FIFO-BMC
 mkdir -p $EXAMPLE_FIFO_BMC_DIR/build && cd $EXAMPLE_FIFO_BMC_DIR/build
 cmake ..
 make
