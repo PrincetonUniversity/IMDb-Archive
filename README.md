@@ -7,6 +7,8 @@ This is the ILA model database, archiving the ILA models synthesized or manually
 
 ### Tutorials
 
+-   [AES](tutorials/aes) is a documented tutorial for ILA-based behavioral equivalence checking. 
+
 ### Examples
 
 ### Cores
