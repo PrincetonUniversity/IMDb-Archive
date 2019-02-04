@@ -15,8 +15,6 @@ This is the ILA model database, archiving the ILA models synthesized or manually
 
 ### Cores
 
-The directory [cores](cores) contains the ILA models of general purpose computing components.
-
 -   [RISC-V](cores/RISC-V)
 -   [PTX](cores/PTX)
 
@@ -29,9 +27,9 @@ The directory [cores](cores) contains the ILA models of general purpose computin
 ## Contribute
 
 1.  Please ensure all commited files follow the [MIT License](LICENSE) requirements with the help of references/submodules.
-2.  Please properly categorize the design and provide scripts for setting up/reproducing the case study in [scripts/ci](scripts/ci).
+2.  Please properly categorize the design and provide scripts for setting up/reproducing the case study in `scripts/ci`.
 
-The script can be run in the pre-configured CI testing environment via pull requests (optional).
+The script (if provided) will be executed in the pre-configured CI testing environment via pull requests (optional).
 For PR from a branch, name the script file as the branch name; for PR from a forked repo, name the script file as `user/repo`. 
 IMDb supported environment (with packages at stable releases) is as follow:
 
