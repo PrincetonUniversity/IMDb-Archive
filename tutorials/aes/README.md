@@ -1,6 +1,6 @@
 # ILA vs Verilog Verification Tutorial
 
-## What's inside the Artifact?
+## What's inside the artifact
 
 Here we leave the background knowledge to the end of the tutorial since you may want
 to first play with the artifact before getting confused by the formal verification
@@ -31,7 +31,7 @@ sudo apt-get remove docker docker-engine docker.io
 sudo apt-get update
 ```
 
-3.  Install packages to allow apt to use a repository over HTTPS:
+3.  Install packages to allow apt to use a repository over HTTPS
 
 ```bash
 sudo apt-get install \
@@ -159,13 +159,11 @@ reads in the given Verilog design and the refinement relations and generates the
 targets in the `verification` folder. To run this script:
 
 ```bash
-    cd build
-    ./AESExec Solver=btor
+cd build
+./AESExec Solver=btor
 ```
 
 This will generate 17 targets in the `verification` folder.
-
-#### Run the Target Generation Script
 
 You can run separately of each target using
 
@@ -359,6 +357,7 @@ the Verilog Design. It assumes a state mapping between the initial states of the
 models (ILA and Verilog) and at the end of the instruction checks for the state mapping.
 It actually forms a commutative diagram as shown below.
 
+```bash
       ILA state1 ------instr--------> ILA state2
          ||                               ||
          ||                               ||
@@ -367,6 +366,7 @@ It actually forms a commutative diagram as shown below.
          ||                               ||
          ||                               ||
       Verilog s1 ----transitions----> Verilog sn
+```
 
 In the refinement relations, one must specify (1) the state mapping, and (2) in the Verilog,
 when should be regarded as the end of an instruction. These two parts are specified in 
