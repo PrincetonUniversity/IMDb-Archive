@@ -166,14 +166,14 @@ This will generate 17 targets in the `verification` folder.
 
 You can run separately of each target using
 ```
-cd verification
+cd ~/aes-demo/verification
 cd <target-name>
 . run.sh
 ```
 
 Or you can run all the targets together using
 ```
-cd verification
+cd ~/aes-demo/verification
 . RunAll.sh
 ```
 
@@ -219,7 +219,7 @@ patch verilog/aes_top.v patch/AllowWriteRegWhenNotIdle.patch
 And now regenerate the verification targets and invoke CoSA by:
 ```
 cd build
-./AESExe Solver=Btor
+./AESExe Solver=btor
 cd ../verification
 . RunAll.sh
 ```
@@ -277,7 +277,7 @@ patch verilog/S.v patch/WrongTableEntry.patch
 Now regenerate the verification targets and invoke CoSA by:
 ```
 cd build
-./AESExe Solver=Btor
+./AESExe Solver=btor
 cd ../verification
 . RunAll.sh
 ```
