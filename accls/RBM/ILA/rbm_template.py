@@ -1,4 +1,5 @@
 import ila
+import os
 from math import log
 from fixpoint import fixpointTemp, fixpoint, fpconst, fpconvert
 
@@ -86,6 +87,7 @@ def buildILA():
     rdGrantInst    = (rd_request == 1) & (rd_grant == 1)
     wrGrantInst    = (wr_request == 1) & (wr_grant == 1)
     decodeExpr     = [rstInst, confDoneInst, rdGrantInst, wrGrantInst]
+    rbm.decode_exprs = decodeExpr
 
     #-------------------------------------
     #  AUX Functions
@@ -187,6 +189,7 @@ def buildILA():
       
 
     decodeExpr = [StartRead, WaitReadComplete, DecideTrainOrPredict, StartTrain, StartPredict, Finish]
+    uabs.decode_exprs = decodeExpr
 
     out_rd_request_nxt  = ila.ite(StartRead, b1, out_rd_request )
     out_rd_length_nxt   = ila.ite(StartRead, 5*nm,  out_rd_length)
@@ -241,6 +244,8 @@ def buildILA():
     # one change is to move these into lower abstraction
     DMAload = rbm.add_microabstraction('DMAload', (rd_granted == 1) ) # this is sub-instruction
     w_cnt = DMAload.reg('i', 16)
+
+    DMAload.decode_exprs = [ (rd_granted == 1) ] # XXX BY: is this the decode?
 
     dma_rd_request = DMAload.getreg('rd_request')
     dma_rd_length  = DMAload.getreg('rd_length')
@@ -770,6 +775,9 @@ def buildILA():
     # as we set_next, the reaction as we defined will be appear in the next cycle
 
     StoreUabs = rbm.add_microabstraction('store', wr_granted == 1)
+
+    StoreUabs.decode_exprs = [ (wr_granted == 1) ] # XXX BY: is this the decode?
+
     store_idx = StoreUabs.reg('i', 16)
     nm = StoreUabs.getreg('num_movies')
     wr_granted = StoreUabs.getreg('wr_granted')
@@ -806,6 +814,17 @@ def buildILA():
 
     keepNC(rbm,'rd_complete')
     keepNC(rbm,'wr_complete')
+
+    archive_dir = './archive'
+    if not os.path.exists(archive_dir):
+        os.makedirs(archive_dir)
+
+    rbm.exportAll(archive_dir + '/rbm.ila')
+    uabs.exportAll(archive_dir + '/compute.ila')
+    DMAload.exportAll(archive_dir + '/DMAload.ila')
+    TrainUabs.exportAll(archive_dir + '/train.ila')
+    PredictUabs.exportAll(archive_dir + '/predict.ila')
+    StoreUabs.exportAll(archive_dir + '/store.ila')
 
     return rbm
 
