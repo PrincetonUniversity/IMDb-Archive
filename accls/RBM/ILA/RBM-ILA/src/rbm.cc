@@ -16,7 +16,8 @@ Ila GetRbmIla() {
 
 InstrLvlAbsPtr GetRbmIlaFromSynthEngine() {
   SetToStdErr(1);
-  EnableDebug("SynthImport");
+  // EnableDebug("SynthImport");
+  // EnableDebug("Portable");
 
   std::string archive_dir = "../../archive";
 
@@ -60,7 +61,6 @@ InstrLvlAbsPtr GetRbmIlaFromSynthEngine() {
 
   auto test = IlaSerDesMngr::DesFromFile("rbm.json");
 
-  DisableDebug("SynthImport");
   return parent_ila;
 }
 
