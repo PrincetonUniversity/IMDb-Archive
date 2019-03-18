@@ -11,6 +11,7 @@ def U2 (gb):
     decode = (gb.in_stream_empty == EMPTY_F) & \
              ((gb.slice_stream_full == FULL_F) | \
               (gb.LB2D_proc_y < gb.LB2D_proc_size))
+    gb.addDecode (decode)
 
     ############################ next state functions #####################
     # arg_1_TREADY

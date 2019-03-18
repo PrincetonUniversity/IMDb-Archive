@@ -11,7 +11,8 @@ def U3 (gb):
     decode = (gb.slice_stream_empty == EMPTY_F) & \
              ((gb.stencil_stream_full == FULL_F) | \
               ((gb.LB2D_shift_x < gb.LB2D_shift_size) & \
-               (gb.LB2D_shift_x > gb.LB2D_shift_x_0))) \
+               (gb.LB2D_shift_x > gb.LB2D_shift_x_0))) 
+    gb.addDecode (decode)
 
     condLast = gb.LB2D_shift_x == gb.LB2D_shift_x_M
 

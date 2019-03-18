@@ -13,6 +13,7 @@ def U1 (gb):
     ############################ decode ###################################
     decode = (gb.arg_1_TREADY == READY_F) & \
              (gb.in_stream_full == FULL_F)
+    gb.addDecode (decode)
 
     condLast = (gb.LB1D_it_1 == gb.it_T) & (gb.LB1D_p_cnt == gb.LB1D_p_cnt_M)
 

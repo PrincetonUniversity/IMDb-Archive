@@ -17,6 +17,7 @@ def U4 (gb):
                (gb.stencil_stream_empty == EMPTY_F)) | \
               ((gb.gb_exit_it[0] == IT_T) & \
                (gb.gb_exit_it[7] == IT_F)))
+    gb.addDecode (decode)
 
     ############################ next state functions #####################
     # arg_1_TREADY
