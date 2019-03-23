@@ -119,7 +119,7 @@ assume -name {pre-set} -env \
 }
 
 
-assume -name {mem-sel} -env { GM_pd_or_tr == 1 }
+assume -name {mem-sel} -env { GM_pd_or_tr == 0 }
 
 # mem-hidden-preserve
 assume { ( ( hidden_unit_CE2 & ~finorever ) |-> ( ( load_addr0 == hidden_unit_A2 ) ##1 ( load_data0 == hidden_unit_Q2 ) ) ) }

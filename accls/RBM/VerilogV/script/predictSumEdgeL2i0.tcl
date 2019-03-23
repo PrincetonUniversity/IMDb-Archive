@@ -141,7 +141,7 @@ assume -name {pre-set} -env \
 }
 
 
-assume -name {mem-sel} -env { GM_pd_or_tr == 1 }
+assume -name {mem-sel} -env { GM_pd_or_tr == 0 }
 
 # mem-visibleEnergies-preserve
 assume { ( ( visibleEnergies_CE2 & ~finorever ) |-> ( ( load_addr0 == visibleEnergies_A2 ) ##1 ( load_data0 == visibleEnergies_Q2 ) ) ) }
