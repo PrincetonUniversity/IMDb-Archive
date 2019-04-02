@@ -165,17 +165,19 @@ void main() {
   /* -------- RTL -------- */
   // input
   _u128 rtl_in_state = 0;
-  for (int i = 15; i >= 0; i--) {
-    rtl_in_state = (rtl_in_state << 8) | in_state[i];
+  for (int i = 0; i < 16; i++) {
+    _u128 extended_byte = in_state[i];
+    rtl_in_state = rtl_in_state | (extended_byte << (i * 8));
   }
 
   _u128 rtl_in_key = 0;
-  for (int i = 15; i >= 0; i--) {
-    rtl_in_key = (rtl_in_key << 8) | in_key[i];
+  for (int i = 0; i < 16; i++) {
+    _u128 extended_byte = in_key[i];
+    rtl_in_key = rtl_in_key | (extended_byte << (i * 8));
   }
 
   // execute
-  for (int i = 0; i < 11; i++) {
+  for (int i = 0; i < 25; i++) {
     aes_128.state = rtl_in_state;
     aes_128.key = rtl_in_key;
     set_inputs();
