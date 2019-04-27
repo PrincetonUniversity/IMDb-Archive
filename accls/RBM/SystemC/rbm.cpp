@@ -226,23 +226,23 @@ void rbm::activateHiddenUnits_predict(bool pingpong, u16 nh, u16 nv)
    DATA_sum_ sum, tmp;
    DATA01_D prob, tmp1;
 ACTIVATE_HIDDEN_PREDICT_H:
-   for (h = 0; h < NUM_HIDDEN_MAX; h++)
+   for (h = 0; h < NUM_HIDDEN_MAX; h++) // [6]
    {
       if (h == nh)
          break;
       sum = 0;
 
    ACTIVATE_HIDDEN_PREDICT_V:
-      for (v = 0; v < NUM_VISIBLE_MAX + 1; v++) // remove the +1 if you want to skip the bias (BIAS?)
+      for (v = 0; v < NUM_VISIBLE_MAX + 1; v++) // remove the +1 if you want to skip the bias (BIAS?) // [33][34]
       {
          if (v == nv + 1)
             break;
          u8 current_data = data[pingpong][v];
-         wait();
-         if(current_data == 1)
+         wait();  // [36]
+         if(current_data == 1) // [37]
          {
             tmp = edges[v][h];
-            wait();
+            wait(); // [38]
             sum += tmp;
          }
       }
@@ -256,11 +256,11 @@ ACTIVATE_HIDDEN_PREDICT_H:
       else
          th = 0;
       hidden_unit[h] = th;
-      wait();
+      wait();  // [35]
    }
 
    hidden_unit[nh] = 1; // turn on bias
-   wait();
+   wait(); // [7]
 }
 
 
@@ -393,49 +393,49 @@ ACTIVATE_VISIBLE_PREDICT_V:
       u16 j;//u16
       max = -500;
    ACTIVATE_VISIBLE_PREDICT_ENERGY:
-      for (j = 0; j < K; j++)
+      for (j = 0; j < K; j++) // [14]
       {
          sum = 0;//TODO: maximum 500 k.1 added together, k>0
       ACTIVATE_VISIBLE_PREDICT_H:
-         for (h = 0; h < NUM_HIDDEN_MAX + 1; h++) // remove the +1 if you want to skip the bias
+         for (h = 0; h < NUM_HIDDEN_MAX + 1; h++) // remove the +1 if you want to skip the bias // [15]
          {
             if (h == nh + 1)
                break;
 
             tmp2 = hidden_unit[h];
-            wait();
+            wait(); // [30] (<--[29])
             tmp1 = edges[v + j][h];
-            wait();
+            wait(); // [31]
             if(tmp2)
             {
                sum += tmp1;
             }
-            wait();
+            wait();  // [32]
          }
          visibleEnergies[j] = sum;
-         wait();
+         wait();  // [16]
          if ( sum > max )
             max = sum;
       }
 
       max -= 31;
    ACTIVATE_VISIBLE_PREDICT_ENERGY_UPDATE:
-      for (j = 0; j < K; j++)
+      for (j = 0; j < K; j++) // [17]
       {
          tmp1 = visibleEnergies[j];
-         wait();
+         wait();  //[19]
          visibleEnergies[j] = tmp1 - max;
-         wait();
+         wait();  //[20]
       }
 
       sumOfpow2 = 0; // this is the numerator
       //TODO: maximum exp of 300 k.1 added together, k>0
    ACTIVATE_VISIBLE_PREDICT_SUM:
-      for (j = 0; j < K; j++)
+      for (j = 0; j < K; j++) // [21] [23]
       {
          /*TODO:fix point; exp function*/
          tmp1 = visibleEnergies[j];
-         wait();
+         wait(); // [22]
          if (tmp1[0] == 0)
             tmp = tmp1.to_int();
          else if (tmp1 > 0)
@@ -458,23 +458,23 @@ ACTIVATE_VISIBLE_PREDICT_V:
       // Getting the probabilities
       expectation = 0.0;
    ACTIVATE_VISIBLE_PREDICT_PROB:
-      for (j = 0; j < K; j++)
+      for (j = 0; j < K; j++) // [24]
       {
          DATA_pow dp = pow2[j];
-         wait();
+         wait();  // [25]
          probs = sld::udiv_func<32, 32, 64, 64, 64, 1>(dp, sumOfpow2);
          expectation += j * probs;
       }
 
       prediction = round_(expectation);
    ACTIVATE_VISIBLE_PREDICT_RATE:
-      for (j = 0; j < K; j++)
+      for (j = 0; j < K; j++) // [27]
       {
          if (j == prediction)
             predict_vector[v + j] = 1;
          else
             predict_vector[v + j] = 0;
-         wait();
+         wait(); // [28]
       }
    }
 
@@ -901,7 +901,7 @@ PREDICT_LOOP:
          for (j = 0; j < K; j++)
          {
             bool current_pv = predict_vector[i + j];
-            wait();
+            wait();  // [13]
             if (current_pv == 1)
             {
                prediction = j + 1;
