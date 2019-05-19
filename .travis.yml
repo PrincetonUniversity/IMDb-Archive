@@ -45,6 +45,11 @@ install:
   - cmake .. -DILANG_INSTALL_DEV=ON
   - make -j$(nproc)
   - sudo make install
+  - cd $TRAVIS_BUILD_DIR
+  - git clone --depth=1 https://github.com/PrincetonUniversity/Itsy.git
+  - cd Itsy
+  - bjam -j$(nproc)
+  - export PYTHONPATH=$(pwd)/build:$PYTHONPATH
 
 script:
   - cd $TRAVIS_BUILD_DIR

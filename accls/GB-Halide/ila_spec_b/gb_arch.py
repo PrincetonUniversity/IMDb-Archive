@@ -38,6 +38,9 @@ class GBArch ():
         self.arg_0_TVALID = m.reg ('arg_0_TVALID', 1)
         self.arg_0_TDATA  = m.reg ('arg_0_TDATA', DATA_SIZE)
 
+        ######################## decode function ###############################
+        self.decode_exprs = []
+
         ######################## states  #######################################
         # 1-D buffer for input data
         self.LB1D_in   = m.reg ('LB1D_in', DATA_SIZE)
@@ -206,6 +209,12 @@ class GBArch ():
         for i in xrange (0, self.gb_exit_size):
             self.gb_exit_it_nxt.append (self.gb_exit_it[i])
 
+    def addDecode (self, decode):
+        self.decode_exprs = self.decode_exprs + [ decode ]
+
+    def setDecode (self):
+        m = self.abst
+        m.decode_exprs = self.decode_exprs
 
     def setNext (self):
         m = self.abst
@@ -262,4 +271,7 @@ class GBArch ():
 
     def exportVerilog (self, fileName):
         self.abst.generateVerilog (fileName)
+
+    def exportModel (self, fileName):
+        self.abst.exportAll (fileName)
 

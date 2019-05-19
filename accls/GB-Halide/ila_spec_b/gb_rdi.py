@@ -10,7 +10,8 @@ def RDI (gb):
     decode = (gb.arg_0_TREADY == READY_T) & \
              (gb.arg_0_TVALID == VALID_T) & \
              (gb.arg_1_TVALID == VALID_F) # work around for rtl export
-
+    gb.addDecode (decode)
+    
 
     ############################ next state functions #####################
     # arg_1_TREADY

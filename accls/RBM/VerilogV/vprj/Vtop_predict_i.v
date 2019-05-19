@@ -563,14 +563,20 @@ assign GM_pow2_mismatch = ~GM_pow2_compare ? 1'b0 : mem_pow2.mem != acc_0.memwri
   wire [ 8:0] GM_predict_vector_waddr0;
   wire        GM_predict_vector_wdata0;
   wire        GM_predict_vector_wen0;
+  wire [ 8:0] GM_predict_vector_waddr1;
+  wire        GM_predict_vector_wdata1;
+  wire        GM_predict_vector_wen1;
+  wire [ 8:0] GM_predict_vector_waddr = GM_predict_vector_wen0 ? GM_predict_vector_waddr0 : GM_predict_vector_waddr1;
+  wire        GM_predict_vector_wdata = GM_predict_vector_wen0 ? GM_predict_vector_wdata0 : GM_predict_vector_wdata1;
+  wire        GM_predict_vector_wen = GM_predict_vector_wen0 | GM_predict_vector_wen1;
 
 predict_vector_mem mem_predict_vector(
   .CLK(clk),
   .RST(rst),
 
-  .waddr(GM_predict_vector_waddr0),
-  .wdata(GM_predict_vector_wdata0),
-  .wen(GM_predict_vector_wen0),
+  .waddr(GM_predict_vector_waddr),
+  .wdata(GM_predict_vector_wdata),
+  .wen(GM_predict_vector_wen),
 
   .raddr(GM_predict_vector_raddr0),
   .rdata(GM_predict_vector_rdata0),
@@ -615,7 +621,7 @@ visible_unit_mem mem_visible_unit(
 assign GM_visible_unit_mismatch = ~GM_visible_unit_compare ? 1'b0 : mem_visible_unit.mem != acc_0. memwrite_rbm_visible_unit_ln365_q ; //or memwrite_rbm_visible_unit_ln365_q
 
 
-train GM
+predict GM
 (
     .conf_done(conf_done),
 
@@ -630,24 +636,22 @@ train GM
     .wr_grant(wr_grant),
 
     // memread
-    .visibleEnergies_data_n63(GM_visibleEnergies_raddr0),
-    .visibleEnergies_addr_n62(GM_visibleEnergies_rdata0),
-    .hidden_unit_data_n101(GM_hidden_unit_rdata0),
-    .hidden_unit_addr_n100(GM_hidden_unit_raddr0),
-    .edges_data_n107(GM_edges_rdata0),
-    .edges_addr_n106(GM_edges_raddr0),
-    .data_data_n133(GM_data_rdata0),
-    .data_addr_n132(GM_data_raddr0),
-    .pos_data_n179(GM_pos_rdata0),
-    .pos_addr_n178(GM_pos_raddr0),
-    .visible_unit_data_n184(GM_visible_unit_rdata0),
-    .visible_unit_addr_n183(GM_visible_unit_raddr0),
-    .pow2_data_n243(GM_pow2_rdata0),
-    .pow2_addr_n242(GM_pow2_raddr0),
-
-    .edges_addr0(GM_edges_waddr0),
-    .edges_data0(GM_edges_wdata0),
-    .edges_wen0(GM_edges_wen0),
+    .visibleEnergies_data_n199(GM_visibleEnergies_raddr0),
+    .visibleEnergies_addr_n198(GM_visibleEnergies_rdata0),
+    .hidden_unit_data_n120(GM_hidden_unit_rdata0),
+    .hidden_unit_addr_n119(GM_hidden_unit_raddr0),
+    .edges_data_n126(GM_edges_rdata0),
+    .edges_addr_n125(GM_edges_raddr0),
+    .data_data_n153(GM_data_rdata0),
+    .data_addr_n152(GM_data_raddr0),
+    //.pos_data_n179(GM_pos_rdata0), // ----------
+    //.pos_addr_n178(GM_pos_raddr0), // ----------
+    //.visible_unit_data_n184(GM_visible_unit_rdata0), // ----------
+    //.visible_unit_addr_n183(GM_visible_unit_raddr0), // ----------
+    .predict_vector_data_n190(GM_predict_vector_rdata0),
+    .predict_vector_addr_n189(GM_predict_vector_raddr0),
+    .pow2_data_n38(GM_pow2_rdata0),
+    .pow2_addr_n37(GM_pow2_raddr0),
 
     .hidden_unit_addr0(GM_hidden_unit_waddr0),
     .hidden_unit_data0(GM_hidden_unit_wdata0),
@@ -657,17 +661,16 @@ train GM
     .hidden_unit_data1(GM_hidden_unit_wdata1),
     .hidden_unit_wen1(GM_hidden_unit_wen1),
 
-    .visible_unit_addr0(GM_visible_unit_waddr0),
-    .visible_unit_data0(GM_visible_unit_wdata0),
-    .visible_unit_wen0(GM_visible_unit_wen0),
+    .predict_vector_addr0(GM_predict_vector_waddr0),
+    .predict_vector_data0(GM_predict_vector_wdata0),
+    .predict_vector_wen0(GM_predict_vector_wen0),
+    .predict_vector_addr1(GM_predict_vector_waddr1),
+    .predict_vector_data1(GM_predict_vector_wdata1),
+    .predict_vector_wen1(GM_predict_vector_wen1),
 
-    .visible_unit_addr1(GM_hidden_unit_waddr1),
-    .visible_unit_data1(GM_hidden_unit_wdata1),
-    .visible_unit_wen1(GM_hidden_unit_wen1),
-
-    .pos_addr0(GM_pos_waddr0),
-    .pos_data0(GM_pos_wdata0),
-    .pos_wen0(GM_pos_wen0),
+    .predict_result_addr0(GM_predict_result_waddr0),
+    .predict_result_data0(GM_predict_result_wdata0),
+    .predict_result_wen0(GM_predict_result_wen0),
 
     .pow2_addr0(GM_pow2_waddr0),
     .pow2_data0(GM_pow2_wdata0),
