@@ -101,7 +101,8 @@ module emaxi(/*autoarg*/
    output              m_axi_wvalid;  // indicates data is ready to go
    input               m_axi_wready;  // slave is ready for data
 
-   //Write response channel
+   // property on losing information ? (could be correct wrt the spec)
+   //Write response channel ---- write response is not used (ordering information not passed)
    input [M_IDW-1:0]   m_axi_bid;
    input [1 : 0]       m_axi_bresp;   // status of the write transaction.
    input               m_axi_bvalid;  // channel is a valid write response
