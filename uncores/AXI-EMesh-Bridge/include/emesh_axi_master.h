@@ -15,6 +15,9 @@ using namespace ilang;
 #define PW 104
 #define AW 32
 #define DW 32
+#define BURST_FIXED BvConst(0,2)
+#define BURST_INCR  BvConst(1,2)
+#define BURST_WRAP  BvConst(2,2)
 
 /// \brief the class of emesh-axi-master ila
 class EmeshAxiMasterBridge {
@@ -31,18 +34,21 @@ public:
 
 protected:
   // --------------- HELPERS -------- //
-  /// specify a nondeterministic value within range [low,high]
-  ExprRef unknown_range(unsigned low, unsigned high);
   /// a nondeterministic choice of a or b
   static ExprRef unknown_choice(const ExprRef& a, const ExprRef& b);
   /// a nondeterminstic bitvector const of width
   static FuncRef unknown(unsigned width);
+  static ExprRef unknownVal(unsigned width);
   /// a helper function to concat a vector of express
   static ExprRef lConcat(const std::vector<ExprRef> & l);
 
 
 protected:
   // ------------ STATE ------------ //
+  // reset
+  ExprRef m_axi_aresetn_r;
+  ExprRef m_axi_aresetn_w;
+  
   // I/O interface: this is where the commands come from.
   ExprRef wr_access;
   ExprRef wr_packet;
@@ -61,9 +67,9 @@ protected:
   ExprRef m_axi_awaddr;  // output
   ExprRef m_axi_awlen;   // output
   ExprRef m_axi_awsize;  // output
-  ExprRef m_axi_awburst  // output
+  ExprRef m_axi_awburst;  // output
   ExprRef m_axi_awlock;  // output
-  ExprRef m_axi_awcache  // output
+  ExprRef m_axi_awcache;  // output
   ExprRef m_axi_awprot;  // output
   ExprRef m_axi_awqos;   // output
   ExprRef m_axi_awvalid; // output
@@ -103,6 +109,16 @@ protected:
   ExprRef m_axi_rlast;   
   ExprRef m_axi_rvalid;  
   ExprRef m_axi_rready;  // output
+  
+  // internal state
+  ExprRef tx_valid;
+  ExprRef tx_burst;
+  ExprRef tx_id;
+  ExprRef tx_addr;
+  ExprRef tx_data;
+  ExprRef tx_len;
+  ExprRef tx_size;
+  ExprRef tx_count;
 
 }; // class EmeshAxiMasterBridge
 

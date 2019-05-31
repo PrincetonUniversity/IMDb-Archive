@@ -5,12 +5,6 @@
 #include <cmath>
 #include <string>
 
-ExprRef EmeshAxiMasterBridge::unknown_range(unsigned low, unsigned high) {
-  unsigned width = (unsigned)std::ceil(std::log2(high + 1));
-  auto val = unknown(width)();
-  model.AddInit((val >= low) & (val <= high));
-  return val;
-}
 
 ExprRef EmeshAxiMasterBridge::unknown_choice(const ExprRef& a, const ExprRef& b) {
   return Ite(unknown(1)() == 1, a, b);
@@ -32,4 +26,8 @@ unsigned nondet_counter = 0;
 FuncRef EmeshAxiMasterBridge::unknown(unsigned width) {
   return FuncRef("unknown" + std::to_string(nondet_counter++),
                  SortRef::BV(width));
+}
+
+ExprRef EmeshAxiMasterBridge::unknownVal(unsigned width) {
+  return unknown(width)();
 }
