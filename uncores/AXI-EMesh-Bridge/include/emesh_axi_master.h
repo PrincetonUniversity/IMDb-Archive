@@ -50,17 +50,17 @@ protected:
   ExprRef m_axi_aresetn_w;
   
   // I/O interface: this is where the commands come from.
-  ExprRef wr_access;
-  ExprRef wr_packet;
-  ExprRef wr_wait;   // output
+  // ExprRef wr_access;
+  // ExprRef wr_packet;
+  // ExprRef wr_wait;   // output
 
-  ExprRef rd_access;
-  ExprRef rd_packet;
-  ExprRef rd_wait;   // output
+  // ExprRef rd_access;
+  // ExprRef rd_packet;
+  // ExprRef rd_wait;   // output
 
-  ExprRef rr_access; // output
-  ExprRef rr_packet; // output
-  ExprRef rr_wait;   
+  // ExprRef rr_access; // output
+  // ExprRef rr_packet; // output
+  // ExprRef rr_wait;   
 
   // AXI -- Write address
   ExprRef m_axi_awid;    // output

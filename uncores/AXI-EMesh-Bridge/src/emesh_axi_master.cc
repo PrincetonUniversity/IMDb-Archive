@@ -7,23 +7,8 @@
 
 EmeshAxiMasterBridge::EmeshAxiMasterBridge()
     : // construct the model
-      wmodel("EmeshAxiMasterBridge_write"),
-      rmodel("EmeshAxiMasterBridge_read"),
-
-  wr_access(wmodel.NewBvInput("wr_access", 1) ),
-  wr_packet(wmodel.NewBvInput("wr_packet",PW) ),
-  wr_wait  (wmodel.NewBvState("wr_wait",   1) ),   // output
-
-  rd_access(rmodel.NewBvInput("rd_access", 1) ),
-  rd_packet(rmodel.NewBvInput("rd_packet",PW) ),
-  rd_wait  (rmodel.NewBvState("rd_wait",   1) ),   // output
-
-  rr_access(rmodel.NewBvState("rr_access",  1) ),  // output
-  rr_packet(rmodel.NewBvState("rr_packet", PW) ), // output
-  rr_wait  (rmodel.NewBvInput("rr_wait",    1) ),   
-
+  wmodel("EmeshAxiMasterBridge_write"),
   // global reset
-  m_axi_aresetn_r (rmodel.NewBvInput("m_axi_aresetn",1)),
   m_axi_aresetn_w (wmodel.NewBvInput("m_axi_aresetn",1)),
 
   // AXI -- Write address
@@ -48,11 +33,27 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
   m_axi_wready(wmodel.NewBvInput("m_axi_wready",  1)),  
 
   // AXI -- Write response
-  m_axi_bid   (rmodel.NewBvInput("m_axi_bid",    M_IDW)),     
-  m_axi_bresp (rmodel.NewBvInput("m_axi_bresp",  2)),   
-  m_axi_bvalid(rmodel.NewBvInput("m_axi_bvalid", 1)),  
-  m_axi_bready(rmodel.NewBvState("m_axi_bready", 1)),  // output
+  m_axi_bid   (wmodel.NewBvInput("m_axi_bid",    M_IDW)),     
+  m_axi_bresp (wmodel.NewBvInput("m_axi_bresp",  2)),   
+  m_axi_bvalid(wmodel.NewBvInput("m_axi_bvalid", 1)),  
+  m_axi_bready(wmodel.NewBvState("m_axi_bready", 1)),  // output
 
+  m_axi_aresetn_r (wmodel.NewBvInput("m_axi_aresetn",1)),
+
+  // internal states -- may not have matches with the Verilog state
+  // but necessary for modeling
+  tx_valid(wmodel.NewBvState("tx_valid", 1)),
+  tx_burst(wmodel.NewBvState("tx_burst", 2)),
+  tx_id   (wmodel.NewBvState("tx_id"   , M_IDW)),
+  tx_addr (wmodel.NewBvState("tx_addr" , 32)),
+  tx_data (wmodel.NewBvState("tx_data" , 64)),
+  tx_len  (wmodel.NewBvState("tx_len"  , 8)),
+  tx_size (wmodel.NewBvState("tx_size" , 3)),
+  tx_count(wmodel.NewBvState("tx_count", 8)),
+
+  // ------------------------------------------------------------------
+  
+  rmodel("EmeshAxiMasterBridge_read"),
   // AXI -- Read address
   m_axi_arid   (rmodel.NewBvState("m_axi_arid",    M_IDW)),    // output
   m_axi_araddr (rmodel.NewBvState("m_axi_araddr",  32)),  // output
@@ -72,21 +73,7 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
   m_axi_rresp (rmodel.NewBvInput("m_axi_rresp",  2)),   
   m_axi_rlast (rmodel.NewBvInput("m_axi_rlast",  1)),   
   m_axi_rvalid(rmodel.NewBvInput("m_axi_rvalid", 1)),  
-  m_axi_rready(rmodel.NewBvState("m_axi_rready", 1)),  // output
-      
-
-  // -------------------- BELOW ARE NOT AXI SPEC ----------------- //
-  // -------------------- BUT SPEC FOR THIS BRIDGE --------------- //
-  // internal states -- may not have matches with the Verilog state
-  tx_valid(wmodel.NewBvState("tx_valid", 1)),
-  tx_burst(wmodel.NewBvState("tx_burst", 2)),
-  tx_id   (wmodel.NewBvState("tx_id"   , M_IDW)),
-  tx_addr (wmodel.NewBvState("tx_addr" , 32)),
-  tx_data (wmodel.NewBvState("tx_data" , 64)),
-  tx_len  (wmodel.NewBvState("tx_len"  , 8)),
-  tx_size (wmodel.NewBvState("tx_size" , 3)),
-  tx_count(wmodel.NewBvState("tx_count", 8))
-
+  m_axi_rready(rmodel.NewBvState("m_axi_rready", 1))  // output
 {
 
   // write data buffers
@@ -209,6 +196,8 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
     // if b_ready
   }
 
+  // ----------------------------------------------------------------------------
+
   // Write channel interface -- what corresponds to instruction
   rmodel.SetFetch( lConcat({m_axi_aresetn_r, m_axi_arready, m_axi_rvalid }) );
   // Valid instruction: what means to have valid command (valid = 1)
@@ -252,3 +241,18 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
 
 }
 
+/*
+
+  wr_access(wmodel.NewBvInput("wr_access", 1) ),
+  wr_packet(wmodel.NewBvInput("wr_packet",PW) ),
+  wr_wait  (wmodel.NewBvState("wr_wait",   1) ),   // output
+
+  rd_access(rmodel.NewBvInput("rd_access", 1) ),
+  rd_packet(rmodel.NewBvInput("rd_packet",PW) ),
+  rd_wait  (rmodel.NewBvState("rd_wait",   1) ),   // output
+
+  rr_access(rmodel.NewBvState("rr_access",  1) ),  // output
+  rr_packet(rmodel.NewBvState("rr_packet", PW) ), // output
+  rr_wait  (rmodel.NewBvInput("rr_wait",    1) ),   
+
+*/
