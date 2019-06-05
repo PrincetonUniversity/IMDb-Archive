@@ -28,7 +28,6 @@ module emaxi_trans(input clk, input rstn,
   );
 
 
-counter
 // set to 5 when initially wr_access and ~wr_wait (avoid repetition)
 // when ever sees a m_axi_awready & m_axi_awvalid , --
 // the match is (exists counter > 0) --> eq?

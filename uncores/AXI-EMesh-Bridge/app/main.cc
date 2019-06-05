@@ -11,6 +11,7 @@ void verifyAxiMaster(
    ) {
   VerilogGeneratorBase::VlgGenConfig vlg_cfg;
   vlg_cfg.pass_node_name = true;
+  vtg_cfg.CosaAddKeep = false;
 
   std::string RootPath    = "..";
   std::string VerilogPath = RootPath    + "/verilog/";
@@ -27,8 +28,8 @@ void verifyAxiMaster(
       {},                                                    // one include path
       path_to_design_files,                                  // designs
       "emaxi",                                               // top_module_name
-      RefrelPath + "varmap-emaxi.json",                      // variable mapping
-      RefrelPath + "instcond-emaxi.json",                    // conditions of start/ready
+      RefrelPath + "varmap-emaxi-write.json",                      // variable mapping
+      RefrelPath + "instcond-emaxi-write.json",                    // conditions of start/ready
       OutputPath,                                            // output path
       model.get(),                                           // model
       VerilogVerificationTargetGenerator::backend_selector::COSA, // backend: COSA
@@ -43,7 +44,6 @@ void verifyAxiMaster(
 int main() {
   // extract the configurations
   std::vector<std::string> design_files = {
-    "emaxi_trans.v",
     "emaxi.v",
     "emesh2packet.v",
     "em_se.v",
@@ -60,7 +60,7 @@ int main() {
   // build the model
   EmeshAxiMasterBridge emaxi;
 
-  // verifyAxiMaster(emaxi.model, vtg_cfg, design_files);
+  verifyAxiMaster(emaxi.wmodel, vtg_cfg, design_files);
 
   return 0;
 }

@@ -7,7 +7,7 @@
 
 module oh_memory_ram  # (parameter DW    = 104,           //memory width
 			 parameter DEPTH = 32,            //memory depth
-			 parameter AW    = $clog2(DEPTH)  // address width  
+			 parameter AW    = 5  // address width  
 			 ) 
    (// read-port
     input 		rd_clk,// rd clock

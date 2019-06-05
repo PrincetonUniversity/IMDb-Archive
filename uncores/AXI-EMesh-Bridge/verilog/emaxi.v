@@ -419,12 +419,12 @@ module emaxi(/*autoarg*/
    
 
    //Rest synchronization (for safety, assume incoming reset is async)
-   wire sync_nreset;   
-   oh_dsync dsync(.dout (sync_nreset),
-               .clk     (m_axi_aclk),
-               .nreset       (1'b1),
-               .din     (m_axi_aresetn)
-               );
+   // wire sync_nreset;   
+   // oh_dsync dsync(.dout (sync_nreset),
+   //             .clk     (m_axi_aclk),
+   //             .nreset       (1'b1),
+   //             .din     (m_axi_aresetn)
+   //             );
    
    //Synchronous FIFO for read transactions      
 
@@ -435,7 +435,7 @@ module emaxi(/*autoarg*/
                .dout            (packet_out[103:0]),
                .empty           (),
                // Inputs
-               .nreset          (sync_nreset),
+               .nreset          (m_axi_aresetn),
                .clk             (m_axi_aclk),
                .wr_en           (fifo_wr_en),
                .din             ({63'b0,readinfo_in[40:0]}),

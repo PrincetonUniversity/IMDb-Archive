@@ -89,7 +89,7 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
     instr.SetUpdate(m_axi_awvalid, BvConst(0,1));
     instr.SetUpdate(m_axi_wvalid,  BvConst(0,1));
 
-    instr.SetUpdate(tx_valid, BvConst(0,1));
+    // instr.SetUpdate(tx_valid, BvConst(0,1)); this is not guaranteed
     // ready signals not specified and thus won't be checked
   }
 

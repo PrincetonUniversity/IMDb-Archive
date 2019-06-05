@@ -8,7 +8,7 @@
 module oh_fifo_sync #(parameter DW        = 104,      //FIFO width
 		      parameter DEPTH     = 32,       //FIFO depth
 		      parameter PROG_FULL = (DEPTH/2),//prog_full threshold  
-		      parameter AW = $clog2(DEPTH)    //rd_count width
+		      parameter AW = 5    //rd_count width
 		      ) 
 (
    input 	       clk, // clock
@@ -34,7 +34,7 @@ module oh_fifo_sync #(parameter DW        = 104,      //FIFO width
    assign fifo_read   = rd_en & ~empty;
    assign fifo_write  = wr_en & ~full;
    
-   always @ ( posedge clk or negedge nreset) 
+   always @ ( posedge clk ) 
      if(!nreset) 
        begin	   
           wr_addr[AW-1:0]   <= 'd0;
