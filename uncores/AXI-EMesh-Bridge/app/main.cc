@@ -3,6 +3,7 @@
 
 /// the function to generate configuration
 VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration();
+VerilogVerificationTargetGenerator::vtg_config_t HandleArguments(int argc, char **argv);
 
 void verifyAxiMaster(
   Ila& model, 
@@ -41,7 +42,7 @@ void verifyAxiMaster(
 
 
 /// Build the model
-int main() {
+int main(int argc, char **argv) {
   // extract the configurations
   std::vector<std::string> design_files = {
     "emaxi.v",
@@ -55,7 +56,8 @@ int main() {
     "packet2emesh.v"
   };
 
-  auto vtg_cfg = SetConfiguration();
+  //auto vtg_cfg = SetConfiguration();
+  auto vtg_cfg = HandleArguments(argc, argv);
 
   // build the model
   EmeshAxiMasterBridge emaxi;
@@ -66,6 +68,45 @@ int main() {
 }
 
 
+VerilogVerificationTargetGenerator::vtg_config_t HandleArguments(int argc, char **argv) {
+  // the solver, the cosa environment
+  // you can use a commandline parser if desired, but since it is not the main focus of
+  // this demo, we skip it
+
+  // set ilang option, operators like '<' will refer to unsigned arithmetics
+  SetUnsignedComparison(true); 
+  
+  VerilogVerificationTargetGenerator::vtg_config_t ret;
+
+  for(unsigned p = 1; p<argc; p++) {
+    std::string arg = argv[p];
+    auto split = arg.find("=");
+    auto argName = arg.substr(0,split);
+    auto param   = arg.substr(split+1);
+
+    if(argName == "Solver")
+      ret.CosaSolver = param;
+    else if(argName == "Env")
+      ret.CosaPyEnvironment = param;
+    else if(argName == "Cosa")
+      ret.CosaPath = param;
+    // else unknown
+    else {
+      std::cerr<<"Unknown argument:" << argName << std::endl;
+      std::cerr<<"Expecting Solver/Env/Cosa=???" << std::endl;
+    }
+  }
+
+  ret.CosaGenTraceVcd = true;
+
+  /// other configurations
+  ret.PortDeclStyle = VlgVerifTgtGenBase::vtg_config_t::NEW;
+  ret.CosaGenJgTesterScript = true;
+  //ret.CosaOtherSolverOptions = "--blackbox-array";
+  //ret.ForceInstCheckReset = true;
+
+  return ret;
+}
 
 VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration() {
 

@@ -20,14 +20,14 @@
 
     "m_axi_bready"  : "m_axi_bready",
 
-    "tx_valid" : [["awvalid_b | wvalid_b","awvalid_b | wvalid_b"], ["1'b1","wr_access"]],
+    "tx_valid" : [["awvalid_b | wvalid_b","tx_valid == awvalid_b | wvalid_b"], ["1'b1","wr_access"]],
     "tx_burst" : [["awvalid_b | wvalid_b","m_axi_awburst"],        ["1'b1","m_axi_awburst"]],
     "tx_id"    : [["awvalid_b | wvalid_b","m_axi_awid"],           ["1'b1","m_axi_awid"]],
     "tx_addr"  : [["awvalid_b | wvalid_b","awaddr_b"],             ["1'b1","wr_dstaddr"]],
     "tx_data"  : [["awvalid_b | wvalid_b","wdata_b"],              ["1'b1","wdata_aligned"]],
-    "tx_len"   : [["awvalid_b | wvalid_b","awlen_b"],              ["1'b1","8'b0"]],
-    "tx_size"  : [["awvalid_b | wvalid_b","awsize_b"],             ["1'b1","{ 1'b0, wr_datamode[1:0] }"]],
-    "tx_count" : "8'd0"
+    "tx_len"   : [["awvalid_b | wvalid_b","awlen_b"],              ["1'b1","tx_len == 8'b0"]],
+    "tx_size"  : [["awvalid_b | wvalid_b","awsize_b"],             ["1'b1","tx_size == { 1'b0, wr_datamode[1:0] }"]],
+    "tx_count" : "tx_count == 8'd0"
   },
 
   "interface mapping": {
@@ -75,14 +75,14 @@
    "m_axi_bid" :     "m_axi_bid",
    "m_axi_bresp" :     "m_axi_bresp",
    "m_axi_bvalid" :     "m_axi_bvalid",
-   "m_axi_arready" :     "m_axi_arready",
-   "m_axi_rid" :     "m_axi_rid",
-   "m_axi_rdata" :     "m_axi_rdata",
-   "m_axi_rresp" :     "m_axi_rresp",
-   "m_axi_rlast" :     "m_axi_rlast",
-   "m_axi_rvalid" :     "m_axi_rvalid",
+   "m_axi_arready" :     "**KEEP**", //"m_axi_arready",
+   "m_axi_rid" :     "**KEEP**", //"m_axi_rid",
+   "m_axi_rdata" :     "**KEEP**", //"m_axi_rdata",
+   "m_axi_rresp" :     "**KEEP**", //"m_axi_rresp",
+   "m_axi_rlast" :     "**KEEP**", //"m_axi_rlast",
+   "m_axi_rvalid" :     "**KEEP**", //"m_axi_rvalid",
 
-     "m_axi_aresetn" :           "m_axi_aresetn",
+     "m_axi_aresetn" :           "m_axi_aresetn", // "**NRESET**", // "m_axi_aresetn",
      "m_axi_aclk"    :           "**CLOCK**"
   },
 
