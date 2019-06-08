@@ -2,9 +2,12 @@
   "instructions": [
     {
       "instruction" : "Reset",
-      "ready bound": 1,
-      "start condition":
-        ["$valid$","$decode$"]
+      "ready bound": 1
+    },
+    
+    {
+      "instruction" : "AXIWriteAddrNotReady",
+      "ready bound": 1
     }
   ],
   

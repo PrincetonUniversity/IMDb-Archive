@@ -56,8 +56,8 @@ int main(int argc, char **argv) {
     "packet2emesh.v"
   };
 
-  //auto vtg_cfg = SetConfiguration();
-  auto vtg_cfg = HandleArguments(argc, argv);
+  auto vtg_cfg = SetConfiguration();
+  //auto vtg_cfg = HandleArguments(argc, argv);
 
   // build the model
   EmeshAxiMasterBridge emaxi;

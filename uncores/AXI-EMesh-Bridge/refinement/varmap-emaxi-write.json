@@ -88,6 +88,13 @@
 
   "mapping control" : [],
 
-  "functions":{}
+  "functions":{
+    "unknown7" : [[ "__START__", "m1.awvalid_b || m1.awvalid_in" ]],
+    "unknown6" : [[ "__IEND__", "m1.m_axi_awvalid" ]],
+    "unknown8" : [[ "__IEND__", "m1.m_axi_awid" ]],
+    "unknown9" : [[ "__IEND__", "m1.m_axi_awaddr" ]],
+    "unknown10": [[ "__IEND__", "m_axi_awlen"]],
+    "unknown11": [[ "__IEND__", "m_axi_awsize"]]
+  }
 
 }
