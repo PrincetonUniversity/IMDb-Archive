@@ -119,6 +119,8 @@ protected:
   ExprRef tx_len;
   ExprRef tx_size;
   ExprRef tx_count;
+  ExprRef tx_addr_done;
+  ExprRef tx_data_done;
 
 }; // class EmeshAxiMasterBridge
 

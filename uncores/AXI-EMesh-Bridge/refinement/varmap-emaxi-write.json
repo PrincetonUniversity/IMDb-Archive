@@ -21,6 +21,8 @@
     "m_axi_bready"  : "m_axi_bready",
 
     "tx_valid" : [["awvalid_b | wvalid_b","tx_valid == awvalid_b | wvalid_b"], ["1'b1","wr_access"]],
+    "tx_addr_done" : "tx_addr_done == !m1.awvalid_b & m1.wvalid_b",
+    "tx_data_done" : "tx_data_done == m1.awvalid_b & !m1.wvalid_b",
     "tx_burst" : [["awvalid_b | wvalid_b","m_axi_awburst"],        ["1'b1","m_axi_awburst"]],
     "tx_id"    : [["awvalid_b | wvalid_b","m_axi_awid"],           ["1'b1","m_axi_awid"]],
     "tx_addr"  : [["awvalid_b | wvalid_b","awaddr_b"],             ["1'b1","wr_dstaddr"]],
@@ -89,6 +91,12 @@
   "mapping control" : [],
 
   "functions":{
+    "unknown0" : [[ "__IEND__", "m1.m_axi_awvalid" ]],
+    "unknown1" : [[ "__IEND__", "m1.m_axi_awid"]],
+    "unknown2" : [[ "__IEND__", "m1.m_axi_awaddr" ]],
+    "unknown3" : [[ "__IEND__", "m_axi_awlen"]],
+    "unknown4" : [[ "__IEND__", "m1.m_axi_awsize" ]],
+    "unknown5" : [[ "__IEND__", "m1.m_axi_awburst"]],    
     "unknown7" : [[ "__START__", "m1.awvalid_b || m1.awvalid_in" ]],
     "unknown6" : [[ "__IEND__", "m1.m_axi_awvalid" ]],
     "unknown8" : [[ "__IEND__", "m1.m_axi_awid" ]],

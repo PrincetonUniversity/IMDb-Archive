@@ -8,7 +8,13 @@
     {
       "instruction" : "AXIWriteAddrNotReady",
       "ready bound": 1
+    },
+
+    {
+      "instruction" : "AXIWriteAddrReady",
+      "ready bound": 1
     }
+    
   ],
   
   "global invariants": [

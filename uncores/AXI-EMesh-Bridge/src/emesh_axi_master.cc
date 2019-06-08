@@ -43,6 +43,8 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
   // internal states -- may not have matches with the Verilog state
   // but necessary for modeling
   tx_valid(wmodel.NewBvState("tx_valid", 1)),
+  tx_addr_done(wmodel.NewBvState("tx_addr_done", 1)),
+  tx_data_done(wmodel.NewBvState("tx_data_done", 1)),
   tx_burst(wmodel.NewBvState("tx_burst", 2)),
   tx_id   (wmodel.NewBvState("tx_id"   , M_IDW)),
   tx_addr (wmodel.NewBvState("tx_addr" , 32)),
@@ -114,12 +116,12 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
 
     
     // a general spec
-    instr.SetUpdate(m_axi_awvalid, Ite(m_axi_awvalid == 1, tx_valid, unknownVal(1)) );
-    instr.SetUpdate(m_axi_awid,    Ite(m_axi_awvalid & tx_valid == 1, tx_id,   unknownVal(M_IDW)));
-    instr.SetUpdate(m_axi_awaddr,  Ite(m_axi_awvalid & tx_valid == 1, tx_addr, unknownVal(32)));
-    instr.SetUpdate(m_axi_awlen,   Ite(m_axi_awvalid & tx_valid == 1, tx_len,  unknownVal(8)));
-    instr.SetUpdate(m_axi_awsize,  Ite(m_axi_awvalid & tx_valid == 1, tx_size, unknownVal(3)));
-    instr.SetUpdate(m_axi_awburst, Ite(m_axi_awvalid & tx_valid == 1, tx_burst,unknownVal(2)));
+    instr.SetUpdate(m_axi_awvalid, Ite(m_axi_awvalid == 1, tx_valid & ~tx_addr_done, unknownVal(1)) );
+    instr.SetUpdate(m_axi_awid,    Ite(m_axi_awvalid & tx_valid & ~tx_addr_done == 1, tx_id,   unknownVal(M_IDW)));
+    instr.SetUpdate(m_axi_awaddr,  Ite(m_axi_awvalid & tx_valid & ~tx_addr_done == 1, tx_addr, unknownVal(32)));
+    instr.SetUpdate(m_axi_awlen,   Ite(m_axi_awvalid & tx_valid & ~tx_addr_done == 1, tx_len,  unknownVal(8)));
+    instr.SetUpdate(m_axi_awsize,  Ite(m_axi_awvalid & tx_valid & ~tx_addr_done == 1, tx_size, unknownVal(3)));
+    instr.SetUpdate(m_axi_awburst, Ite(m_axi_awvalid & tx_valid & ~tx_addr_done == 1, tx_burst,unknownVal(2)));
   }
 
   { // AXIWriteAddrNotReady instruction
@@ -164,13 +166,13 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
                 Ite( tx_size == 3, BvConst(0xff,8) , unknownVal(8)  // 8bytes
                  ))));
 
-    instr.SetUpdate( m_axi_wvalid, Ite( m_axi_wvalid == 1, tx_valid, unknownVal(1) ) );
-    instr.SetUpdate( m_axi_wid,    Ite( m_axi_wvalid & tx_valid == 1, tx_id, unknownVal(M_IDW)) );
-    instr.SetUpdate( m_axi_wdata,  Ite( m_axi_wvalid & tx_valid == 1, tx_data, unknownVal(64) ) );
-    instr.SetUpdate( m_axi_wstrb,  Ite( m_axi_wvalid & tx_valid == 1, strb, unknownVal(8) ) );
-    instr.SetUpdate( m_axi_wlast,  Ite( m_axi_wvalid & tx_valid == 1, Ite( tx_count == tx_len, BvConst(1,1), BvConst(0,1)), unknownVal(1) ) );
+    instr.SetUpdate( m_axi_wvalid, Ite( m_axi_wvalid == 1, tx_valid & ~tx_data_done, unknownVal(1) ) );
+    instr.SetUpdate( m_axi_wid,    Ite( m_axi_wvalid & tx_valid & ~tx_data_done == 1, tx_id, unknownVal(M_IDW)) );
+    instr.SetUpdate( m_axi_wdata,  Ite( m_axi_wvalid & tx_valid & ~tx_data_done == 1, tx_data, unknownVal(64) ) );
+    instr.SetUpdate( m_axi_wstrb,  Ite( m_axi_wvalid & tx_valid & ~tx_data_done == 1, strb, unknownVal(8) ) );
+    instr.SetUpdate( m_axi_wlast,  Ite( m_axi_wvalid & tx_valid & ~tx_data_done == 1, Ite( tx_count == tx_len, BvConst(1,1), BvConst(0,1)), unknownVal(1) ) );
 
-    instr.SetUpdate( tx_count,     Ite( m_axi_wvalid & tx_valid == 1, tx_count + 1, BvConst(0, 8) ));
+    instr.SetUpdate( tx_count,     Ite( m_axi_wvalid & tx_valid & ~tx_data_done == 1, tx_count + 1, BvConst(0, 8) ));
   }
 
 
