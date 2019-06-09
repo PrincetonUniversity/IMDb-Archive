@@ -102,7 +102,15 @@
     "unknown8" : [[ "__IEND__", "m1.m_axi_awid" ]],
     "unknown9" : [[ "__IEND__", "m1.m_axi_awaddr" ]],
     "unknown10": [[ "__IEND__", "m_axi_awlen"]],
-    "unknown11": [[ "__IEND__", "m_axi_awsize"]]
+    "unknown11": [[ "__IEND__", "m_axi_awsize"]],
+
+    "unknown20": [[ "__IEND__", "m_axi_wid"]],
+    "unknown21": [[ "__IEND__", "m_axi_wdata"]],
+    "unknown22": [[ "__IEND__", "m_axi_wstrb"]],
+    "unknown23": [[ "__IEND__", "m_axi_wlast"]],
+    "unknown25" :[[ "__START__", "m1.wvalid_b || m1.awvalid_in" ]],
+    "unknown24": [[ "__IEND__", "m_axi_wvalid"]]
+
   }
 
 }

@@ -188,7 +188,7 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
     instr.SetUpdate( m_axi_wdata,  Ite(m_axi_wvalid == 1, m_axi_wdata, unknownVal(64)));
     instr.SetUpdate( m_axi_wstrb,  Ite(m_axi_wvalid == 1, m_axi_wstrb, unknownVal(8)));
     instr.SetUpdate( m_axi_wlast,  Ite(m_axi_wvalid == 1, m_axi_wlast, unknownVal(1)));
-    instr.SetUpdate( m_axi_wvalid, Ite(m_axi_wvalid == 1, m_axi_wvalid,unknownVal(1)));
+    instr.SetUpdate( m_axi_wvalid, Ite(m_axi_wvalid == 1, m_axi_wvalid, Ite( unknownVal(1) == 1, BvConst(1,1), unknownVal(1))));
   }
 
   {
