@@ -1,0 +1,86 @@
+{
+  "models": { "ILA":"m0" , "VERILOG": "m1" },
+  "state mapping": { 
+    "m_axi_arid"    : "m_axi_arid"   ,
+    "m_axi_araddr"  : "m_axi_araddr" ,
+    "m_axi_arlen"   : "m_axi_arlen"  ,
+    "m_axi_arsize"  : "m_axi_arsize" ,
+    "m_axi_arburst" : "m_axi_arburst",
+    "m_axi_arlock"  : "m_axi_arlock" ,
+    "m_axi_arcache" : "m_axi_arcache",
+    "m_axi_arprot"  : "m_axi_arprot" ,
+    "m_axi_arqos"   : "m_axi_arqos"  ,
+    "m_axi_arvalid" : "m_axi_arvalid",
+
+    "m_axi_rready"  : "m_axi_rready"
+
+  },
+
+  "interface mapping": {
+
+   "wr_wait": "**KEEP**",
+   "rd_wait": "**KEEP**",
+   "rr_access": "**KEEP**",
+   "rr_packet": "**KEEP**",
+   "wr_access": "**KEEP**",
+   "wr_packet": "**KEEP**",
+   "rd_access": "**KEEP**",
+   "rd_packet": "**KEEP**",
+   "rr_wait": "**KEEP**",
+
+   "m_axi_awid":     "**SO**",
+   "m_axi_awaddr":    "**SO**",
+   "m_axi_awlen":     "**SO**",
+   "m_axi_awsize":    "**SO**",
+   "m_axi_awburst":    "**SO**",
+   "m_axi_awlock":    "**SO**",
+   "m_axi_awcache":    "**SO**",
+   "m_axi_awprot":    "**SO**",
+   "m_axi_awqos":    "**SO**",
+   "m_axi_awvalid":    "**SO**",
+   "m_axi_wid":     "**SO**",
+   "m_axi_wdata":    "**SO**",
+   "m_axi_wstrb":    "**SO**",
+   "m_axi_wlast":    "**SO**",
+   "m_axi_wvalid":    "**SO**",
+   "m_axi_bready":    "**SO**",
+   "m_axi_arid":    "**SO**",
+   "m_axi_araddr":    "**SO**",
+   "m_axi_arlen":    "**SO**",
+   "m_axi_arsize":    "**SO**",
+   "m_axi_arburst":    "**SO**",
+   "m_axi_arlock":    "**SO**",
+   "m_axi_arcache":    "**SO**",
+   "m_axi_arprot":    "**SO**",
+   "m_axi_arqos":    "**SO**",
+   "m_axi_arvalid":    "**SO**",
+   "m_axi_rready":    "**SO**",
+   // Inputs
+   "m_axi_awready" :     "**KEEP**", // "m_axi_awready",
+   "m_axi_wready" :      "**KEEP**", //"m_axi_wready",
+   "m_axi_bid" :     "**KEEP**", //"m_axi_bid",
+   "m_axi_bresp" :   "**KEEP**", //"m_axi_bresp",
+   "m_axi_bvalid" :  "**KEEP**", //"m_axi_bvalid",
+   "m_axi_arready" : "**KEEP**", //"m_axi_arready",
+   "m_axi_rid" :     "m_axi_rid",
+   "m_axi_rdata" :     "m_axi_rdata",
+   "m_axi_rresp" :     "m_axi_rresp",
+   "m_axi_rlast" :     "m_axi_rlast",
+   "m_axi_rvalid" :    "m_axi_rvalid",
+
+     "m_axi_aresetn" :           "m_axi_aresetn", // "**NRESET**", // "m_axi_aresetn",
+     "m_axi_aclk"    :           "**CLOCK**"
+  },
+
+  "mapping control" : [],
+
+  "functions":{
+    "unknown26": [[ "__IEND__", "m1.m_axi_arid"]],
+    "unknown27": [[ "__IEND__", "m1.m_axi_araddr"]],
+    "unknown28": [[ "__IEND__", "m1.m_axi_arlen"]],
+    "unknown29": [[ "__IEND__", "m1.m_axi_arsize"]],
+    "unknown30": [[ "__IEND__", "m1.m_axi_arburst"]],
+    "unknown31": [[ "__IEND__", "m1.m_axi_arvalid"]]
+  }
+
+}

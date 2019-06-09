@@ -1,7 +1,7 @@
 {
   "instructions": [
     {
-      "instruction" : "Reset",
+      "instruction" : "WReset",
       "ready bound": 1
     },
     

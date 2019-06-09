@@ -5,10 +5,12 @@
 VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration();
 VerilogVerificationTargetGenerator::vtg_config_t HandleArguments(int argc, char **argv);
 
-void verifyAxiMaster(
+void verifyAxiMasterRW(
   Ila& model, 
   VerilogVerificationTargetGenerator::vtg_config_t vtg_cfg,
-  const std::vector<std::string> & design_files
+  const std::vector<std::string> & design_files,
+  const std::string & varmap,
+  const std::string & instcont
    ) {
   VerilogGeneratorBase::VlgGenConfig vlg_cfg;
   vlg_cfg.pass_node_name = true;
@@ -29,8 +31,8 @@ void verifyAxiMaster(
       {},                                                    // one include path
       path_to_design_files,                                  // designs
       "emaxi",                                               // top_module_name
-      RefrelPath + "varmap-emaxi-write.json",                      // variable mapping
-      RefrelPath + "instcond-emaxi-write.json",                    // conditions of start/ready
+      RefrelPath + varmap,                      // variable mapping
+      RefrelPath + instcont,                    // conditions of start/ready
       OutputPath,                                            // output path
       model.get(),                                           // model
       VerilogVerificationTargetGenerator::backend_selector::COSA, // backend: COSA
@@ -62,7 +64,8 @@ int main(int argc, char **argv) {
   // build the model
   EmeshAxiMasterBridge emaxi;
 
-  verifyAxiMaster(emaxi.wmodel, vtg_cfg, design_files);
+  verifyAxiMasterRW(emaxi.wmodel, vtg_cfg, design_files, "varmap-emaxi-write.json", "instcond-emaxi-write.json");
+  verifyAxiMasterRW(emaxi.rmodel, vtg_cfg, design_files, "varmap-emaxi-read.json",  "instcond-emaxi-read.json");
 
   return 0;
 }

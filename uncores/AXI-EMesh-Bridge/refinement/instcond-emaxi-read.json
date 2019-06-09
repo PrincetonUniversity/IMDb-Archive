@@ -1,0 +1,17 @@
+{
+  "instructions": [
+    {
+      "instruction" : "RReset",
+      "ready bound": 1
+    },
+    
+    {
+      "instruction" : "AXIReadAddrNotReady",
+      "ready bound": 1
+    }    
+  ],
+  
+  "global invariants": []
+
+}
+

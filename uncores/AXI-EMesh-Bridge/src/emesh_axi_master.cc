@@ -86,7 +86,7 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
   wmodel.SetValid( /*always true*/ BoolConst(true) );
 
   { // reset instruction
-    auto instr = wmodel.NewInstr("Reset");
+    auto instr = wmodel.NewInstr("WReset");
     instr.SetDecode( m_axi_aresetn_w == 0 );
     instr.SetUpdate(m_axi_awvalid, BvConst(0,1));
     instr.SetUpdate(m_axi_wvalid,  BvConst(0,1));
@@ -206,7 +206,7 @@ EmeshAxiMasterBridge::EmeshAxiMasterBridge()
   rmodel.SetValid( /*always true*/ BoolConst(true) );
 
   {// reset instruction
-    auto instr = rmodel.NewInstr("Reset");
+    auto instr = rmodel.NewInstr("RReset");
     instr.SetDecode( m_axi_aresetn_r == 0 );
     instr.SetUpdate(m_axi_arvalid, BvConst(0,1));
     instr.SetUpdate(m_axi_rvalid,  BvConst(0,1));
