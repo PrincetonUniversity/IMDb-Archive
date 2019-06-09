@@ -101,9 +101,14 @@
     "unknown6" : [[ "__IEND__", "m1.m_axi_awvalid" ]],
     "unknown8" : [[ "__IEND__", "m1.m_axi_awid" ]],
     "unknown9" : [[ "__IEND__", "m1.m_axi_awaddr" ]],
-    "unknown10": [[ "__IEND__", "m_axi_awlen"]],
-    "unknown11": [[ "__IEND__", "m_axi_awsize"]],
-
+    "unknown10": [[ "__IEND__", "m1.m_axi_awlen"]],
+    "unknown11": [[ "__IEND__", "m1.m_axi_awsize"]],
+    // 12,13,14 should be totally arbitrary, because in verilog there is no such case (and in spec no such case)
+    "unknown15": [[ "__IEND__", "m1.m_axi_wvalid" ]],
+    "unknown16": [[ "__IEND__", "m1.m_axi_wid" ]],
+    "unknown17": [[ "__IEND__", "m1.m_axi_wdata" ]],
+    "unknown18": [[ "__IEND__", "m1.m_axi_wstrb" ]],
+    "unknown19": [[ "__IEND__", "m1.m_axi_wlast" ]],
     "unknown20": [[ "__IEND__", "m_axi_wid"]],
     "unknown21": [[ "__IEND__", "m_axi_wdata"]],
     "unknown22": [[ "__IEND__", "m_axi_wstrb"]],

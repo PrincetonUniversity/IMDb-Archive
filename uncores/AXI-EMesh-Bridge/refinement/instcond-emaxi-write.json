@@ -16,6 +16,11 @@
     },
 
     {
+      "instruction" : "AXIWriteDataReady",
+      "ready bound": 1
+    },
+
+    {
       "instruction" : "AXIWriteDataNotReady",
       "ready bound": 1
     }    
