@@ -61,7 +61,7 @@
    "m_axi_bid" :     "**KEEP**", //"m_axi_bid",
    "m_axi_bresp" :   "**KEEP**", //"m_axi_bresp",
    "m_axi_bvalid" :  "**KEEP**", //"m_axi_bvalid",
-   "m_axi_arready" : "**KEEP**", //"m_axi_arready",
+   "m_axi_arready" : "m_axi_arready", //"m_axi_arready",
    "m_axi_rid" :     "m_axi_rid",
    "m_axi_rdata" :     "m_axi_rdata",
    "m_axi_rresp" :     "m_axi_rresp",
