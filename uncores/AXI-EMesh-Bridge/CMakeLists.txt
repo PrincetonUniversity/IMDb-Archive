@@ -50,6 +50,7 @@ endif()
 add_library(${EMESHAXI_TARGET}
   src/emesh_axi_master.cc
   src/emesh_axi_util.cc
+  src/emesh_axi_slave.cc
 )
 
 target_include_directories(${EMESHAXI_TARGET} PRIVATE include)

@@ -1,4 +1,5 @@
 #include <emesh_axi_master.h>
+#include <emesh_axi_slave.h>
 #include <ilang/vtarget-out/vtarget_gen.h>
 
 /// the function to generate configuration
@@ -48,6 +49,7 @@ int main(int argc, char **argv) {
   // extract the configurations
   std::vector<std::string> design_files = {
     "emaxi.v",
+    "esaxi.v",
     "emesh2packet.v",
     "em_se.v",
     "esaxi.v",
