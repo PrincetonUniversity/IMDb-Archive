@@ -1,0 +1,91 @@
+FROM ubuntu:bionic as builder
+
+# var
+ENV VIRT_ENV ilang-env
+ENV BUILD_ROOT /ibuild
+ENV BUILD_PREF $BUILD_ROOT/$VIRT_ENV
+
+# root dir
+WORKDIR $BUILD_ROOT
+
+# build packages
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install --yes --no-install-recommends \
+    bison \
+    build-essential \
+    cmake \
+    flex \
+    git \
+    libboost-all-dev \
+    libz3-dev \
+    pkg-config \
+    python \
+    python-pip \
+    vim \
+    wget \
+    z3 \
+    && rm -rf /var/lib/apt/lists/*
+
+# portable build result
+WORKDIR $BUILD_ROOT
+RUN pip install virtualenv
+RUN virtualenv $VIRT_ENV
+
+# ILAng
+ENV ILANG_DIR $BUILD_ROOT/ILAng
+WORKDIR $BUILD_ROOT
+#ADD https://api.github.com/repos/Bo-Yuan-Huang/ILAng/git/refs/heads/master ilang_version.json
+RUN git clone https://github.com/Bo-Yuan-Huang/ILAng.git $ILANG_DIR
+WORKDIR $ILANG_DIR
+RUN mkdir -p build 
+WORKDIR $ILANG_DIR/build
+RUN cmake .. -DCMAKE_INSTALL_PREFIX="$BUILD_PREF" -DILANG_INSTALL_DEV=ON && \
+    make -j"$(nproc)" && \
+    make install 
+
+# ItSy
+ENV ITSY_DIR $BUILD_ROOT/ItSy
+WORKDIR $BUILD_ROOT
+#ADD https://api.github.com/repos/PrincetonUniversity/ItSy/git/refs/heads/master itsy_version.json
+RUN git clone https://github.com/PrincetonUniversity/ItSy.git $ITSY_DIR
+WORKDIR $ITSY_DIR
+RUN bjam -j$(nproc)
+RUN cp build/ila.so $BUILD_PREF/lib
+
+#
+# Deployment
+#
+FROM ubuntu:bionic
+
+RUN apt update && DEBIAN_FRONTEND=noninteractive apt install --yes --no-install-recommends \
+    bison \
+    build-essential \
+    cmake \
+    flex \
+    git \
+    libboost-all-dev \
+    libz3-dev \
+    pkg-config \
+    python \
+    python-pip \
+    vim \
+    wget \
+    z3 \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV VIRT_ENV ilang-env
+ENV BUILD_ROOT /ibuild
+ENV BUILD_PREF $BUILD_ROOT/$VIRT_ENV
+
+WORKDIR /root/workspace
+
+RUN echo "source $BUILD_PREF/bin/activate" >> init.sh
+RUN echo "export PYTHONPATH=$BUILD_PREF/lib:\$PYTHONPATH" >> init.sh
+RUN echo "export CMAKE_PREFIX_PATH=$BUILD_PREF:\$CMAKE_PREFIX_PATH" >> init.sh
+RUN echo "cd $(pwd)" >> init.sh
+
+# configure files
+COPY --from=builder $BUILD_PREF $BUILD_PREF
+COPY --from=builder $BUILD_ROOT/ILAng/boilerplate/ ./simple/
+
+# done
+CMD echo "run 'source init.sh' to start" && /bin/bash
