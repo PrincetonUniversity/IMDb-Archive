@@ -1,0 +1,259 @@
+{
+  "instructions": [
+
+    {
+      "instruction"      : "REG_RD_FMAC_TX_PKT_CNT",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT_LO",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT_HI",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_TX_BYTE_CNT",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_BYTE_CNT_LO",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_BYTE_CNT_HI",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_UNDERSIZE_PKT_CNT",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_CRC32_ERR_CNT",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_DCNT_OVERRUN",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_DCNT_LINK_ERR",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT_OVERSIZE",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_PHY_STAT",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT_JABBER",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT_FRAGMENT",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_RAW_FRAME_CNT",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_BAD_FRAME_CNT",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT64_LO",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT64_HI",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT127_LO",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT127_HI",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT255_LO",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT255_HI",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT511_LO",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT511_HI",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT1023_LO",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT1023_HI",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT1518_LO",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    },
+
+    {
+      "instruction"      : "REG_RD_FMAC_RX_PKT_CNT1518_HI",
+      "ready bound"      : 5,
+      
+      "flush constraint" : [ "m1.reg_rd_start == 0" ],
+      "pre-flush end"    : "m1.reg_rd_done_out == 0 && m1.reg_rd_delay1 == 0 && m1.reg_rd_delay2 == 0 && m1.reg_rd_delay3 == 0 && m1.reg_rd_delay4 == 0", 
+      "post-flush end"   : "m1.reg_rd_done_out == 1"
+    }
+
+  ],
+  
+  "global invariants": [] 
+}
