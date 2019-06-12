@@ -1,0 +1,17 @@
+{ // ${comment}
+  auto instr = m.NewInstr("${instr_name}");
+
+  // decode
+  auto addr_match = (m.input(HOST_ADDR) == ${mmio_addr});
+  auto is_reg_read = (m.input(REG_RD_START) == REG_RD_START_V_BUSY);
+  instr.SetDecode(addr_match & is_reg_read);
+
+  // update
+  auto data_out_var = m.state(MAC_REGDOUT);
+  auto data_out_nxt = m.state(${reg_name});
+  instr.SetUpdate(data_out_var, data_out_nxt);
+
+  auto done_signal_var = m.state(REG_RD_DONE_OUT);
+  auto done_signal_nxt = BvConst(1, REG_RD_DONE_OUT_BWID);
+  instr.SetUpdate(done_signal_var, done_signal_nxt);
+}
