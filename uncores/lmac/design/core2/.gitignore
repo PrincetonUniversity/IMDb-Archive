@@ -1,0 +1,4 @@
+*
+!.gitignore
+!asynch_fifo.v
+!asynch_fifo_reg.v

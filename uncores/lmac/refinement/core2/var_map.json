@@ -1,0 +1,121 @@
+{
+  "models": { 
+    "ILA"     : "m0", 
+    "VERILOG" : "m1" 
+  },
+
+  "state mapping": { 
+    "Linkup"                    : "m1.xauiA_linkup",
+    "reg_rd_done_out"           : "m1.reg_rd_done_out",
+    "mac_regdout"               : "m1.FMAC_REGDOUT",
+    "FMAC_TX_PKT_CNT"           : "m1.FMAC_TX_PKT_CNT",
+    "FMAC_RX_PKT_CNT_LO"        : "m1.FMAC_RX_PKT_CNT_LO",
+    "FMAC_RX_PKT_CNT_HI"        : "m1.FMAC_RX_PKT_CNT_HI",
+    "FMAC_TX_BYTE_CNT"          : "m1.FMAC_TX_BYTE_CNT",
+    "FMAC_RX_BYTE_CNT_LO"       : "m1.FMAC_RX_BYTE_CNT_LO",
+    "FMAC_RX_BYTE_CNT_HI"       : "m1.FMAC_RX_BYTE_CNT_HI",
+    "FMAC_RX_UNDERSIZE_PKT_CNT" : "m1.FMAC_RX_UNDERSIZE_PKT_CNT",
+    "FMAC_RX_CRC32_ERR_CNT"     : "m1.FMAC_RX_CRC_ERR_CNT",
+    "FMAC_RX_DCNT_OVERRUN"      : "m1.FMAC_DCNT_OVERRUN",
+    "FMAC_RX_DCNT_LINK_ERR"     : "m1.FMAC_DCNT_LINK_ERR",
+    "FMAC_RX_PKT_CNT_OVERSIZE"  : "m1.FMAC_PKT_CNT_OVERSIZE",
+    "FMAC_PHY_STAT"             : "m1.fmac_register_if.FMAC_PHY_STAT",
+    "FMAC_RX_PKT_CNT_JABBER"    : "m1.FMAC_PKT_CNT_JABBER",
+    "FMAC_RX_PKT_CNT_FRAGMENT"  : "m1.FMAC_PKT_CNT_FRAGMENT",
+    "FMAC_RX_RAW_FRAME_CNT"     : "m1.fmac_register_if.FMAC_RAW_FRAME_CNT",
+    "FMAC_RX_BAD_FRAME_CNT"     : "m1.fmac_register_if.FMAC_BAD_FRAMESOF_CNT",
+    "FMAC_RX_PKT_CNT64_LO"      : "m0.FMAC_RX_PKT_CNT64_LO == m1.FMAC_RX_PKT_CNT64_LO[31:0]",
+    "FMAC_RX_PKT_CNT64_HI"      : "m1.FMAC_RX_PKT_CNT64_HI",
+    "FMAC_RX_PKT_CNT127_LO"     : "m0.FMAC_RX_PKT_CNT127_LO == m1.FMAC_RX_PKT_CNT127_LO[31:0]",
+    "FMAC_RX_PKT_CNT127_HI"     : "m1.FMAC_RX_PKT_CNT127_HI",
+    "FMAC_RX_PKT_CNT255_LO"     : "m0.FMAC_RX_PKT_CNT255_LO == m1.FMAC_RX_PKT_CNT255_LO[31:0]",
+    "FMAC_RX_PKT_CNT255_HI"     : "m1.FMAC_RX_PKT_CNT255_HI",
+    "FMAC_RX_PKT_CNT511_LO"     : "m0.FMAC_RX_PKT_CNT511_LO == m1.FMAC_RX_PKT_CNT511_LO[31:0]",
+    "FMAC_RX_PKT_CNT511_HI"     : "m1.FMAC_RX_PKT_CNT511_HI",
+    "FMAC_RX_PKT_CNT1023_LO"    : "m0.FMAC_RX_PKT_CNT1023_LO == m1.FMAC_RX_PKT_CNT1023_LO[31:0]",
+    "FMAC_RX_PKT_CNT1023_HI"    : "m1.FMAC_RX_PKT_CNT1023_HI",
+    "FMAC_RX_PKT_CNT1518_LO"    : "m0.FMAC_RX_PKT_CNT1518_LO == m1.FMAC_RX_PKT_CNT1518_LO[31:0]",
+    "FMAC_RX_PKT_CNT1518_HI"    : "m1.FMAC_RX_PKT_CNT1518_HI",
+    "TXFIFO_FULL"               : "m1.tx_mac_full",
+    "TXFIFO_WUSED_QWD"          : "m1.tx_mac_usedw",
+
+    // XXX: double check
+    "RX_IPCS_DATA"              : "m1.ipcs_fifo_dout",
+    "RX_IPCS_EMPTY"             : "m1.cs_fifo_empty",
+    "RX_PKT_DATA"               : "m1.core.drx_pkt_data",
+    "RX_PKT_EMPTY"              : "m1.rx_mac_empty"
+  },
+
+  "interface mapping": {
+    "clk"               : "**CLOCK**",
+    "xA_clk"            : "**CLOCK**",
+    "reset_"            : "**NRESET**", 
+
+    "mode_10G"          : "**KEEP**",
+    "mode_5G"           : "**KEEP**",
+    "mode_2p5G"         : "**KEEP**",
+    "mode_1G"           : "**KEEP**",
+
+    "TCORE_MODE"        : "**KEEP**",
+
+    "tx_mac_wr"         : "**KEEP**",
+    "tx_mac_data"       : "**KEEP**",		
+    "tx_mac_full"       : "**KEEP**",		
+    "tx_mac_usedw"      : "**KEEP**",	
+
+    "rx_mac_data"       : "**KEEP**",
+    "rx_mac_ctrl"       : "**KEEP**",
+    "rx_mac_empty"	    : "**KEEP**",
+    "rx_mac_rd"         : "**KEEP**",
+    "rx_mac_rd_cycle"   : "**KEEP**",	
+
+    "rx_mac_full_dbg"   : "**NC**",
+    "rx_mac_usedw_dbg"  : "**NC**",
+
+    "cs_fifo_rd_en"     : "**KEEP**",
+    "cs_fifo_empty"     : "**KEEP**",
+    "ipcs_fifo_dout"    : "**KEEP**",
+
+    "xgmii_reset_"      : "**KEEP**",
+    "xgmii_txd"         : "**KEEP**",
+    "xgmii_txc"         : "**KEEP**",
+
+    "xgmii_rxd"         : "**KEEP**",
+    "xgmii_rxc"         : "**KEEP**",
+    "xgmii_led_"        : "**KEEP**",	
+
+    "xauiA_linkup"      : "**SO**",
+
+    "host_addr_reg"     : "host_addr",
+    "SYS_ADDR"          : "**KEEP**",
+
+    "fail_over"         : "**KEEP**",
+    "fmac_ctrl"         : "MAC_CTRL",
+    "fmac_ctrl1"        : "MAC_CTRL1",
+
+    "fmac_rxd_en"       : "MAC_RXD_EN",
+
+    "mac_pause_value"   : "**KEEP**",
+    "mac_addr0"         : "**KEEP**",
+    "mcast_saddr"       : "**KEEP**",
+
+    "reg_rd_start"      : "reg_rd_start",
+
+    "reg_rd_done_out"   : "**SO**",
+
+    "FMAC_REGDOUT"      : "**SO**",
+    "FIFO_OV_IPEND"     : "**KEEP**"
+  },
+
+  "mapping control" : [
+    "(~ ((m0.reg_rd_start == 1) && (m0.reg_rd_done_out == 1)))",
+    "(m1.TCORE_MODE == 1)",
+    "(m1.SYS_ADDR == 1)",
+    "(m1.mode_10G == 0)",
+    "(m1.mode_5G == 0)", 
+    "(m1.mode_2p5G == 0)",
+    "(m1.mode_1G == 1)"
+  ],
+
+  "functions": {}
+}
