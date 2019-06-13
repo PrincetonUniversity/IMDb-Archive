@@ -22,6 +22,8 @@ This is the ILA model database, archiving the ILA models synthesized or manually
 
 ### Uncores
 
+-   [LMAC](uncores/lmac): LeWiz Communications Ethernet MAC. 
+
 ### Others
 
 ## Contribute

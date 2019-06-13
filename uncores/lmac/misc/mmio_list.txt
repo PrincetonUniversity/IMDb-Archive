@@ -1,0 +1,119 @@
+h’0_1000
+Reserved
+(Reserved - user defined space)
+h’0_1008
+Reserved
+h’0_1010
+Reserved
+h’0_1018
+Reserved
+h’0_1020
+FMAC_TX_PKT_CNT
+Number of transmitted packets. (Each register is 32 bit)
+h’0_1028
+FMAC_RX_PKT_CNT_LO
+Number of received packets (bit 31:0 of 64 bit counter)
+h’0_102C
+FMAC_RX_PKT_CNT_HI
+Number of received packets (bit 63:32 of 64 bit counter)
+h’0_1030
+FMAC_TX_BYTE_CNT
+Number of bytes transmitted
+h’0_1038
+FMAC_RX_BYTE_CNT_LO
+Number of bytes received (low part of 64 bit count)
+h’0_103C
+FMAC_RX_BYTE_CNT_HI
+Number of bytes received (high part of 64 bit count)
+h’0_1040
+FMAC_RX_UNDERSIZE_PKT_CNT
+Number of undersize packets received (<64 byte packet)
+h’0_1048
+FMAC_RX_CRC32_ERR_CNT
+Number of CRC error packets encountered
+h’0_1050
+FMAC_RX_DCNT_OVERRUN
+Number of packets overrun the RxFIFO and dropped
+h’0_1058
+FMAC_RX_DCNT_LINK_ERR
+Number of packets received encountered link error
+h’0_1060
+FMAC_RX_PKT_CNT_OVERSIZE
+Number of packets received but over the MAX packet size
+h’0_1068
+FMAC_PHY_STAT
+Internal PHY/Ethernet Link status and information
+h’0_1070
+Reserved
+h’0_1078
+FMAC_RX_PKT_CNT_JABBER
+Number of jabber packets
+h’0_1080
+FMAC_RX_PKT_CNT_FRAGMENT
+Number of fragmented packets
+h’0_1088
+FMAC_RX_RAW_FRAME_CNT
+Number of raw Ethernet frames received
+h’0_1090
+FMAC_RX_BAD_FRAME_CNT
+Number of bad Ethernet frames received
+h’0_1800
+FMAC_RX_PKT_CNT64_LO
+Number of packets with size < 64 bytes (low 32 bit count)
+h’0_1804
+FMAC_RX_PKT_CNT64_HI
+Number of packets with size < 64 bytes (high 32 bit count)
+h’0_1808
+FMAC_RX_PKT_CNT127_LO
+Number of packets with size < 127 bytes (low 32 bit count)
+h’0_180C
+FMAC_RX_PKT_CNT127_HI
+Number of packets with size < 127 bytes (high 32 bit count)
+h’0_1810
+FMAC_RX_PKT_CNT255_LO
+.......
+h’0_1814
+FMAC_RX_PKT_CNT255_HI
+.......
+h’0_1818
+FMAC_RX_PKT_CNT511_LO
+.......
+h’0_181C
+FMAC_RX_PKT_CNT511_HI
+.......
+h’0_1820
+FMAC_RX_PKT_CNT1023_LO
+.......
+h’0_1824
+FMAC_RX_PKT_CNT1023_HI
+.......
+h’0_1828
+FMAC_RX_PKT_CNT1518_LO
+Number of packets with size < 1518 bytes (low 32 bit count)
+h’0_182C
+FMAC_RX_PKT_CNT1518_HI
+Number of packets with size < 1518 bytes (high 32 bit count)
+h’0_1830
+Reserved
+h’0_1834
+Reserved
+h’0_1838
+Reserved
+h’0_183C
+Reserved
+h’0_1840
+Reserved
+h’0_1844
+Reserved
+h’0_1848
+Reserved
+h’0_184C
+Reserved
+h’0_1850
+Reserved
+h’0_1854
+Reserved
+h’0_1858
+Reserved
+h’0_185C
+Reserved
