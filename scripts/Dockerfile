@@ -27,8 +27,7 @@ RUN apt update && DEBIAN_FRONTEND=noninteractive apt install --yes --no-install-
 
 # portable build result
 WORKDIR $BUILD_ROOT
-RUN pip install virtualenv
-RUN virtualenv $VIRT_ENV
+RUN mkdir $VIRT_ENV
 
 # ILAng
 ENV ILANG_DIR $BUILD_ROOT/ILAng
@@ -78,14 +77,8 @@ ENV BUILD_PREF $BUILD_ROOT/$VIRT_ENV
 
 WORKDIR /root/workspace
 
-RUN echo "source $BUILD_PREF/bin/activate" >> init.sh
-RUN echo "export PYTHONPATH=$BUILD_PREF/lib:\$PYTHONPATH" >> init.sh
-RUN echo "export CMAKE_PREFIX_PATH=$BUILD_PREF:\$CMAKE_PREFIX_PATH" >> init.sh
-RUN echo "cd $(pwd)" >> init.sh
-
 # configure files
 COPY --from=builder $BUILD_PREF $BUILD_PREF
 COPY --from=builder $BUILD_ROOT/ILAng/boilerplate/ ./simple/
 
-# done
-CMD echo "run 'source init.sh' to start" && /bin/bash
+RUN cp -R $BUILD_PREF/* /usr/
