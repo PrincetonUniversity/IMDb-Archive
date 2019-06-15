@@ -1,6 +1,5 @@
 #!/bin/bash
-
 mkdir -p build && cd build
 cmake ..
 make
-./AESExe
+./fifo_bmc 20

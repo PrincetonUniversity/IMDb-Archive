@@ -1,0 +1,30 @@
+FROM byhuang/ilang:IMDb-ci
+
+# tutorial
+ENV TUTORIAL_DIR /tutorial
+COPY scripts/ci/tutorial_aes.sh $TUTORIAL_DIR/tutorial.sh
+COPY tutorials/aes $TUTORIAL_DIR
+WORKDIR $TUTORIAL_DIR
+RUN /bin/bash tutorial.sh
+
+# example fifo
+ENV FIFO_DIR /fifo
+COPY scripts/ci/example_fifo.sh $FIFO_DIR/fifo.sh
+COPY examples/FIFO-BMC $FIFO_DIR
+WORKDIR $FIFO_DIR
+RUN /bin/bash fifo.sh
+
+# gb
+ENV GB_DIR /gb
+COPY scripts/ci/gb.sh $GB_DIR/gb.sh
+COPY accls/GB-Halide $GB_DIR
+WORKDIR $GB_DIR
+RUN /bin/bash gb.sh
+
+# lmac
+ENV LMAC_DIR /lmac
+COPY scripts/ci/lmac.sh $LMAC_DIR/lmac.sh
+COPY uncores/lmac $LMAC_DIR
+WORKDIR $LMAC_DIR
+RUN /bin/bash lmac.sh
+

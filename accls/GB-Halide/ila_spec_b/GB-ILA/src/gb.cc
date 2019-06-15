@@ -2,8 +2,8 @@
 // Synopsis: implementation of the Gaussian Blur library
 
 #include <gb/gb.h>
-#include <ilang/portable/interface.h>
-#include <ilang/synth-interface/synth_engine_interface.h>
+#include <ilang/target-itsy/interface.h>
+#include <ilang/target-json/interface.h>
 #include <ilang/util/log.h>
 
 namespace ilang {
