@@ -1,12 +1,12 @@
 #!/usr/bin/bash
-export GB_DIR=$TRAVIS_BUILD_DIR/accls/GB-Halide
+
+export PYTHONPATH=/usr/lib:$PYTHONPATH
 
 # GB-L
-cd $GB_DIR/ila_spec_b
+cd ila_spec_b
 python gb_hier.py
 cd GB-ILA
 mkdir -p build && cd build
 cmake ..
 make
 ./gb
-

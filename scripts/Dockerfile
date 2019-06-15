@@ -81,4 +81,4 @@ WORKDIR /root/workspace
 COPY --from=builder $BUILD_PREF $BUILD_PREF
 COPY --from=builder $BUILD_ROOT/ILAng/boilerplate/ ./simple/
 
-RUN cp -R $BUILD_PREF/* /usr/
+RUN cp -r $BUILD_PREF/* /usr/
