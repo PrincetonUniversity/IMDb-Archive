@@ -47,7 +47,7 @@ WORKDIR $BUILD_ROOT
 #ADD https://api.github.com/repos/PrincetonUniversity/ItSy/git/refs/heads/master itsy_version.json
 RUN git clone https://github.com/PrincetonUniversity/ItSy.git $ITSY_DIR
 WORKDIR $ITSY_DIR
-RUN bjam -j$(nproc)
+RUN bjam -j"$(nproc)"
 RUN cp build/ila.so $BUILD_PREF/lib
 
 #
