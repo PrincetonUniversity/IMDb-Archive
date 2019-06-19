@@ -68,10 +68,6 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
   tx_bwait(wmodel.NewBvState("tx_bwait", 1)), // b_wait
   tx_ractive(rmodel.NewBvState("tx_ractive", 1)), // read_wactive
 
-  tx_bid(wmodel.NewBvState("tx_bid", S_IDW)), // axi_bid
-  tx_addr (wmodel.NewBvState("tx_addr" , 32)), // axi_awaddr
-  tx_size (wmodel.NewBvState("tx_size" , 3)),  // axi_awsize
-  tx_burst (wmodel.NewBvState("tx_burst" , 2)),// axi_awburst
   tx_len (rmodel.NewBvState("tx_len", 8)), // axi_arlen
   tx_arsize(rmodel.NewBvState("tx_arsize", 3))
 
@@ -86,16 +82,13 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
   wmodel.SetValid( /*always true*/ BoolConst(true) );
 
   { // reset instruction
-    auto instr = wmodel.NewInstr("Reset");
+    auto instr = wmodel.NewInstr("WReset");
     instr.SetDecode(s_axi_aresetn_w == 0 );
     
     // Write addr
     instr.SetUpdate(s_axi_awready, BvConst(1,1)); // default state recommends to be high
     instr.SetUpdate(tx_wactive, BvConst(0,1));
-    instr.SetUpdate(tx_bid, BvConst(0,S_IDW));
-    instr.SetUpdate(tx_addr, BvConst(0,32));
-    instr.SetUpdate(tx_size, BvConst(0,3));
-    instr.SetUpdate(tx_burst, BvConst(0,2));
+    instr.SetUpdate(s_axi_bid, BvConst(0,S_IDW));
     
     // Write data
     instr.SetUpdate(s_axi_wready, BvConst(0,1));
@@ -114,14 +107,7 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait, BvConst(1,1), BvConst(0,1)) );
     instr.SetUpdate(tx_wactive, Ite(s_axi_awready, BvConst(1,1), Ite(s_axi_wready & s_axi_wlast, BvConst(0,1), tx_wactive)) );
     
-    instr.SetUpdate(tx_bid,  Ite(s_axi_awready, s_axi_awid, tx_bid) );
-    instr.SetUpdate(tx_addr,  Ite(s_axi_awready, s_axi_awaddr, 
-                              Ite(s_axi_wvalid & s_axi_wready, 
-                              Ite(tx_burst == BvConst(1,2), Concat( Extract(tx_addr,31,2) + BvConst(1,30), BvConst(0,2)),
-                              tx_addr), 
-                              tx_addr)));
-    instr.SetUpdate(tx_size,  Ite(s_axi_awready, s_axi_awsize, tx_size) );
-    instr.SetUpdate(tx_burst,  Ite(s_axi_awready, s_axi_awburst, tx_burst) );
+    instr.SetUpdate(s_axi_bid,  Ite(s_axi_awready, s_axi_awid, s_axi_bid) );
   }
 
   { // AXIWriteAddrNotValid instruction
@@ -131,11 +117,6 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     
     instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait, BvConst(1,1), unknownVal(1)));
     instr.SetUpdate(tx_wactive, Ite(s_axi_wready & s_axi_wvalid & s_axi_wlast, BvConst(0,1), unknownVal(1)) );
-
-    instr.SetUpdate(tx_addr,  Ite(s_axi_wvalid & s_axi_wready, 
-                              Ite(tx_burst == BvConst(1,2), Concat( Extract(tx_addr,31,2) + BvConst(1,30), BvConst(0,2)),
-                              tx_addr), 
-                              tx_addr));
   }
 
   {
@@ -176,7 +157,7 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
   rmodel.SetValid( /*always true*/ BoolConst(true) );
 
   {// reset instruction
-    auto instr = rmodel.NewInstr("Reset");
+    auto instr = rmodel.NewInstr("RReset");
     instr.SetDecode( s_axi_aresetn_r == 0 );
     
     // AR
