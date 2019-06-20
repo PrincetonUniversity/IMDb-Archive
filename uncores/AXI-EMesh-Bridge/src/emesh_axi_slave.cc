@@ -115,8 +115,8 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
 
     instr.SetDecode( ( s_axi_awvalid == 0 ) & ( s_axi_aresetn_w == 1 ) ); // should keep its old value
     
-    instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait, BvConst(1,1), unknownVal(1)));
-    instr.SetUpdate(tx_wactive, Ite(s_axi_wready & s_axi_wvalid & s_axi_wlast, BvConst(0,1), unknownVal(1)) );
+    instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait, BvConst(1,1), s_axi_awready));
+    instr.SetUpdate(tx_wactive, Ite(s_axi_wready & s_axi_wvalid & s_axi_wlast, BvConst(0,1), tx_wactive) );
   }
 
   {
