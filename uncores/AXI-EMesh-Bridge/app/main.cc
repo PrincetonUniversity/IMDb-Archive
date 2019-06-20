@@ -43,13 +43,49 @@ void verifyAxiMasterRW(
   vg.GenerateTargets();
 }
 
+void verifyAxiSlaveRW(
+  Ila& model, 
+  VerilogVerificationTargetGenerator::vtg_config_t vtg_cfg,
+  const std::vector<std::string> & design_files,
+  const std::string & varmap,
+  const std::string & instcont
+   ) {
+  VerilogGeneratorBase::VlgGenConfig vlg_cfg;
+  vlg_cfg.pass_node_name = true;
+  vtg_cfg.CosaAddKeep = false;
+
+  std::string RootPath    = "..";
+  std::string VerilogPath = RootPath    + "/verilog/";
+  std::string IncludePath = VerilogPath + "include/";
+  std::string RefrelPath  = RootPath    + "/refinement/";
+  std::string OutputPath  = RootPath    + "/slave_verification/";
+
+  std::vector<std::string> path_to_design_files; // update path
+  for(auto && f : design_files)
+    path_to_design_files.push_back( VerilogPath + f );
+  
+
+  VerilogVerificationTargetGenerator vg(
+      {},                                                    // one include path
+      path_to_design_files,                                  // designs
+      "esaxi",                                               // top_module_name
+      RefrelPath + varmap,                      // variable mapping
+      RefrelPath + instcont,                    // conditions of start/ready
+      OutputPath,                                            // output path
+      model.get(),                                           // model
+      VerilogVerificationTargetGenerator::backend_selector::COSA, // backend: COSA
+      vtg_cfg,  // target generator configuration
+      vlg_cfg); // verilog generator configuration
+
+  vg.GenerateTargets();
+}
+
 
 /// Build the model
 int main(int argc, char **argv) {
   // extract the configurations
   std::vector<std::string> design_files = {
     "emaxi.v",
-    "esaxi.v",
     "emesh2packet.v",
     "em_se.v",
     "esaxi.v",
@@ -65,9 +101,13 @@ int main(int argc, char **argv) {
 
   // build the model
   EmeshAxiMasterBridge emaxi;
+  EmeshAxiSlaveBridge esaxi;
 
   verifyAxiMasterRW(emaxi.wmodel, vtg_cfg, design_files, "varmap-emaxi-write.json", "instcond-emaxi-write.json");
   verifyAxiMasterRW(emaxi.rmodel, vtg_cfg, design_files, "varmap-emaxi-read.json",  "instcond-emaxi-read.json");
+
+  verifyAxiSlaveRW(esaxi.wmodel, vtg_cfg, design_files, "varmap-esaxi-write.json", "instcond-esaxi-write.json");
+  verifyAxiSlaveRW(esaxi.rmodel, vtg_cfg, design_files, "varmap-esaxi-read.json",  "instcond-esaxi-read.json");
 
   return 0;
 }
