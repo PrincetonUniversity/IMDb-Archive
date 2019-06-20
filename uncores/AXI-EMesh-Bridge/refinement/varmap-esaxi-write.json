@@ -1,0 +1,79 @@
+{
+  "models": { "ILA":"m0" , "VERILOG": "m1" },
+  "state mapping": { 
+    "s_axi_awready" : "s_axi_awready",
+
+    "s_axi_wready"  : "s_axi_wready" ,
+
+    "s_axi_bid"     : "s_axi_bid",
+    "s_axi_bresp"   : "s_axi_bresp",
+    "s_axi_bvalid"  : "s_axi_bvalid",
+
+    "tx_wactive"    : "tx_wactive == write_wactive",
+    "tx_bwait"      : "tx_bwait == b_wait"
+  },
+
+  "interface mapping": {
+    "wr_wait":   "**KEEP**",
+    "rd_wait":   "**KEEP**",
+    "rr_access": "**KEEP**",
+    "rr_packet": "**KEEP**",
+    "wr_access": "**KEEP**",
+    "wr_packet": "**KEEP**",
+    "rd_access": "**KEEP**",
+    "rd_packet": "**KEEP**",
+    "rr_wait":   "**KEEP**",
+ 
+    // Inputs
+    "s_axi_awid":      "**KEEP**",
+    "s_axi_awaddr":    "**KEEP**",
+    "s_axi_awlen":     "**KEEP**",
+    "s_axi_awsize":    "**KEEP**",
+    "s_axi_awburst":   "**KEEP**",
+    "s_axi_awlock":    "**KEEP**",
+    "s_axi_awcache":   "**KEEP**",
+    "s_axi_awprot":    "**KEEP**",
+    "s_axi_awqos":     "**KEEP**",
+    "s_axi_awvalid":   "**KEEP**",
+    "s_axi_wid":       "**KEEP**",
+    "s_axi_wdata":     "**KEEP**",
+    "s_axi_wstrb":     "**KEEP**",
+    "s_axi_wlast":     "**KEEP**",
+    "s_axi_wvalid":    "**KEEP**",
+    "s_axi_bready":    "**KEEP**",
+    "s_axi_arid":      "**KEEP**",
+    "s_axi_araddr":    "**KEEP**",
+    "s_axi_arlen":     "**KEEP**",
+    "s_axi_arsize":    "**KEEP**",
+    "s_axi_arburst":   "**KEEP**",
+    "s_axi_arlock":    "**KEEP**",
+    "s_axi_arcache":   "**KEEP**",
+    "s_axi_arprot":    "**KEEP**",
+    "s_axi_arqos":     "**KEEP**",
+    "s_axi_arvalid":   "**KEEP**",
+    "s_axi_rready":    "**KEEP**",
+ 
+    "s_axi_awready" :     "**SO**",
+    "s_axi_wready" :      "**SO**",
+    "s_axi_bid" :         "**SO**",
+    "s_axi_bresp" :       "**SO**",
+    "s_axi_bvalid" :      "**SO**",
+    "s_axi_arready" :     "**SO**", 
+    "s_axi_rid" :         "**SO**",
+    "s_axi_rdata" :       "**SO**",
+    "s_axi_rresp" :       "**SO**",
+    "s_axi_rlast" :       "**SO**",
+    "s_axi_rvalid" :      "**SO**",
+ 
+   "s_axi_aresetn" :           "s_axi_aresetn", // "**NRESET**", // "s_axi_aresetn",
+   "s_axi_aclk"    :           "**CLOCK**"
+  },
+
+  "mapping control" : [],
+
+  "functions":{
+    "unknown0" : [[ "__IEND__", "m1.s_axi_wready" ]],
+    "unknown1" : [[ "__IEND__", "m1.s_axi_wready"]]
+  }
+
+}

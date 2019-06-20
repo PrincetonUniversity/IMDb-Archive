@@ -1,0 +1,34 @@
+{
+  "instructions": [
+    {
+      "instruction" : "WReset",
+      "ready bound": 1
+    },
+    
+    {
+      "instruction" : "AXIWriteAddrNotValid",
+      "ready bound": 1
+    },
+
+    {
+      "instruction" : "AXIWriteAddrValid",
+      "ready bound": 1
+    },
+
+    {
+      "instruction" : "AXIWriteDataValid",
+      "ready bound": 1
+    },
+
+    {
+      "instruction" : "AXIWriteDataNotValid",
+      "ready bound": 1
+    }    
+
+    
+  ],
+  
+  "global invariants": []
+
+}
+

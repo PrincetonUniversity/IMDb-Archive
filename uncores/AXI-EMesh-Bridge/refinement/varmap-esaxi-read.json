@@ -1,0 +1,91 @@
+{
+  "models": { "ILA":"m0" , "VERILOG": "m1" },
+  "state mapping": { 
+    "s_axi_rid"      : "s_axi_rid",
+    "s_axi_rdata"    : "s_axi_rdata",
+    "s_axi_rresp"    : "s_axi_rresp",
+    "s_axi_rlast"    : "s_axi_rlast",
+    "s_axi_rvalid"   : "s_axi_rvalid",
+
+    "s_axi_arready"  : "s_axi_arready",
+
+    "tx_ractive"     : "tx_ractive == read_wactive",
+    "tx_len"         : "tx_len == axi_arlen",
+    "tx_arsize"      : "tx_arsize == axi_arsize"
+  },
+
+  "interface mapping": {
+
+   "wr_wait":   "**KEEP**",
+   "rd_wait":   "**KEEP**",
+   "rr_access": "**KEEP**",
+   "rr_packet": "**KEEP**",
+   "wr_access": "**KEEP**",
+   "wr_packet": "**KEEP**",
+   "rd_access": "**KEEP**",
+   "rd_packet": "**KEEP**",
+   "rr_wait":   "**KEEP**",
+
+   // Inputs
+   "s_axi_awid":      "**KEEP**",
+   "s_axi_awaddr":    "**KEEP**",
+   "s_axi_awlen":     "**KEEP**",
+   "s_axi_awsize":    "**KEEP**",
+   "s_axi_awburst":   "**KEEP**",
+   "s_axi_awlock":    "**KEEP**",
+   "s_axi_awcache":   "**KEEP**",
+   "s_axi_awprot":    "**KEEP**",
+   "s_axi_awqos":     "**KEEP**",
+   "s_axi_awvalid":   "**KEEP**",
+   "s_axi_wid":       "**KEEP**",
+   "s_axi_wdata":     "**KEEP**",
+   "s_axi_wstrb":     "**KEEP**",
+   "s_axi_wlast":     "**KEEP**",
+   "s_axi_wvalid":    "**KEEP**",
+   "s_axi_bready":    "**KEEP**",
+   "s_axi_arid":      "**KEEP**",
+   "s_axi_araddr":    "**KEEP**",
+   "s_axi_arlen":     "**KEEP**",
+   "s_axi_arsize":    "**KEEP**",
+   "s_axi_arburst":   "**KEEP**",
+   "s_axi_arlock":    "**KEEP**",
+   "s_axi_arcache":   "**KEEP**",
+   "s_axi_arprot":    "**KEEP**",
+   "s_axi_arqos":     "**KEEP**",
+   "s_axi_arvalid":   "**KEEP**",
+   "s_axi_rready":    "**KEEP**",
+
+   "s_axi_awready" :     "**SO**",
+   "s_axi_wready" :      "**SO**",
+   "s_axi_bid" :         "**SO**",
+   "s_axi_bresp" :       "**SO**",
+   "s_axi_bvalid" :      "**SO**",
+   "s_axi_arready" :     "**SO**", 
+   "s_axi_rid" :         "**SO**",
+   "s_axi_rdata" :       "**SO**",
+   "s_axi_rresp" :       "**SO**",
+   "s_axi_rlast" :       "**SO**",
+   "s_axi_rvalid" :      "**SO**",
+
+  "s_axi_aresetn" :           "s_axi_aresetn", // "**NRESET**", // "s_axi_aresetn",
+  "s_axi_aclk"    :           "**CLOCK**"
+  },
+
+  "mapping control" : [],
+
+  "functions":{
+    "unknown2": [[ "__START__", "m1.rr_return_access"]],
+    "unknown3": [[ "__START__", "m1.rr_return_data[7:0]"]],
+    "unknown4": [[ "__START__", "m1.rr_return_data[7:0]"]],
+    "unknown5": [[ "__START__", "m1.rr_return_data[7:0]"]],
+    "unknown6": [[ "__START__", "m1.rr_return_data[7:0]"]],
+    "unknown7": [[ "__START__", "m1.rr_return_data[15:0]"]],
+    "unknown8": [[ "__START__", "m1.rr_return_data[15:0]"]],
+    "unknown9": [[ "__START__", "m1.rr_return_data[31:0]"]],
+    "unknown10": [[ "__START__", "m1.rr_return_access"]],
+    "unknown11": [[ "__START__", "m1.rr_return_access"]],
+    "unknown12": [[ "__START__", "m1.rr_timeout_access"]],
+    "unknown13": [[ "__START__", "m1.rr_return_access"]]
+  }
+
+}
