@@ -122,11 +122,7 @@ protected:
   ExprRef tx_wactive;
   ExprRef tx_bwait;
   ExprRef tx_ractive;
-
-  ExprRef tx_bid;
-  ExprRef tx_addr;
-  ExprRef tx_size;
-  ExprRef tx_burst;
+  
   ExprRef tx_len;
   ExprRef tx_arsize;
 
