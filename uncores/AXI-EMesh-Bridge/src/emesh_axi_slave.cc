@@ -104,10 +104,10 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
 
     instr.SetDecode( (s_axi_awvalid == 1) & (s_axi_aresetn_w == 1) ); // will get what's in its buffer
 
-    instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait, BvConst(1,1), BvConst(0,1)) );
-    instr.SetUpdate(tx_wactive, Ite(s_axi_awready, BvConst(1,1), Ite(s_axi_wready & s_axi_wlast, BvConst(0,1), tx_wactive)) );
+    instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait == 1, BvConst(1,1), BvConst(0,1)) );
+    instr.SetUpdate(tx_wactive, Ite(s_axi_awready == 1, BvConst(1,1), Ite(s_axi_wready & s_axi_wlast == 1, BvConst(0,1), tx_wactive)) );
     
-    instr.SetUpdate(s_axi_bid,  Ite(s_axi_awready, s_axi_awid, s_axi_bid) );
+    instr.SetUpdate(s_axi_bid,  Ite(s_axi_awready == 1, s_axi_awid, s_axi_bid) );
   }
 
   { // AXIWriteAddrNotValid instruction
@@ -115,8 +115,8 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
 
     instr.SetDecode( ( s_axi_awvalid == 0 ) & ( s_axi_aresetn_w == 1 ) ); // should keep its old value
     
-    instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait, BvConst(1,1), s_axi_awready));
-    instr.SetUpdate(tx_wactive, Ite(s_axi_wready & s_axi_wvalid & s_axi_wlast, BvConst(0,1), tx_wactive) );
+    instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait == 1, BvConst(1,1), s_axi_awready));
+    instr.SetUpdate(tx_wactive, Ite(s_axi_wready & s_axi_wvalid & s_axi_wlast == 1, BvConst(0,1), tx_wactive) );
   }
 
   {
@@ -125,10 +125,10 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
 
     instr.SetDecode( ( s_axi_wvalid == 1 ) & ( s_axi_aresetn_w == 1 ) );
 
-    instr.SetUpdate(s_axi_wready, Ite(s_axi_wready & s_axi_wlast, BvConst(0,1), Ite(tx_wactive, unknownVal(1), s_axi_wready)));
-    instr.SetUpdate(s_axi_bvalid, Ite(s_axi_wready & s_axi_wlast, BvConst(1,1), Ite(s_axi_bready & s_axi_bvalid, BvConst(0,1), s_axi_wready)));
-    instr.SetUpdate(s_axi_bresp, Ite(s_axi_wready & s_axi_wlast, BvConst(0,2), s_axi_bresp));
-    instr.SetUpdate(tx_bwait, Ite(s_axi_wready & s_axi_wlast, ~s_axi_bready, Ite(s_axi_bready & s_axi_bvalid, BvConst(0,1), tx_bwait)));
+    instr.SetUpdate(s_axi_wready, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(0,1), Ite(tx_wactive == 1, unknownVal(1), s_axi_wready)));
+    instr.SetUpdate(s_axi_bvalid, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(1,1), Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), s_axi_wready)));
+    instr.SetUpdate(s_axi_bresp, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(0,2), s_axi_bresp));
+    instr.SetUpdate(tx_bwait, Ite(s_axi_wready & s_axi_wlast == 1, ~s_axi_bready, Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), tx_bwait)));
   }
 
 
@@ -138,9 +138,9 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
 
     instr.SetDecode( ( s_axi_wvalid == 0 ) & ( s_axi_aresetn_w == 1 ) );
 
-    instr.SetUpdate(s_axi_wready, Ite(tx_wactive, unknownVal(1), s_axi_wready));
-    instr.SetUpdate(s_axi_bvalid, Ite(s_axi_bready & s_axi_bvalid, BvConst(0,1), s_axi_wready));
-    instr.SetUpdate(tx_bwait, Ite(s_axi_bready & s_axi_bvalid, BvConst(0,1), tx_bwait));
+    instr.SetUpdate(s_axi_wready, Ite(tx_wactive == 1, unknownVal(1), s_axi_wready));
+    instr.SetUpdate(s_axi_bvalid, Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), s_axi_wready));
+    instr.SetUpdate(tx_bwait, Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), tx_bwait));
   }
 
   {
@@ -178,24 +178,24 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     auto instr = rmodel.NewInstr("AXIReadAddrValid");
     instr.SetDecode( (s_axi_aresetn_r == 1) & (s_axi_arvalid == 1) );
 
-    instr.SetUpdate(s_axi_arready, Ite(~s_axi_arready & ~tx_ractive, BvConst(1,1), BvConst(0,1)));
-    instr.SetUpdate(tx_ractive, Ite(s_axi_arready, BvConst(1,1), Ite(s_axi_rvalid & s_axi_rlast & s_axi_rready, BvConst(0,1), tx_ractive)));
-    instr.SetUpdate(tx_len, Ite(s_axi_arready, s_axi_arlen, Ite(s_axi_rvalid & s_axi_rready, tx_len - BvConst(1,8), tx_len)));
-    instr.SetUpdate(tx_arsize, Ite(s_axi_arready, s_axi_arsize, tx_arsize));
-    instr.SetUpdate(s_axi_rlast,  Ite(s_axi_arready, Ite(s_axi_arlen == 0, BvConst(1,1), BvConst(0,1)), 
-                                  Ite(s_axi_rvalid & s_axi_rready, 
+    instr.SetUpdate(s_axi_arready, Ite(~s_axi_arready & ~tx_ractive == 1, BvConst(1,1), BvConst(0,1)));
+    instr.SetUpdate(tx_ractive, Ite(s_axi_arready == 1, BvConst(1,1), Ite(s_axi_rvalid & s_axi_rlast & s_axi_rready == 1, BvConst(0,1), tx_ractive)));
+    instr.SetUpdate(tx_len, Ite(s_axi_arready == 1, s_axi_arlen, Ite(s_axi_rvalid & s_axi_rready == 1, tx_len - BvConst(1,8), tx_len)));
+    instr.SetUpdate(tx_arsize, Ite(s_axi_arready == 1, s_axi_arsize, tx_arsize));
+    instr.SetUpdate(s_axi_rlast,  Ite(s_axi_arready == 1, Ite(s_axi_arlen == 0, BvConst(1,1), BvConst(0,1)), 
+                                  Ite(s_axi_rvalid & s_axi_rready == 1, 
                                   Ite(tx_len == BvConst(1,8), BvConst(1,1), s_axi_rlast), s_axi_rlast)));
-    instr.SetUpdate(s_axi_rid, Ite(s_axi_arready, s_axi_arid, s_axi_rid));
+    instr.SetUpdate(s_axi_rid, Ite(s_axi_arready == 1, s_axi_arid, s_axi_rid));
   }
 
   { // AR Not Valid
     auto instr = rmodel.NewInstr("AXIReadAddrNotValid");
     instr.SetDecode( (s_axi_aresetn_r == 1) & (s_axi_arvalid == 0) );
     // if arvalid is 1, it should hold its status
-    instr.SetUpdate(s_axi_arready, Ite(~s_axi_arready & ~tx_ractive, BvConst(1,1), s_axi_arready));
-    instr.SetUpdate(tx_ractive, Ite(s_axi_rvalid & s_axi_rlast & s_axi_rready, BvConst(0,1), tx_ractive));
-    instr.SetUpdate(tx_len, Ite(s_axi_rvalid & s_axi_rready, tx_len - BvConst(1,8), tx_len));
-    instr.SetUpdate(s_axi_rlast,  Ite(s_axi_rvalid & s_axi_rready, 
+    instr.SetUpdate(s_axi_arready, Ite(~s_axi_arready & ~tx_ractive == 1, BvConst(1,1), s_axi_arready));
+    instr.SetUpdate(tx_ractive, Ite(s_axi_rvalid & s_axi_rlast & s_axi_rready == 1, BvConst(0,1), tx_ractive));
+    instr.SetUpdate(tx_len, Ite(s_axi_rvalid & s_axi_rready == 1, tx_len - BvConst(1,8), tx_len));
+    instr.SetUpdate(s_axi_rlast,  Ite(s_axi_rvalid & s_axi_rready == 1, 
                                   Ite(tx_len == BvConst(1,8), BvConst(1,1), s_axi_rlast), s_axi_rlast));
   } 
 
