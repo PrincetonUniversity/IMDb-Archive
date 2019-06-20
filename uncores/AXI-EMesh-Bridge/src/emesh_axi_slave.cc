@@ -71,6 +71,7 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
   tx_len (rmodel.NewBvState("tx_len", 8)), // axi_arlen
   tx_arsize(rmodel.NewBvState("tx_arsize", 3))
 
+  // ------------------------------------------------------------------
 {
 
   // write data buffers
