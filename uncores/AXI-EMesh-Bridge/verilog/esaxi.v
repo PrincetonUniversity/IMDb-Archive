@@ -159,6 +159,8 @@ module esaxi (/*autoarg*/
    wire [31:0] 	      rr_mux_data;
    wire [DW-1:0]      rr_data;
    wire [31:0] 	      rr_return_data;
+   wire rr_return_access;
+   wire rr_timeout_access;
    reg [TW-1:0]       timeout_counter;
    
    //###################################################

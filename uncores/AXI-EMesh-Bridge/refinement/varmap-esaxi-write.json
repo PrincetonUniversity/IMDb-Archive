@@ -9,7 +9,7 @@
     "s_axi_bresp"   : "s_axi_bresp",
     "s_axi_bvalid"  : "s_axi_bvalid",
 
-    "tx_wactive"    : "tx_wactive == write_wactive",
+    "tx_wactive"    : "tx_wactive == write_active",
     "tx_bwait"      : "tx_bwait == b_wait"
   },
 
