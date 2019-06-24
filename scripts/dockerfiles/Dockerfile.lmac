@@ -1,9 +1,0 @@
-FROM byhuang/ilang:IMDb-ci
-
-# lmac
-ENV LMAC_DIR /lmac
-COPY scripts/ci/lmac.sh $LMAC_DIR/lmac.sh
-COPY uncores/lmac $LMAC_DIR
-
-WORKDIR $LMAC_DIR
-RUN /bin/bash lmac.sh

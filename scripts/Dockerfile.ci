@@ -28,3 +28,9 @@ COPY uncores/lmac $LMAC_DIR
 WORKDIR $LMAC_DIR
 RUN /bin/bash lmac.sh
 
+# oc8051
+ENV OC8051_DIR /oc8051
+COPY scripts/ci/oc8051.sh $OC8051_DIR/oc8051.sh
+COPY cores/8051 $OC8051_DIR
+WORKDIR $OC8051_DIR
+RUN /bin/bash oc8051.sh

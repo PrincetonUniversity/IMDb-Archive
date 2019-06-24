@@ -32,7 +32,7 @@ RUN mkdir $VIRT_ENV
 # ILAng
 ENV ILANG_DIR $BUILD_ROOT/ILAng
 WORKDIR $BUILD_ROOT
-#ADD https://api.github.com/repos/Bo-Yuan-Huang/ILAng/git/refs/heads/master ilang_version.json
+ADD https://api.github.com/repos/Bo-Yuan-Huang/ILAng/git/refs/heads/master ilang_version.json
 RUN git clone https://github.com/Bo-Yuan-Huang/ILAng.git $ILANG_DIR
 WORKDIR $ILANG_DIR
 RUN mkdir -p build 
@@ -44,7 +44,7 @@ RUN cmake .. -DCMAKE_INSTALL_PREFIX="$BUILD_PREF" -DILANG_INSTALL_DEV=ON && \
 # ItSy
 ENV ITSY_DIR $BUILD_ROOT/ItSy
 WORKDIR $BUILD_ROOT
-#ADD https://api.github.com/repos/PrincetonUniversity/ItSy/git/refs/heads/master itsy_version.json
+ADD https://api.github.com/repos/PrincetonUniversity/ItSy/git/refs/heads/master itsy_version.json
 RUN git clone https://github.com/PrincetonUniversity/ItSy.git $ITSY_DIR
 WORKDIR $ITSY_DIR
 RUN bjam -j"$(nproc)"
