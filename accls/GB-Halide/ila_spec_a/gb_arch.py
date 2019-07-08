@@ -116,3 +116,7 @@ class GBArch ():
 
     def exportVerilog (self, fileName):
         self.abst.generateVerilog (fileName)
+
+    def exportModel (self, fileName):
+        self.abst.exportAll (fileName)
+
