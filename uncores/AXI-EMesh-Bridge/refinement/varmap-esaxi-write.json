@@ -40,7 +40,7 @@
     "s_axi_wstrb":     "**KEEP**",
     "s_axi_wlast":     "**KEEP**",
     "s_axi_wvalid":    "s_axi_wvalid",
-    "s_axi_bready":    "s_axi_bready",
+    "s_axi_bready":    "**KEEP**",
     "s_axi_arid":      "**KEEP**",
     "s_axi_araddr":    "**KEEP**",
     "s_axi_arlen":     "**KEEP**",
