@@ -191,7 +191,7 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
   { // AR Not Valid
     auto instr = rmodel.NewInstr("AXIReadAddrNotValid");
     instr.SetDecode( (s_axi_aresetn_r == 1) & (s_axi_arvalid == 0) );
-    // if arvalid is 1, it should hold its status
+    // if arvalid is 0, it should hold its status
     instr.SetUpdate(s_axi_arready, Ite(~s_axi_arready & ~tx_ractive == 1, BvConst(1,1), s_axi_arready));
     instr.SetUpdate(tx_ractive, Ite(s_axi_rvalid & s_axi_rlast & s_axi_rready == 1, BvConst(0,1), tx_ractive));
     instr.SetUpdate(tx_len, Ite(s_axi_rvalid & s_axi_rready == 1, tx_len - BvConst(1,8), tx_len));
