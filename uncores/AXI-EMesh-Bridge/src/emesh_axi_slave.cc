@@ -126,7 +126,7 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     instr.SetDecode( ( s_axi_wvalid == 1 ) & ( s_axi_aresetn_w == 1 ) );
 
     instr.SetUpdate(s_axi_wready, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(0,1), Ite(tx_wactive == 1, unknownVal(1), s_axi_wready)));
-    instr.SetUpdate(s_axi_bvalid, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(1,1), Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), s_axi_wready)));
+    instr.SetUpdate(s_axi_bvalid, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(1,1), Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), s_axi_bvalid)));
     instr.SetUpdate(s_axi_bresp, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(0,2), s_axi_bresp));
     instr.SetUpdate(tx_bwait, Ite(s_axi_wready & s_axi_wlast == 1, ~s_axi_bready, Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), tx_bwait)));
   }
@@ -139,7 +139,7 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     instr.SetDecode( ( s_axi_wvalid == 0 ) & ( s_axi_aresetn_w == 1 ) );
 
     instr.SetUpdate(s_axi_wready, Ite(tx_wactive == 1, unknownVal(1), s_axi_wready));
-    instr.SetUpdate(s_axi_bvalid, Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), s_axi_wready));
+    instr.SetUpdate(s_axi_bvalid, Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), s_axi_bvalid));
     instr.SetUpdate(tx_bwait, Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), tx_bwait));
   }
 
