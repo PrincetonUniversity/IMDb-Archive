@@ -25,7 +25,7 @@
     "rr_wait":   "**KEEP**",
  
     // Inputs
-    "s_axi_awid":      "**KEEP**",
+    "s_axi_awid":      "s_axi_awid",
     "s_axi_awaddr":    "**KEEP**",
     "s_axi_awlen":     "**KEEP**",
     "s_axi_awsize":    "**KEEP**",
