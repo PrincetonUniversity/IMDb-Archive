@@ -207,7 +207,8 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     auto data = Ite(Extract(tx_arsize,1,0) == 0, Concat(Concat(unknownVal(8),unknownVal(8)), Concat(unknownVal(8),unknownVal(8))),
                 Ite(Extract(tx_arsize,1,0) == 1, Concat(unknownVal(16),unknownVal(16)), unknownVal(32)));
     instr.SetUpdate(s_axi_rdata, Ite(unknownVal(1) == 1, data, s_axi_rdata) );
-    instr.SetUpdate(s_axi_rresp, Ite(unknownVal(1) == 1, Ite(unknownVal(1) == 1, BvConst(2,2), BvConst(0,2) ), s_axi_rresp));
+    auto value = Ite(unknownVal(1) == 1, BvConst(2,2), BvConst(0,2) );
+    instr.SetUpdate(s_axi_rresp, Ite(unknownVal(1) == 1, value, s_axi_rresp));
   }
 
   {

@@ -83,8 +83,8 @@
     "unknown8": [[ "__START__", "m1.rr_return_data[15:0]"]],
     "unknown9": [[ "__START__", "m1.rr_return_data[31:0]"]],
     "unknown10": [[ "__START__", "m1.rr_return_access"]],
-    "unknown11": [[ "__START__", "m1.rr_return_access"]],
-    "unknown12": [[ "__START__", "m1.rr_timeout_access"]],
+    "unknown11": [[ "__START__", "m1.rr_timeout_access"]],
+    "unknown12": [[ "__START__", "m1.rr_return_access"]],
     "unknown13": [[ "__START__", "m1.rr_return_access"]]
   }
 
