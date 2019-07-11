@@ -105,7 +105,7 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     instr.SetDecode( (s_axi_awvalid == 1) & (s_axi_aresetn_w == 1) ); // will get what's in its buffer
 
     instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait == 1, BvConst(1,1), BvConst(0,1)) );
-    instr.SetUpdate(tx_wactive, Ite(s_axi_awready == 1, BvConst(1,1), Ite(s_axi_wready & s_axi_wlast == 1, BvConst(0,1), tx_wactive)) );
+    instr.SetUpdate(tx_wactive, Ite(s_axi_awready == 1, BvConst(1,1), Ite(s_axi_wvalid & s_axi_wready & s_axi_wlast == 1, BvConst(0,1), tx_wactive)) );
     
     instr.SetUpdate(s_axi_bid,  Ite(s_axi_awready == 1, s_axi_awid, s_axi_bid) );
   }
