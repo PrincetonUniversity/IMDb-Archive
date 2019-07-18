@@ -12,9 +12,10 @@ int main(int argc, char *argv[]) {
   auto model = aes_model.model.get();
   IlaSim simulator_generator;
   string sim_gen_dir = argv[1];
+  string systemc_path = argv[2];
   bool cpp_gen = false;
   simulator_generator.set_instr_lvl_abs(model);
-  simulator_generator.set_systemc_path("/home/arm-cosim/obj/");
+  simulator_generator.set_systemc_path(systemc_path);
   simulator_generator.sim_gen(sim_gen_dir, false, true, cpp_gen);
 
   return 0;

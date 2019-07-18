@@ -22,8 +22,8 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 ##
 find_package(ilang REQUIRED)
 
-include_directories(/home/arm-cosim/ILAng/include)
-LINK_DIRECTORIES(/home/arm-cosim/obj/lib)
+#include_directories(/home/arm-cosim/ILAng/include)
+#LINK_DIRECTORIES(/home/arm-cosim/obj/lib)
 # ---------------------------------------------------------------------------- #
 # TARGET
 # executable
