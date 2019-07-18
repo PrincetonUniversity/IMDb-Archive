@@ -75,11 +75,10 @@ void aes_ila_tlm::b_transport(tlm::tlm_generic_payload& trans, sc_time& delay)
 		SC_REPORT_FATAL("Aes_axi_tlm", "Unsupported access\n");
 		return;
 	}
-	int START_ADDR = 0;
-	int LENGTH_ADDR = 1 * 4;
-	int TEXT_ADDR = 2;
-	int KEY_ADDR = 4 * 4;
-	int COUNTER_ADDR = 8 * 4;
+	unsigned int START_ADDR = 0;
+	unsigned int LENGTH_ADDR = 1 * 4;
+	unsigned int TEXT_ADDR = 2;
+	unsigned int COUNTER_ADDR = 8 * 4;
 
 	if (trans.get_command() == tlm::TLM_READ_COMMAND) {
 		memcpy(ptr, &memory[addr], len);
@@ -87,8 +86,6 @@ void aes_ila_tlm::b_transport(tlm::tlm_generic_payload& trans, sc_time& delay)
 	else if (cmd == tlm::TLM_WRITE_COMMAND) {
 		if (addr != START_ADDR)
 		  memcpy(&memory[addr], ptr, len);
-		int data = ptr[0];
-		//cout << "addr:" << addr << " data:" << data << endl;
 		if ((addr > START_ADDR) && (addr <= (COUNTER_ADDR + 15))) {
 			AES_cmd_in.write(2);
 			AES_cmd_data_in.write(memory[addr]);

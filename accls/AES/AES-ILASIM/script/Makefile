@@ -35,7 +35,7 @@ HAVE_VERILOG_VCS=n
 else
 SYSTEMC ?= /home/arm-cosim/obj/
 SYSTEMC_INCLUDE ?=$(SYSTEMC)/include/
-SYSTEMC_LIBDIR ?= $(SYSTEMC)/lib
+SYSTEMC_LIBDIR ?= $(SYSTEMC)/lib-linux64
 # In case your TLM-2.0 installation is not bundled with
 # with the SystemC one.
 # TLM2 ?= /opt/systemc/TLM-2009-07-15
@@ -67,11 +67,14 @@ ZYNQ_TOP_C = zynq_demo.cc
 ZYNQ_TOP_O = $(ZYNQ_TOP_C:.cc=.o)
 ZYNQMP_TOP_C = zynqmp_demo.cc
 ZYNQMP_TOP_O = $(ZYNQMP_TOP_C:.cc=.o)
+ZYNQMP_ILASIM_TOP_C = zynqmp_ilasim_demo.cc
+ZYNQMP_ILASIM_TOP_O = $(ZYNQMP_ILASIM_TOP_C:.cc=.o)
 ZYNQMP_LMAC2_TOP_C = zynqmp_lmac2_demo.cc
 ZYNQMP_LMAC2_TOP_O = $(ZYNQMP_LMAC2_TOP_C:.cc=.o)
 
 ZYNQ_OBJS += $(ZYNQ_TOP_O)
 ZYNQMP_OBJS += $(ZYNQMP_TOP_O)
+ZYNQMP_ILASIM_OBJS += $(ZYNQMP_ILASIM_TOP_O)
 ZYNQMP_LMAC2_OBJS += $(ZYNQMP_LMAC2_TOP_O)
 
 # Uncomment to enable use of scml2
@@ -157,6 +160,7 @@ VHDLAN_FLAGS += -sc_model apb_slave_dummy
 
 SYSCAN_ZYNQ_DEMO = zynq_demo.cc
 SYSCAN_ZYNQMP_DEMO = zynqmp_demo.cc
+SYSCAN_ZYNQMP_ILASIM_DEMO = zynqmp_ilasim_demo.cc
 SYSCAN_ZYNQMP_LMAC2_DEMO = zynqmp_lmac2_demo.cc
 SYSCAN_SCFILES += demo-dma.cc debugdev.cc remote-port-tlm.cc
 VCS_CFILES += remote-port-proto.c remote-port-sk.c safeio.c
@@ -171,10 +175,12 @@ OBJS = $(C_OBJS) $(SC_OBJS)
 
 ZYNQ_OBJS += $(OBJS)
 ZYNQMP_OBJS += $(OBJS)
+ZYNQMP_ILASIM_OBJS += $(OBJS)
 ZYNQMP_LMAC2_OBJS += $(OBJS)
 
 TARGET_ZYNQ_DEMO = zynq_demo
 TARGET_ZYNQMP_DEMO = zynqmp_demo
+TARGET_ZYNQMP_ILASIM_DEMO = zynqmp_ilasim_demo
 TARGET_ZYNQMP_LMAC2_DEMO = zynqmp_lmac2_demo
 
 TARGETS = $(TARGET_ZYNQ_DEMO) $(TARGET_ZYNQMP_DEMO)
@@ -207,6 +213,7 @@ $(VOBJ_DIR)/Vlmac_wrapper_top__ALL.a: $(LM_CORE)
 	$(MAKE) -C $(VOBJ_DIR) -f Vlmac_wrapper_top.mk
 
 $(ZYNQMP_LMAC2_TOP_O): $(V_LDLIBS)
+$(ZYNQMP_ILASIM_TOP_O): $(V_LDLIBS)
 $(ZYNQMP_TOP_O): $(V_LDLIBS)
 $(VERILATED_O): $(V_LDLIBS)
 
@@ -234,6 +241,9 @@ else
 $(TARGET_ZYNQMP_DEMO): $(ZYNQMP_OBJS) $(VTOP_LIB) $(VERILATED_O)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
+$(TARGET_ZYNQMP_ILASIM_DEMO): $(ZYNQMP_ILASIM_OBJS) $(VTOP_LIB) $(VERILATED_O)
+	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
+
 $(TARGET_ZYNQMP_LMAC2_DEMO): $(ZYNQMP_LMAC2_OBJS) $(VTOP_LIB) $(VERILATED_O)
 	$(CXX) $(LDFLAGS) -o $@ $^ $(LDLIBS)
 
@@ -248,5 +258,6 @@ clean:
 	$(RM) $(OBJS) $(OBJS:.o=.d) $(TARGETS)
 	$(RM) $(ZYNQ_OBJS) $(ZYNQ_OBJS:.o=.d)
 	$(RM) $(ZYNQMP_OBJS) $(ZYNQMP_OBJS:.o=.d)
+	$(RM) $(ZYNQMP_ILASIM_OBJS) $(ZYNQMP_ILASIM_OBJS:.o=.d)
 	$(RM) $(ZYNQMP_LMAC2_OBJS) $(ZYNQMP_LMAC2_OBJS:.o=.d)
 	$(RM) -r $(VOBJ_DIR) $(CSRC_DIR) *.daidir
