@@ -1,13 +1,13 @@
-ILA-Based Sound Co-Simulation Model Generation Demo (appeared in POSH2019 meeting)
+ILA-Based Sound Co-Simulation Model Generation Demo
 ==================================================================================
 ## Introduction ##
 A co-simulation model for an AES device is generated using ILAng for HW/SW co-simulation. The generation process is fully automated using the sim\_gen API of the ILAng framework. This demo also integrates the generated co-simulation model with a complete SoC hardware model, and presents a software running on the integrated model.
 
 
 ## Prerequisites ##
-1.  ILAng is the platform to model hardware components. An up-to-date version needs to be installed, available here: https://github.com/Bo-Yuan-Huang/ILAng.
+1.  ILAng is the platform to model hardware components. An up-to-date version needs to be installed, available [here](https://github.com/Bo-Yuan-Huang/ILAng).
 2. IMDb is github repo that holds this demo.
-3. [SystemCTLM] (https://github.com/Xilinx/systemctlm-cosim-demo) contains the SystemC model of a small SoC. Our generated AES co-simulation model is integrated with it.
+3. [SystemCTLM](https://github.com/Xilinx/systemctlm-cosim-demo) contains the SystemC model of a small SoC. Our generated AES co-simulation model is integrated with it.
 4. SystemC library is needed to compile the AES co-simulation model and also the small SoC.
 
 
@@ -31,7 +31,7 @@ make zynqmp_demo
 ```
 
 3. Run the co-simulation
-There'll be a Qemu session (with a linux OS) to emulate the core, and the zynqmp_demo (compiled in 2) simulates the rest of the system.  On the running linux OS, we need to get the software script and run it.
+There'll be a Qemu session (with a linux OS) to emulate the core, and the zynqmp\_demo (compiled in 2) simulates the rest of the system.  On the running linux OS, we need to get the software script and run it.
 ```
 wget https://raw.githubusercontent.com/PrincetonUniversity/IMDb/ilasim-demo/accls/AES/AES-ILASIM/demo_files_copy_to_xilinx/demo_script_on_linux.sh
 bash ./demo_script_on_linux.sh
