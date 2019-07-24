@@ -37,7 +37,7 @@ make zynqmp_demo
 
 3.  Run the co-simulation
 There'll be a Qemu session (with a linux OS) to emulate the core, and the zynqmp\_demo (compiled in 2) simulates the rest of the system.  On the running linux OS, we need to get the software script and run it.
-```
+```sh
 wget https://raw.githubusercontent.com/PrincetonUniversity/IMDb/ilasim-demo/accls/AES/AES-ILASIM/demo_files_copy_to_xilinx/demo_script_on_linux.sh
 bash ./demo_script_on_linux.sh
 ```
