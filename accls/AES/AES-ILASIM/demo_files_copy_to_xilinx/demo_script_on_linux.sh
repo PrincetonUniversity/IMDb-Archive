@@ -1,3 +1,4 @@
+#!/bin/bash
 # setup memory
 poke 2688942240 72
 poke 2688942241 97

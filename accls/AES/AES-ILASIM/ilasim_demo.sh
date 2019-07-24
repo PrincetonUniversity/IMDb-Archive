@@ -1,3 +1,4 @@
+#!/bin/bash
 # $SYSTEM_DIR, $ILANG_PATH, $IMDB_PATH are needed
 
 DEMO_MODEL_PATH=$IMDB_PATH/accls/AES/AES-ILASIM/
