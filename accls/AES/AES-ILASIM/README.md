@@ -17,19 +17,19 @@ Steps to use
 ---------------------------------------------------------------------------------
 
 0.  Get all related repositories:
-```
+```sh
 git clone https://github.com/Bo-Yuan-Huang/ILAng.git
 git clone https://github.com/PrincetonUniversity/IMDb.git
 git clone https://github.com/Xilinx/systemctlm-cosim-demo.git
 ```
 
 1.  Generate the co-simulation model from the AES device's ILA model.
-```
+```sh
 (SYSTEMC_DIR=path_to_systemc_dir ILANG_PATH=path_to_ilang_repo IMDB_PATH=path_to_imdb_repo ./ilasim_demo.sh)
 ```
 
 2.  Integrated the AES co-simulation model with the small SoC model
-```
+```sh
 cp demo_files_copy_to_xilinx/* path_to_systemctlm-cosim-demo
 cd path_to_systemctlm-cosim-demo
 make zynqmp_demo
