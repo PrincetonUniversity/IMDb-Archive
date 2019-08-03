@@ -4,7 +4,7 @@
     "VERILOG": "HLS"
   },
 
-  "state_mapping": {
+  "state mapping": {
     "arg_1_TREADY": "HLS.arg_1_TREADY",
     "arg_0_TVALID": "HLS.arg_0_TVALID",
     "RAM_x": "HLS.hls_target_linebuffer_1_U0.hls_target_linebuffer_U0.hls_target_call_U0.hls_target_call_Loop_LB2D_buf_proc_U0.col_reg_349",
