@@ -37,12 +37,12 @@
 
     "arg_0_TDATA": "**SO**",
     "arg_0_TLAST": "**SO**",
-    "arg_1_TDATA": "**SO**",
-    "arg_1_TLAST": "**SO**",
-    "arg_1_TVALID": "**SO**",
+    "arg_1_TDATA": "**KEEP**",
+    "arg_1_TLAST": "**KEEP**",
+    "arg_1_TVALID": "**KEEP**",
     "arg_1_TREADY": "**SO**",
     "arg_0_TVALID": "**SO**",
-    "arg_0_TREADY": "**SO**",
+    "arg_0_TREADY": "**KEEP**",
     
     "s_axi_config_AWVALID": "**KEEP**",
     "s_axi_config_AWREADY": "**KEEP**",
