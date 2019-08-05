@@ -43,6 +43,7 @@ VerilogVerificationTargetGenerator::vtg_config_t SetVerifGenConfig() {
   // other
   config.PortDeclStyle = VlgVerifTgtGenBase::vtg_config_t::NEW;
   config.CosaGenJgTesterScript = true;
+  config.ExpandMemoryArray = true;
   // config.CosaOtherSolverOptions = "--blackbox-array";
   // config.ForceInstCheckReset = true;
 
