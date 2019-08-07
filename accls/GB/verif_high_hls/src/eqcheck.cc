@@ -24,6 +24,10 @@ VerilogGeneratorBase::VlgGenConfig SetVlgGenConfig() {
   VerilogGeneratorBase::VlgGenConfig vlg_cfg;
 
   vlg_cfg.pass_node_name = true;
+  // this overwrites the global default configurations
+  // if you need per-state configuration, please use the
+  // `annotation` section in refinement map
+  vlg_cfg.extMem = false;
 
   return vlg_cfg;
 }
@@ -43,7 +47,6 @@ VerilogVerificationTargetGenerator::vtg_config_t SetVerifGenConfig() {
   // other
   config.PortDeclStyle = VlgVerifTgtGenBase::vtg_config_t::NEW;
   config.CosaGenJgTesterScript = true;
-  config.ExpandMemoryArray = true;
   // config.CosaOtherSolverOptions = "--blackbox-array";
   // config.ForceInstCheckReset = true;
 
