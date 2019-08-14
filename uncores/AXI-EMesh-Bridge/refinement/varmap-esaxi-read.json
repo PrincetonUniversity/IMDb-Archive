@@ -10,7 +10,7 @@
     "s_axi_arready"  : "s_axi_arready",
 
     "tx_ractive"     : "tx_ractive == read_active",
-    "tx_len"         : "tx_len == axi_arlen",
+    "tx_arlen"       : "tx_arlen == axi_arlen",
     "tx_arsize"      : "tx_arsize == axi_arsize"
   },
 

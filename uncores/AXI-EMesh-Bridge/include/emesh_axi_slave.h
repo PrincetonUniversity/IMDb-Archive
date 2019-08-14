@@ -123,7 +123,7 @@ protected:
   ExprRef tx_bwait;
   ExprRef tx_ractive;
   
-  ExprRef tx_len;
+  ExprRef tx_arlen;
   ExprRef tx_arsize;
 
 }; // class EmeshAxiSlaveBridge

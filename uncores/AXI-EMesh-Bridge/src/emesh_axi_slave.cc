@@ -68,7 +68,7 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
   tx_bwait(wmodel.NewBvState("tx_bwait", 1)), // b_wait
   tx_ractive(rmodel.NewBvState("tx_ractive", 1)), // read_wactive
 
-  tx_len (rmodel.NewBvState("tx_len", 8)), // axi_arlen
+  tx_arlen (rmodel.NewBvState("tx_arlen", 8)), // axi_arlen
   tx_arsize(rmodel.NewBvState("tx_arsize", 3))
 
   // ------------------------------------------------------------------
@@ -92,50 +92,64 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     
     // Write data
     instr.SetUpdate(s_axi_wready, BvConst(0,1));
-    instr.SetUpdate(s_axi_bvalid, BvConst(0,1));
+    instr.SetUpdate(s_axi_bvalid, BvConst(0,1)); // a slave interface must drive RVALID and BVALID low
     instr.SetUpdate(s_axi_bresp, BvConst(0,2));
     instr.SetUpdate(tx_bwait, BvConst(0,1));
 
   }
 
+  // ------ AW Channel ------  //
 
   { // AXIWriteAddrValid instruction
     auto instr = wmodel.NewInstr("AXIWriteAddrValid");
-
     instr.SetDecode( (s_axi_awvalid == 1) & (s_axi_aresetn_w == 1) ); // will get what's in its buffer
 
+    // we're always ready for an address cycle if we're not doing something else; 
+    // but when a transaction happens, awready will change to 0
     instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait == 1, BvConst(1,1), BvConst(0,1)) );
-    instr.SetUpdate(tx_wactive, Ite(s_axi_awready == 1, BvConst(1,1), Ite(s_axi_wvalid & s_axi_wready & s_axi_wlast == 1, BvConst(0,1), tx_wactive)) );
-    
+
+    // when a transaction happen, write is active, when last bit is written, write is not active any more
+    auto last_wr_beat = s_axi_wready & s_axi_wvalid & s_axi_wlast;
+    instr.SetUpdate(tx_wactive, Ite(s_axi_awready == 1, BvConst(1,1), Ite(last_wr_beat == 1, BvConst(0,1), tx_wactive)) );
+
+    // update the info of the write transaction(burst_based transaction)
     instr.SetUpdate(s_axi_bid,  Ite(s_axi_awready == 1, s_axi_awid, s_axi_bid) );
+ // instr.SetUpdate(tx_awaddr,
+ // instr.SetUpdate(tx_awsize,
+ // instr.SetUpdate(tx_awburst,
   }
 
   { // AXIWriteAddrNotValid instruction
     auto instr = wmodel.NewInstr("AXIWriteAddrNotValid"); 
-
     instr.SetDecode( ( s_axi_awvalid == 0 ) & ( s_axi_aresetn_w == 1 ) ); // should keep its old value
-    
+
     instr.SetUpdate(s_axi_awready, Ite(~s_axi_awready & ~tx_wactive & ~tx_bwait == 1, BvConst(1,1), s_axi_awready));
-    instr.SetUpdate(tx_wactive, Ite(s_axi_wready & s_axi_wvalid & s_axi_wlast == 1, BvConst(0,1), tx_wactive) );
+
+    // when last bit is written, write is not active any more
+    auto last_wr_beat = s_axi_wready & s_axi_wvalid & s_axi_wlast;
+    instr.SetUpdate(tx_wactive, Ite(last_wr_beat == 1, BvConst(0,1), tx_wactive) );
   }
+
+  // ------ W Channel ------  //
 
   {
     // AXIWriteDataValid instruction
     auto instr = wmodel.NewInstr("AXIWriteDataValid"); 
-
     instr.SetDecode( ( s_axi_wvalid == 1 ) & ( s_axi_aresetn_w == 1 ) );
 
-    instr.SetUpdate(s_axi_wready, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(0,1), Ite(tx_wactive == 1, unknownVal(1), s_axi_wready)));
+    // tx_wactive ----- last_wr_beat : two important points
+    instr.SetUpdate(s_axi_wready, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(0,1), Ite(tx_wactive == 1, unknownVal(1), s_axi_wready))); // unkownVal == ~wr_wait
+    // TODO: based on Figure A3-7 or A3-6? 
+    // After transaction, change back to 0
     instr.SetUpdate(s_axi_bvalid, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(1,1), Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), s_axi_bvalid)));
+    // ok resp
     instr.SetUpdate(s_axi_bresp, Ite(s_axi_wready & s_axi_wlast == 1, BvConst(0,2), s_axi_bresp));
     instr.SetUpdate(tx_bwait, Ite(s_axi_wready & s_axi_wlast == 1, ~s_axi_bready, Ite(s_axi_bready & s_axi_bvalid == 1, BvConst(0,1), tx_bwait)));
   }
 
-
   {
     // AXIWriteDataNotValid instruction
     auto instr = wmodel.NewInstr("AXIWriteDataNotValid");
-
     instr.SetDecode( ( s_axi_wvalid == 0 ) & ( s_axi_aresetn_w == 1 ) );
 
     instr.SetUpdate(s_axi_wready, Ite(tx_wactive == 1, unknownVal(1), s_axi_wready));
@@ -163,28 +177,37 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     // AR
     instr.SetUpdate(s_axi_arready, BvConst(0,1));
     instr.SetUpdate(tx_ractive, BvConst(0,1));
-    instr.SetUpdate(tx_len, BvConst(0,8));
+    instr.SetUpdate(tx_arlen, BvConst(0,8));
     instr.SetUpdate(tx_arsize, BvConst(0,3));
+  //instr.SetUpdate(tx_araddr, BvConst(0,32));
     instr.SetUpdate(s_axi_rlast, BvConst(0,1));
     instr.SetUpdate(s_axi_rid, BvConst(0,S_IDW));
 
     // Read Resp
-    instr.SetUpdate(s_axi_rvalid,  BvConst(0,1));
+    instr.SetUpdate(s_axi_rvalid,  BvConst(0,1)); // a slave interface must drive RVALID and BVALID low
     instr.SetUpdate(s_axi_rdata, BvConst(0,32));
     instr.SetUpdate(s_axi_rresp, BvConst(0,2));
   }
+
+  //-------- AR Channel ---------//
 
   { // AR Valid  
     auto instr = rmodel.NewInstr("AXIReadAddrValid");
     instr.SetDecode( (s_axi_aresetn_r == 1) & (s_axi_arvalid == 1) );
 
     instr.SetUpdate(s_axi_arready, Ite(~s_axi_arready & ~tx_ractive == 1, BvConst(1,1), BvConst(0,1)));
-    instr.SetUpdate(tx_ractive, Ite(s_axi_arready == 1, BvConst(1,1), Ite(s_axi_rvalid & s_axi_rlast & s_axi_rready == 1, BvConst(0,1), tx_ractive)));
-    instr.SetUpdate(tx_len, Ite(s_axi_arready == 1, s_axi_arlen, Ite(s_axi_rvalid & s_axi_rready == 1, tx_len - BvConst(1,8), tx_len)));
+    auto last_rd_beat = s_axi_rvalid & s_axi_rlast & s_axi_rready;
+    instr.SetUpdate(tx_ractive, Ite(s_axi_arready == 1, BvConst(1,1), Ite(last_rd_beat == 1, BvConst(0,1), tx_ractive)));
+    // update info of read transaction: in AR channel, get the input info; in R channel, calculate itself 
+    instr.SetUpdate(tx_arlen, Ite(s_axi_arready == 1, s_axi_arlen, Ite(s_axi_rvalid & s_axi_rready == 1, tx_arlen - BvConst(1,8), tx_arlen)));
     instr.SetUpdate(tx_arsize, Ite(s_axi_arready == 1, s_axi_arsize, tx_arsize));
+    // instr.SetUpdate(tx_araddr, Ite(s_axi_arready == 1, s_axi_araddr, Ite(s_axi_rvalid & s_axi_rready == 1, 
+    //                                                                  Ite(s_axi_arburst == BvConst(1,2), (TODO: update addr), tx_addr), tx_araddr)));
+
+    // identify read_last, assert it when last bit is read
     instr.SetUpdate(s_axi_rlast,  Ite(s_axi_arready == 1, Ite(s_axi_arlen == 0, BvConst(1,1), BvConst(0,1)), 
                                   Ite(s_axi_rvalid & s_axi_rready == 1, 
-                                  Ite(tx_len == BvConst(1,8), BvConst(1,1), s_axi_rlast), s_axi_rlast)));
+                                  Ite(tx_arlen == BvConst(1,8), BvConst(1,1), s_axi_rlast), s_axi_rlast)));
     instr.SetUpdate(s_axi_rid, Ite(s_axi_arready == 1, s_axi_arid, s_axi_rid));
   }
 
@@ -194,11 +217,15 @@ EmeshAxiSlaveBridge::EmeshAxiSlaveBridge()
     // if arvalid is 0, it should hold its status
     instr.SetUpdate(s_axi_arready, Ite(~s_axi_arready & ~tx_ractive == 1, BvConst(1,1), s_axi_arready));
     instr.SetUpdate(tx_ractive, Ite(s_axi_rvalid & s_axi_rlast & s_axi_rready == 1, BvConst(0,1), tx_ractive));
-    instr.SetUpdate(tx_len, Ite(s_axi_rvalid & s_axi_rready == 1, tx_len - BvConst(1,8), tx_len));
+
+    instr.SetUpdate(tx_arlen, Ite(s_axi_rvalid & s_axi_rready == 1, tx_arlen - BvConst(1,8), tx_arlen));
+    // still have to update tx_araddr
+    
     instr.SetUpdate(s_axi_rlast,  Ite(s_axi_rvalid & s_axi_rready == 1, 
-                                  Ite(tx_len == BvConst(1,8), BvConst(1,1), s_axi_rlast), s_axi_rlast));
+                                  Ite(tx_arlen == BvConst(1,8), BvConst(1,1), s_axi_rlast), s_axi_rlast));
   } 
 
+  //------- R Channel -------//
 
   {
     auto instr = rmodel.NewInstr("AXIReadDataReady");
