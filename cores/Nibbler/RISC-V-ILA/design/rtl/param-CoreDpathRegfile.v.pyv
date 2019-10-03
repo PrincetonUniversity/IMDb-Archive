@@ -1,0 +1,85 @@
+//=========================================================================
+// 5-Stage PARC Register File
+//=========================================================================
+
+`ifndef PARAM_DPATH_REGFILE_V
+`define PARAM_DPATH_REGFILE_V
+
+<%
+import param_Defines as p
+%>
+
+module param_CoreDpathRegfile
+(
+  input            clk,
+  input  [ 4:0]    raddr0_Rhl, // Read 0 address (combinational input)
+<%
+print '  input  ['+str(p.C_OFFBITS-1)+':0]     roff0_Rhl,  // Offset within a register to read from'
+print '  output reg ['+str(p.P_NBITS-1)   +':0] rdata0_Rhl, // Read 0 data (combinational on raddr)'
+%>
+  
+  input  [ 4:0]      raddr1_Rhl, // Read 1 address (combinational input)
+<%
+print '  input  ['+str(p.C_OFFBITS-1)+':0]       roff1_Rhl,  // Offset within a register to read from'
+print '  output reg ['+str(p.P_NBITS-1)   +':0]   rdata1_Rhl, // Read 0 data (combinational on raddr)'
+%>
+  input          wen_Xhl,    // Write enable (sample on rising clk edge)
+  input  [ 4:0]  waddr_Xhl,  // Write address (sample on rising clk edge)
+<%
+print '  input  ['+str(p.C_OFFBITS-1)+':0]   woffset_Xhl,  // Offset within a register to write to '
+print '  input  ['+str(p.P_NBITS-1)+':0]   wdata_Xhl    // Write data (sample on rising clk edge)'
+%>
+);
+
+  // We use an array of 32 bit register for the regfile itself
+  reg [31:0] registers[31:0];
+
+  // Combinational read ports
+
+  wire [31:0] rdata0_word = ( raddr0_Rhl == 0 ) ? 32'b0 : registers[raddr0_Rhl];
+  wire [31:0] rdata1_word = ( raddr1_Rhl == 0 ) ? 32'b0 : registers[raddr1_Rhl];
+
+  always @(*) begin
+    case(roff0_Rhl)
+<%
+for offset in range(p.C_N_OFF):
+  idx_hi = ((offset+1) * p.P_NBITS) - 1
+  idx_lo = offset * p.P_NBITS
+  print '      '+p.C_OFFBITS_STR+'\'d'+str(offset)+': rdata0_Rhl = rdata0_word[' + str(idx_hi) + ':' + str(idx_lo) +'];'
+print '      default: rdata0_Rhl = '+p.C_OFFBITS_STR+'\'d0;'
+%>    endcase
+  end
+
+  always @(*) begin
+    case(roff1_Rhl)
+<%
+for offset in range(p.C_N_OFF):
+  idx_hi = ((offset+1) * p.P_NBITS) - 1
+  idx_lo = offset * p.P_NBITS
+  print '      '+p.C_OFFBITS_STR+'\'d'+str(offset)+': rdata1_Rhl = rdata1_word[' + str(idx_hi) + ':' + str(idx_lo) +'];'
+print '      default: rdata1_Rhl = '+p.C_OFFBITS_STR+'\'d0;'
+%>    endcase
+  end
+
+  
+  // Write port is active only when wen is asserted
+<%
+for idx in range(32):
+  print '\n  //Register ' + str(idx) + ':'
+  for offset in range(32/p.P_NBITS):
+    print '  always @(posedge clk) begin'
+    print '    if ((waddr_Xhl == 5\'d' + str(idx) + ') && (woffset_Xhl == '+ p.C_OFFBITS_STR + '\'d' + str(offset) + ') && (wen_Xhl == 1\'b1)) begin'
+    
+    # // calculate bit bounds for this offset
+    idx_hi = ((offset+1) * p.P_NBITS) - 1
+    idx_lo = offset * p.P_NBITS
+    
+    print '      registers['+str(idx)+'][' + str(idx_hi) + ':' + str(idx_lo) +'] <= wdata_Xhl;'
+    print '    end'
+    print '  end'
+%>
+
+endmodule
+
+`endif
+

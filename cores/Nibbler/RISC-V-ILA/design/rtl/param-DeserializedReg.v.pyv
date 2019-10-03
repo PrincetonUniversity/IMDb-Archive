@@ -1,0 +1,97 @@
+`ifndef PARAM_DESERIALIZED_REG_V
+`define PARAM_DESERIALIZED_REG_V
+
+`include "param-ClkEnBuf.v"
+<%
+import param_Defines as p
+%>
+
+
+module param_DeserializedSeqLog
+(
+<%
+print "  input clk,"
+for i in range(p.C_N_OFF):
+  print "  input subword_"+str(i)+"_en,"
+print "  input ["+str(p.P_NBITS-1)+":0] write_data,"
+
+print "  output reg [31:0] out"
+%>
+);
+
+<%
+print '  reg ['+str(p.P_NBITS-1)+':0] reg_array['+str(p.C_N_OFF-1)+':0];'
+for i in range(p.C_N_OFF):
+  print "  // Subword "+str(i)+" Sequential"
+  print "  always @ (posedge clk) begin"
+  print "    reg_array["+str(i)+"] <= subword_"+str(i)+"_en ? write_data : reg_array["+str(i)+"];"
+  print "  end"
+  print ""
+%>
+
+  // Concatenate register array for convenience later
+  always @(*) begin
+    out = {
+<%
+for i in range(p.C_N_OFF-1,0,-1):
+  print "    reg_array["+str(i)+"],"
+print "    reg_array[0]" #// needed to avoid terminal comma
+%>    };
+  end
+
+endmodule
+
+module param_DeserializedReg
+(
+  input reset,
+  input clk,
+
+<%
+print  '  input ['+str(p.C_OFFBITS-1)+':0] subword_en_idx,'
+print  '  input ['+str(p.P_NBITS-1)+':0] data_in,'
+%>
+  output reg [31:0] out
+);
+
+<%
+print '  wire ['+str(p.P_NBITS-1)+':0] write_data = reset ? '+ str(p.P_NBITS) +'\'b0 : data_in;'
+%>
+
+// Convert subword enable index to one-hot enable signal
+<%
+print 'reg ['+str(p.C_N_OFF-1)+':0] subword_off_en;'
+%>
+always @(*) begin
+<%
+print '  subword_off_en = '+str(p.C_N_OFF)+'\'b0;'
+%>
+  case (subword_en_idx)
+<%
+for i in range(p.C_N_OFF):
+  print '    '+ str(p.C_OFFBITS) +'\'d'+str(i)+': subword_off_en['+str(i)+'] = 1\'b1;'
+print '    default: subword_off_en = '+str(p.C_N_OFF)+'\'b0;'
+%>
+  endcase
+end
+
+wire[31:0] seq_log_out;
+param_DeserializedSeqLog seq_log
+(
+<%
+print "  .clk (clk),"
+for i in range(p.C_N_OFF):
+  print "  .subword_"+str(i)+"_en (subword_off_en["+str(i)+"]),"
+print "  .write_data (write_data),"
+print "  .out (seq_log_out)"
+%>
+);
+
+
+always @(*) begin
+  out = seq_log_out;
+end
+
+
+endmodule
+
+`endif

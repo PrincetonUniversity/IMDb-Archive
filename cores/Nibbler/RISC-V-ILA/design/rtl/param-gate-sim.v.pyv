@@ -1,0 +1,293 @@
+//=========================================================================
+// 5-Stage PARCv2 Processor Simulator
+//=========================================================================
+`timescale 1ps/1fs
+// `include "param-Core.v"
+`include "vc-TestDualPortRandDelayMem.v"
+
+module param_sim;
+
+  //----------------------------------------------------------------------
+  // Setup
+  //----------------------------------------------------------------------
+
+  reg clk   = 1'b0;
+  reg reset = 1'b1;
+
+<%
+import os
+import math
+print '  always #'+str(int(math.ceil(int(os.environ['CLK_FREQ'])/2.0)))+' clk = ~clk;'
+%>
+  wire [31:0] status;
+
+  //----------------------------------------------------------------------
+  // Wires for connecting processor and memory
+  //----------------------------------------------------------------------
+
+  wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] imemreq_msg;
+  wire                                 imemreq_val;
+  wire                                 imemreq_rdy;
+  wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] imemresp_msg;
+  wire                                 imemresp_val;
+
+ wire [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq_msg;
+ wire                                 dmemreq_val;
+ wire                                 dmemreq_rdy;
+ wire   [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp_msg;
+ wire                                 dmemresp_val;
+
+  //----------------------------------------------------------------------
+  // Reset signals for processor and memory
+  //----------------------------------------------------------------------
+
+  reg reset_mem;
+  reg reset_proc;
+
+  always @ ( posedge clk ) begin
+    reset_mem  <= reset;
+    reset_proc <= reset_mem;
+  end
+
+  //----------------------------------------------------------------------
+  // Processor
+  //----------------------------------------------------------------------
+
+  param_riscv_Core 
+  // #(
+  //   .P_NBITS(1)
+  // )
+  proc
+  (
+    .clk               (clk),
+    .reset             (reset_proc),
+
+    // Instruction request interface
+
+    .imemreq_msg       (imemreq_msg),
+    .imemreq_val       (imemreq_val),
+    .imemreq_rdy       (imemreq_rdy),
+
+    // Instruction response interface
+
+    .imemresp_msg      (imemresp_msg),
+    .imemresp_val      (imemresp_val),
+
+    // Data request interface
+
+   .dmemreq_msg       (dmemreq_msg),
+   .dmemreq_val       (dmemreq_val),
+   .dmemreq_rdy       (dmemreq_rdy),
+
+    // Data response interface
+
+   .dmemresp_msg      (dmemresp_msg),
+   .dmemresp_val      (dmemresp_val),
+
+    // CP0 status register output to host
+
+    .cp0_status        (status)
+  );
+
+  //----------------------------------------------------------------------
+  // Test Memory
+  //----------------------------------------------------------------------
+
+  vc_TestDualPortRandDelayMem
+  #(
+    .p_mem_sz    (1<<20), // max 20-bit address to index into memory
+    .p_addr_sz   (32),    // high order bits will get truncated in memory
+    .p_data_sz   (32),
+    .p_max_delay (0)
+  )
+  mem
+  (
+    .clk                (clk),
+    .reset              (reset_mem),
+
+    // Instruction request interface
+
+    .memreq0_val        (imemreq_val),
+    .memreq0_rdy        (imemreq_rdy),
+    .memreq0_msg        (imemreq_msg),
+
+    // Instruction response interface
+
+    .memresp0_val       (imemresp_val),
+    .memresp0_rdy       (1'b1),
+    .memresp0_msg       (imemresp_msg),
+
+    // Data request interface
+
+    .memreq1_val       (dmemreq_val),
+   .memreq1_rdy        (dmemreq_rdy),
+   .memreq1_msg        (dmemreq_msg),
+
+    // Data response interface
+
+   .memresp1_val       (dmemresp_val),
+   .memresp1_rdy       (1'b1),
+   .memresp1_msg       (dmemresp_msg)
+   );
+
+  //----------------------------------------------------------------------
+  // Start the simulation
+  //----------------------------------------------------------------------
+
+  integer fh;
+  reg [1023:0] exe_filename;
+  reg [1023:0] vcd_filename;
+  reg [1023:0] stats_filename;
+  reg   [31:0] max_cycles;
+  reg          verbose;
+  reg          stats;
+  reg          vcd;
+  reg    [1:0] disasm;
+
+  integer i;
+
+  initial begin
+
+    // Load program into memory from the command line
+    if ( $value$plusargs( "exe=%s", exe_filename ) ) begin
+
+      // Check that file exists
+      fh = $fopen( exe_filename, "r" );
+      if ( !fh ) begin
+        $display( "\n ERROR: Could not open vmh file (%s)! \n", exe_filename );
+        $finish;
+      end
+      $fclose(fh);
+
+      $readmemh( exe_filename, mem.mem.m );
+
+    end
+    else begin
+      $display( "\n ERROR: No executable specified! (use +exe=<filename>) \n" );
+      $finish;
+    end
+
+    // Get max number of cycles to run simulation for from command line
+    if ( !$value$plusargs( "max-cycles=%d", max_cycles ) ) begin
+      max_cycles = 500000; /// TEMP!!!
+    end
+
+    // Get stats flag
+/*    if ( !$value$plusargs( "stats=%d", stats ) ) begin
+
+      // Get verbose flag
+      if ( !$value$plusargs( "verbose=%d", verbose ) ) begin
+        verbose = 1'b0;
+      end
+
+      proc.ctrl.stats_en = 1'b0;
+    end
+    else begin
+      verbose = 1'b1;
+      proc.ctrl.stats_en = 1'b1;
+    end
+*/
+    // vcd dump
+    if ( $value$plusargs( "vcd=%d", vcd ) ) begin
+      vcd_filename = { exe_filename[1023:32], ".vcd" }; // Super hack, remove last 3 chars,
+                                                        // replace with .vcd extension
+      $dumpfile( vcd_filename );
+      $dumpvars;
+    end
+
+    // Disassemble instructions
+    if ( !$value$plusargs( "disasm=%d", disasm ) ) begin
+      disasm = 2'b0;
+    end
+
+    // Strobe reset
+    #5   reset = 1'b1;
+    #600 reset = 1'b0;
+
+  end
+
+ //----------------------------------------------------------------------
+  // Keep track of stats
+  //----------------------------------------------------------------------
+  reg [31:0] num_inst    = 32'b0;
+  reg [31:0] num_cycles  = 32'b0;
+  always @( posedge clk ) begin
+    if ( !reset ) begin
+
+      // Count cycles if stats are enabled
+      num_cycles = num_cycles + 1;
+
+      // Count instructions for every cycle a new instruction is sent to core
+      // Since it's a single-instruction proc, we don't have to worry 
+      // about stalling or squashing.
+      if ( proc.ctrl.imemresp_val && proc.ctrl.imemresp_rdy ) begin
+        num_inst = num_inst + 1;
+      end
+    end
+  end
+
+  //----------------------------------------------------------------------
+  // Stop running when status changes
+  //----------------------------------------------------------------------
+
+  real ipc;
+  integer f;
+
+  always @ ( * ) begin
+    if ( !reset && ( status != 0 ) ) begin
+
+      if ( status == 1'b1 )
+        $display( "*** PASSED ***" );
+
+      if ( status > 1'b1 )
+        $display( "*** FAILED *** (status = %d)", status );
+
+      // if ( verbose == 1'b1 ) begin
+      ipc = num_inst/$itor(num_cycles);
+
+      $display( "--------------------------------------------" );
+      $display( " STATS                                      " );
+      $display( "--------------------------------------------" );
+
+      $display( " status     = %d", status                     );
+      $display( " num_cycles = %d", num_cycles       );
+      $display( " num_inst   = %d", num_inst         );
+      $display( " ipc        = %f", ipc                        );
+      // end
+      
+      stats_filename = { exe_filename[1023:32], ".stat" }; // Super hack, remove last 3 chars,
+                                                        // replace with .stat extension
+      f = $fopen(stats_filename,"w");
+      $fwrite(f,"num_cycles,%d\n",num_cycles);
+      $fwrite(f,"num_inst,%d\n",num_inst);
+      $fwrite(f,"ipc,%f\n",ipc);
+<%
+print '      $fwrite(f,"clk_per,'+os.environ['CLK_FREQ']+'\\n");'
+%>
+      $fclose(f);
+
+      $finish;
+
+    end
+  end
+
+  //----------------------------------------------------------------------
+  // Safety net to catch infinite loops
+  //----------------------------------------------------------------------
+
+  reg [31:0] cycle_count = 32'b0;
+
+  always @ ( posedge clk ) begin
+    cycle_count = cycle_count + 1'b1;
+  end
+
+  always @ ( * ) begin
+    if ( cycle_count > max_cycles ) begin
+      #20;
+      $display("*** FAILED *** (timeout)");
+      $finish;
+   end
+  end
+
+endmodule
+
