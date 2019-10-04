@@ -1,0 +1,67 @@
+{
+  "global invariants": [],
+
+  "instructions": [
+    {
+      "instruction" : "ADD",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "SUB",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "AND",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "OR",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "XOR",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "SLT",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "ADDI",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "ANDI",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "ORI",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "XORI",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "SLTI",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "LUI",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "AUIPC",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "JALR",
+      "ready bound" : 11
+    },
+    {
+      "instruction" : "BNE",
+      "ready bound" : 11
+    }
+  ]
+}
+
