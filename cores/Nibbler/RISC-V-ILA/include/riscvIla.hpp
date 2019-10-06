@@ -16,7 +16,13 @@ namespace ilang {
 
 class riscvILA_user {
 
+public:
+  // --------------- CONSTRUCTOR ------ //
+  riscvILA_user();
+  // --------------- MEMBERS ----------- //
   Ila model;
+
+private:
 
   ExprRef pc;
   ExprRef mem;
