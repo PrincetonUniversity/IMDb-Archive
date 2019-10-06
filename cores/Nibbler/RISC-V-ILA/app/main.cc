@@ -31,7 +31,7 @@ void verifyNibbler(
     path_to_design_files.push_back( VerilogPath + f );
 
   VerilogVerificationTargetGenerator vg(
-      {},                             // no include
+      {IncludePath},                             // no include
       path_to_design_files,           // designs
       "param_riscv_Core",             // top_module_name
       RefrelPath + varmap,            // variable mapping
