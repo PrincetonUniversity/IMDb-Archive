@@ -33,7 +33,7 @@ void verifyNibbler(
   VerilogVerificationTargetGenerator vg(
       {},                             // no include
       path_to_design_files,           // designs
-      "param-Core",                      // top_module_name
+      "param_riscv_Core",             // top_module_name
       RefrelPath + varmap,            // variable mapping
       RefrelPath + instcont,          // conditions of start/ready
       OutputPath,                     // output path
