@@ -31,7 +31,7 @@ ExprRef riscvILA_user::indexIntoGPR(const ExprRef& idxBits) {
   return expr;
 }
 
-riscvILA_user::riscvILA_user(int pc_init_val)
+riscvILA_user::riscvILA_user() //int pc_init_val)
     : model(InstrLvlAbs::New("riscv")), // define ila
       pc(model.NewBvState("pc", XLEN)),
       mem(model.NewMemState("mem", MEM_WORD_ADDR_LEN, MEM_WORD)),
@@ -51,11 +51,11 @@ riscvILA_user::riscvILA_user(int pc_init_val)
 {
   for (int idx = 0; idx < 32; idx++)
     GPR.push_back(model.NewBvState("x" + std::to_string(idx), XLEN));
-  if ((pc_init_val & 0x3) != 0)
-    std::cerr << "Warning: the initial pc is not valid: not aligned."
-              << std::endl;
+  //if ((pc_init_val & 0x3) != 0)
+  //  std::cerr << "Warning: the initial pc is not valid: not aligned."
+  //            << std::endl;
 
-  model.AddInit(pc == BvConst(pc_init_val, XLEN));
+  // model.AddInit(pc == BvConst(pc_init_val, XLEN));
 }
 
 ExprRef riscvILA_user::getSlice(const ExprRef& word, const ExprRef& lowBits,
