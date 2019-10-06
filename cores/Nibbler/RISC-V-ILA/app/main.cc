@@ -46,7 +46,7 @@ void verifyNibbler(
 }
 
 
-int main() {
+int main(int argc, char **argv) {
   // TODO
 
   std::vector<std::string> design_files = {
