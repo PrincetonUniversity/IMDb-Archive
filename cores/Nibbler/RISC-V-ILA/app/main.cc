@@ -50,16 +50,7 @@ int main(int argc, char **argv) {
   // TODO
 
   std::vector<std::string> design_files = {
-    "param-ClkEnBuf.v",
-    "param-Core.v",
-    "param-CoreDpathAlu.v",
-    "param-CoreDpathRegfile.v",
-    "param-Ctrl.v",
-    "param-DeserializedReg.v",
-    "param-Dpath.v",
-    "param-PCComputation.v",
-    "param-ShiftDemux.v",
-    "param-SIMDLaneDpath.v"
+    "param-Core.v"
   };
 
   //auto vtg_cfg = SetConfiguration();
