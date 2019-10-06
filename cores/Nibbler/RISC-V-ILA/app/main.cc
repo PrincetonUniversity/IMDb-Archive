@@ -1,8 +1,10 @@
 #include "riscvIla.hpp"
+#include <ilang/vtarget-out/vtarget_gen.h>
 
 using namespace ilang;
 
 /// the function to parse commandline arguments
+VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration();
 VerilogVerificationTargetGenerator::vtg_config_t HandleArguments(int argc, char **argv);
 
 /// To verify the exact AES128 ILA
@@ -64,9 +66,9 @@ int main() {
   auto vtg_cfg = HandleArguments(argc, argv);
 
   // build the model
-  EmeshAxiMasterBridge emaxi;
+  riscvILA_user nibbler;
 
-  verifyNibbler(emaxi.wmodel, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler.json");
+  verifyNibbler(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler.json");
 
   riscvILA_user riscvILA(0);
   riscvILA.addInstructions(); // 37 base integer instructions
