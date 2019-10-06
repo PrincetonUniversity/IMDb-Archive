@@ -70,8 +70,8 @@ int main(int argc, char **argv) {
 
   verifyNibbler(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler.json");
 
-  riscvILA_user riscvILA(0);
-  riscvILA.addInstructions(); // 37 base integer instructions
+  // riscvILA_user riscvILA(0);
+  // riscvILA.addInstructions(); // 37 base integer instructions
 
   return 0;
 }
