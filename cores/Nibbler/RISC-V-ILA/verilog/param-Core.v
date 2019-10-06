@@ -5,8 +5,8 @@
 `ifndef RISCV_CORE_V
 `define RISCV_CORE_V
 
-`include "vc-MemReqMsg.v"
-`include "vc-MemRespMsg.v"
+//`include "vc-MemReqMsg.v"
+//`include "vc-MemRespMsg.v"
 `include "param-Ctrl.v"
 `include "param-Dpath.v"
 
@@ -26,24 +26,24 @@ module param_riscv_Core
 
   // Instruction Memory Request Port
 
-  output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] imemreq_msg,
+  output [/*`VC_MEM_REQ_MSG_SZ(32,32)-1*/66:0] imemreq_msg,
   output                                 imemreq_val,
   input                                  imemreq_rdy,
 
   // Instruction Memory Response Port
 
-  input [`VC_MEM_RESP_MSG_SZ(32)-1:0] imemresp_msg,
+  input [/*`VC_MEM_RESP_MSG_SZ(32)-1*/34:0] imemresp_msg,
   input                               imemresp_val,
 
   // Data Memory Request Port
 
- output [`VC_MEM_REQ_MSG_SZ(32,32)-1:0] dmemreq_msg,
+ output [/*`VC_MEM_REQ_MSG_SZ(32,32)-1*/66:0] dmemreq_msg,
  output                                 dmemreq_val,
  input                                  dmemreq_rdy,
 
   // Data Memory Response Port
 
- input [`VC_MEM_RESP_MSG_SZ(32)-1:0] dmemresp_msg,
+ input [/*`VC_MEM_RESP_MSG_SZ(32)-1*/34:0] dmemresp_msg,
  input                               dmemresp_val,
 
 
