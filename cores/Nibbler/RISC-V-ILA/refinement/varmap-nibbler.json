@@ -1,9 +1,9 @@
 {
   "models": { "ILA":"m0" , "VERILOG": "m1" },
   "state mapping": { 
-    "pc" : "m1.dpath.pc" ,
-    "x0" : "m1.dpath.lane_0.rfile.registers[0]",
-    "x1" : "m1.dpath.lane_0.rfile.registers[1]",
+    "pc" : "m1.dpath.pc",
+    "x0" : "m1.dpath.lane_0.rfile.registers[0][31:0]",
+    "x1" : "m1.dpath.lane_0.rfile.registers[1][31:0]",
     "x2" : "m1.dpath.lane_0.rfile.registers[2]",
     "x3" : "m1.dpath.lane_0.rfile.registers[3]",
     "x4" : "m1.dpath.lane_0.rfile.registers[4]",
@@ -34,12 +34,12 @@
     "x29" : "m1.dpath.lane_0.rfile.registers[29]",
     "x30" : "m1.dpath.lane_0.rfile.registers[30]",
     "x31" : "m1.dpath.lane_0.rfile.registers[31]",
-    "mem"               : "**MEM**XRAM"
+    "mem"               : "**MEM**mem"
   },
 
   "interface mapping": {
      "clk":"**CLOCK**",
-     "rst":"**RESET**",
+     "reset":"**RESET**",
      "imemreq_msg": "**KEEP**",
      "imemreq_rdy": "**KEEP**",
      "imemreq_val": "**KEEP**",
@@ -48,6 +48,8 @@
      "dmemreq_msg": "**KEEP**",
      "dmemreq_rdy": "**KEEP**",
      "dmemreq_val": "**KEEP**",
+     "dmemresp_msg":"**KEEP**",
+     "dmemresp_val":"**KEEP**",
      "cp0_status": "**KEEP**"
   },
 
