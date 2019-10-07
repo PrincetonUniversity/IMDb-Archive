@@ -9,9 +9,6 @@
 //-------------------------------------------------------------------------
 
 module  param_CoreDpathAlu
-// #(
-//   parameter P_NBITS = 4
-// )
 (
   input [3:0] in_a,
   input [3:0] in_b,
