@@ -1,7 +1,7 @@
 {
   "models": { "ILA":"m0" , "VERILOG": "m1" },
   "state mapping": { 
-    "pc" : "m1.dpath.pc" ,
+    "pc" : "m1.dpath.pc",
     "x0" : "m1.dpath.lane_0.rfile.registers[0]",
     "x1" : "m1.dpath.lane_0.rfile.registers[1]",
     "x2" : "m1.dpath.lane_0.rfile.registers[2]",
@@ -39,7 +39,7 @@
 
   "interface mapping": {
      "clk":"**CLOCK**",
-     "rst":"**RESET**",
+     "reset":"**RESET**",
      "imemreq_msg": "**KEEP**",
      "imemreq_rdy": "**KEEP**",
      "imemreq_val": "**KEEP**",
@@ -48,6 +48,8 @@
      "dmemreq_msg": "**KEEP**",
      "dmemreq_rdy": "**KEEP**",
      "dmemreq_val": "**KEEP**",
+     "dmemresp_msg":"**KEEP**",
+     "dmemresp_val":"**KEEP**",
      "cp0_status": "**KEEP**"
   },
 
