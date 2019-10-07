@@ -34,7 +34,7 @@
     "x29" : "m1.dpath.lane_0.rfile.registers[29]",
     "x30" : "m1.dpath.lane_0.rfile.registers[30]",
     "x31" : "m1.dpath.lane_0.rfile.registers[31]",
-    "mem"               : "**MEM**XRAM"
+    "mem"               : "**MEM**mem"
   },
 
   "interface mapping": {
