@@ -1,9 +1,7 @@
 
-`ifndef PARAM_DPATH_V
-`define PARAM_DPATH_V
 
-`include "param-PCComputation.v"
-`include "param-SIMDLaneDpath.v"
+// `include "param-PCComputation.v"
+// `include "param-SIMDLaneDpath.v"
 
 module param_Dpath
 // #(
@@ -158,4 +156,3 @@ module param_Dpath
   );
 
 endmodule
-`endif

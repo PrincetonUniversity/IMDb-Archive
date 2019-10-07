@@ -2,9 +2,6 @@
 // 5-Stage PARC Register File
 //=========================================================================
 
-`ifndef PARAM_DPATH_REGFILE_V
-`define PARAM_DPATH_REGFILE_V
-
 
 
 module param_CoreDpathRegfile
@@ -1411,6 +1408,3 @@ module param_CoreDpathRegfile
 
 
 endmodule
-
-`endif
-

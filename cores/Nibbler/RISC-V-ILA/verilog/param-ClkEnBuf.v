@@ -1,7 +1,4 @@
 
-`ifndef PARAM_CLKENBUF_V
-`define PARAM_CLKENBUF_V
-
 module param_ClkEnBuf (clk, rclk, en_l);
 output clk;
 input  rclk, en_l;
@@ -13,5 +10,3 @@ reg    clken;
   assign clk = clken & rclk;
 
 endmodule
-
-`endif

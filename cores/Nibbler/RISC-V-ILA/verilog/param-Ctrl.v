@@ -1,6 +1,4 @@
 
-`ifndef PARAM_CTRL_V
-`define PARAM_CTRL_V
 
 `include "tinyrv2-InstMsg.v"
 
@@ -784,5 +782,3 @@ end
   //   end
   // end
 endmodule
-`endif
-

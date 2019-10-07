@@ -1,5 +1,3 @@
-`ifndef PARAM_SHIFT_DEMUX_V
-`define PARAM_SHIFT_DEMUX_V
 
 module param_ShiftDemux
 (
@@ -58,5 +56,3 @@ end
 
 
 endmodule
-
-`endif

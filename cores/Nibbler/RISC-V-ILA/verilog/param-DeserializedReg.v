@@ -1,7 +1,6 @@
-`ifndef PARAM_DESERIALIZED_REG_V
-`define PARAM_DESERIALIZED_REG_V
 
-`include "param-ClkEnBuf.v"
+
+// `include "param-ClkEnBuf.v"
 
 
 
@@ -138,5 +137,3 @@ end
 
 
 endmodule
-
-`endif

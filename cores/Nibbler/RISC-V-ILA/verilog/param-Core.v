@@ -2,13 +2,11 @@
 // Variable bit-width RISCV Core
 //=========================================================================
 
-`ifndef RISCV_CORE_V
-`define RISCV_CORE_V
 
 //`include "vc-MemReqMsg.v"
 //`include "vc-MemRespMsg.v"
-`include "param-Ctrl.v"
-`include "param-Dpath.v"
+//`include "param-Ctrl.v"
+//`include "param-Dpath.v"
 
 
 
@@ -249,6 +247,3 @@ module param_riscv_Core
   );
 
 endmodule
-
-`endif
-

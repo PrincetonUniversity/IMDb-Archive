@@ -1,9 +1,5 @@
 
-`ifndef PARAM_SIMD_LANE_DPATH_V
-`define PARAM_SIMD_LANE_DPATH_V
 
-`include "param-CoreDpathRegfile.v"
-`include "param-CoreDpathAlu.v"
 
 module param_SIMDLaneDpath
 // #(
@@ -270,4 +266,3 @@ assign temp_reg_Xhl = 32'b0;
   assign shamt_reg = 5'b0; 
 
 endmodule
-`endif

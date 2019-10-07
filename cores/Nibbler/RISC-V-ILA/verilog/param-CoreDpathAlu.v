@@ -2,8 +2,6 @@
 // Paramaterizable bit-width ALU containing add/sub, logical, shifter. (mul?)
 //============================================================================
 
-`ifndef PARAM_CORE_DPATH_ALU_V
-`define PARAM_CORE_DPATH_ALU_V
 
 
 //-------------------------------------------------------------------------
@@ -60,6 +58,4 @@ end
 assign a_b_not_eq = |xor_out;
 
 endmodule
-
-`endif
 

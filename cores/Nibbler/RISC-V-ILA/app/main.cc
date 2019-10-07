@@ -50,6 +50,15 @@ int main(int argc, char **argv) {
   // TODO
 
   std::vector<std::string> design_files = {
+    "param-Ctrl.v",
+    "param-ShiftDemux.v",
+    "param-CoreDpathRegfile.v",
+    "param-CoreDpathAlu.v",
+    "param-SIMDLaneDpath.v",
+    "param-ClkEnBuf.v",
+    "param-DeserializedReg.v",
+    "param-PCComputation.v",
+    "param-Dpath.v",
     "param-Core.v"
   };
 

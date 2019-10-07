@@ -1,10 +1,9 @@
-`ifndef PARAM_PC_COMPUTATION_V
-`define PARAM_PC_COMPUTATION_V
+
 
 // `include "param-PCPlus4.v"
-`include "param-ClkEnBuf.v"
-`include "param-ShiftDemux.v"
-`include "param-DeserializedReg.v"
+// `include "param-ClkEnBuf.v"
+// `include "param-ShiftDemux.v"
+// `include "param-DeserializedReg.v"
 
 module param_PCComputation
 // #(
@@ -148,4 +147,3 @@ module param_PCComputation
   assign pc_plus4_mux_out_Xhl = pc_plus4_mux_sel_Xhl ? pc_plus4_bit_Xhl : pc_bit_Xhl;
 
 endmodule
-`endif
