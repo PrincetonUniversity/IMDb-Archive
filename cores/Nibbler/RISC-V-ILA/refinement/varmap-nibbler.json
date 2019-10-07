@@ -34,7 +34,7 @@
     "x29" : "m1.dpath.lane_0.rfile.registers[29]",
     "x30" : "m1.dpath.lane_0.rfile.registers[30]",
     "x31" : "m1.dpath.lane_0.rfile.registers[31]",
-    "mem"               : "**MEM**XRAM"
+    "mem"               : "**MEM**mem"
   },
 
   "interface mapping": {
@@ -53,7 +53,7 @@
      "cp0_status": "**KEEP**"
   },
 
-  "mapping control" : [ "__IMEM_mem_0_rdata == m1.ctrl.ir"
+  "mapping control" : [ "m0.inst == m1.ctrl.ir"
   ]
 
 }

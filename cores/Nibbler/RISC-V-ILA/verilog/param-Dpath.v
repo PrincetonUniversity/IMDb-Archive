@@ -4,6 +4,11 @@
 // `include "param-SIMDLaneDpath.v"
 
 module param_Dpath
+// #(
+//   parameter P_NBITS = 4,
+//   parameter C_N_OFF   = 8, //32/P_NBITS;
+//   parameter C_OFFBITS = 3//$clog2(C_N_OFF);
+// )
 (
 
   input                  clk,

@@ -11,6 +11,13 @@
 
 
 module param_riscv_Core
+// #(
+// 
+// print '  parameter P_NBITS = '+str(p.P_NBITS) + ','
+// print '  parameter C_N_OFF = '+str(p.C_N_OFF) + ','
+// print '  parameter C_OFFBITS = '+str(p.C_OFFBITS)
+//
+// )
 (
   input         clk,
   input         reset,
