@@ -64,44 +64,7 @@ module param_CoreDpathRegfile
 
   //Register 0:
   always @(posedge clk) begin
-    if ((waddr_Xhl == 5'd0) && (woffset_Xhl == 3'd0) && (wen_Xhl == 1'b1)) begin
-      registers[0][3:0] <= wdata_Xhl;
-    end
-  end
-  always @(posedge clk) begin
-    if ((waddr_Xhl == 5'd0) && (woffset_Xhl == 3'd1) && (wen_Xhl == 1'b1)) begin
-      registers[0][7:4] <= wdata_Xhl;
-    end
-  end
-  always @(posedge clk) begin
-    if ((waddr_Xhl == 5'd0) && (woffset_Xhl == 3'd2) && (wen_Xhl == 1'b1)) begin
-      registers[0][11:8] <= wdata_Xhl;
-    end
-  end
-  always @(posedge clk) begin
-    if ((waddr_Xhl == 5'd0) && (woffset_Xhl == 3'd3) && (wen_Xhl == 1'b1)) begin
-      registers[0][15:12] <= wdata_Xhl;
-    end
-  end
-  always @(posedge clk) begin
-    if ((waddr_Xhl == 5'd0) && (woffset_Xhl == 3'd4) && (wen_Xhl == 1'b1)) begin
-      registers[0][19:16] <= wdata_Xhl;
-    end
-  end
-  always @(posedge clk) begin
-    if ((waddr_Xhl == 5'd0) && (woffset_Xhl == 3'd5) && (wen_Xhl == 1'b1)) begin
-      registers[0][23:20] <= wdata_Xhl;
-    end
-  end
-  always @(posedge clk) begin
-    if ((waddr_Xhl == 5'd0) && (woffset_Xhl == 3'd6) && (wen_Xhl == 1'b1)) begin
-      registers[0][27:24] <= wdata_Xhl;
-    end
-  end
-  always @(posedge clk) begin
-    if ((waddr_Xhl == 5'd0) && (woffset_Xhl == 3'd7) && (wen_Xhl == 1'b1)) begin
-      registers[0][31:28] <= wdata_Xhl;
-    end
+      registers[0] <= 32'd0;
   end
 
   //Register 1:

@@ -4,63 +4,78 @@
   "instructions": [
     {
       "instruction" : "ADD",
-      "ready bound" : 11
+      "ready bound" : 11 ,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "SUB",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "AND",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "OR",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "XOR",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "SLT",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "ADDI",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "ANDI",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "ORI",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "XORI",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "SLTI",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "LUI",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "AUIPC",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "JALR",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     },
     {
       "instruction" : "BNE",
-      "ready bound" : 11
+      "ready bound" : 11,
+      "start condition" : ["$decode$", "m1.ctrl.wb_subword_off_Dhl == 0"]
     }
   ]
 }

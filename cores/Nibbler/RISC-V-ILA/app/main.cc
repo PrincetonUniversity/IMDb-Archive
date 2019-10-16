@@ -19,6 +19,9 @@ void verifyNibbler(
   vlg_cfg.pass_node_name = true;
   vtg_cfg.CosaAddKeep = false;
 
+  vtg_cfg.MemAbsReadAbstraction = true;
+  vtg_cfg.ForceInstCheckReset = true;
+
 
   std::string RootPath = "..";
   std::string VerilogPath = RootPath + "/verilog/";
@@ -62,8 +65,8 @@ int main(int argc, char **argv) {
     "param-Core.v"
   };
 
-  //auto vtg_cfg = SetConfiguration();
-  auto vtg_cfg = HandleArguments(argc, argv);
+  auto vtg_cfg = SetConfiguration();
+  //auto vtg_cfg = HandleArguments(argc, argv);
 
   // build the model
   riscvILA_user nibbler;
@@ -122,8 +125,7 @@ VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration() {
   
   VerilogVerificationTargetGenerator::vtg_config_t ret;
   ret.CosaSolver = "btor";
-  ret.CosaPyEnvironment = "~/cosaEnv/bin/activate";
-  ret.CosaPath = "~/CoSA";
+  ret.CosaPyEnvironment = "/ibuild/ilang-env/bin/activate";
   ret.CosaGenTraceVcd = true;
 
   /// other configurations

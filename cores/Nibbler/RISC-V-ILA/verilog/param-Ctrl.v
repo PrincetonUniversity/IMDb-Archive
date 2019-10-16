@@ -396,12 +396,12 @@ assign csrw_microcode[1] = { rep_const, 5'd0, y, pc_n, am_r, rs1, addr_x, addr_x
   wire [cs_sz-1:0] nop_microcode;
   // NOTE: It takes 8 cycles to calculate pc+4, so each NOP needs to be at least 8 (-3??) cycles long. Be safe with 8.
   // TODO: Confirm this actually works and doesn't end after 1 cycle.
-                    //                     repeat, cp0_wen, pc_sel, amux_sel, addr_a, addr_b, addr_wb, mem_acc, wb_en, b_imm_en,  b_imm_sel,   b_imm_type, b_imm_zero,  bm_sel, addsub,  logic,         shift, flag_en, shift_en, br_reg_en, new_isnt 
-  assign nop_microcode =        { rep_const, 5'd7,       n,   pc_x,     am_p, addr_x, addr_x,  addr_x,       n,     n,        n,    b_imm_x, immed_type_x,          y,  bm_imm, fn_add, fn_and, fn_shift_zero,       n,        n,         n,     y };
+                    //                     repeat, cp0_wen, pc_sel, amux_sel, addr_a, addr_b, addr_wb, mem_acc, wb_en, b_imm_en,  b_imm_sel,   b_imm_type, b_imm_zero,  bm_sel, addsub, ！carry_in_0, logic,         shift, flag_en, shift_en, br_reg_en,       new_isnt 
+  assign nop_microcode =        { rep_const, 5'd7,       n,   pc_x,     am_p, addr_x, addr_x,  addr_x,       n,     n,        n,    b_imm_x, immed_type_x,          y,  bm_imm, fn_add,   carry_in_0, fn_and, fn_shift_zero,       n,        n,         n,           y };
   
 
-  wire [cs_sz-1:0] cs_default = { rep_const, 5'd0,       n,   pc_x,     am_p, addr_x, addr_x,  addr_x,       n,     n,        n,    b_imm_x, immed_type_x,          y,  bm_imm, fn_add, fn_and, fn_shift_zero,       n,        n,         n,     n };
-                            
+  wire [cs_sz-1:0] cs_default = { rep_const, 5'd0,       n,   pc_x,     am_p, addr_x, addr_x,  addr_x,       n,     n,        n,    b_imm_x, immed_type_x,          y,  bm_imm, fn_add,   carry_in_0, fn_and, fn_shift_zero,fn_type_arith,     y, shift_right, n, n,   n };
+                    
  
 
 
@@ -499,7 +499,7 @@ end
 
   wire       addsub_fn_Dhl        = cs_mux_out[13];
   wire       prop_carry_Dhl       = cs_mux_out[12];
-  wire       carry_in_1_Dhl       = cs_mux_out[11];
+  wire       carry_in_1_Dhl       = cs_mux_out[11]; //no
   wire [1:0] logic_fn_Dhl         = cs_mux_out[10:9];
   wire [1:0] shift_fn_Dhl         = cs_mux_out[8:7];
 
@@ -649,7 +649,8 @@ end
     b_mux_sel_Rhl        <= b_mux_sel_Dhl;
 
     a_subword_off_Rhl    <= a_subword_off_Dhl;
-    b_subword_off_Rhl    <= a_subword_off_Dhl;
+    // b_subword_off_Rhl    <= a_subword_off_Dhl; //bug
+    b_subword_off_Rhl    <= b_subword_off_Dhl;
     wb_subword_off_Rhl   <= wb_subword_off_Dhl;
 
     addsub_fn_Rhl        <= addsub_fn_Dhl;
