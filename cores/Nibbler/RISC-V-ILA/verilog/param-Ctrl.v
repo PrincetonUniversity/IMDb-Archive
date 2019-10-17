@@ -397,7 +397,7 @@ assign csrw_microcode[1] = { rep_const, 5'd0, y, pc_n, am_r, rs1, addr_x, addr_x
   // NOTE: It takes 8 cycles to calculate pc+4, so each NOP needs to be at least 8 (-3??) cycles long. Be safe with 8.
   // TODO: Confirm this actually works and doesn't end after 1 cycle.
                     //                     repeat, cp0_wen, pc_sel, amux_sel, addr_a, addr_b, addr_wb, mem_acc, wb_en, b_imm_en,  b_imm_sel,   b_imm_type, b_imm_zero,  bm_sel, addsub, ！carry_in_0, logic,         shift, flag_en, shift_en, br_reg_en,       new_isnt 
-  assign nop_microcode =        { rep_const, 5'd7,       n,   pc_x,     am_p, addr_x, addr_x,  addr_x,       n,     n,        n,    b_imm_x, immed_type_x,          y,  bm_imm, fn_add,   carry_in_0, fn_and, fn_shift_zero,       n,        n,         n,           y };
+  assign nop_microcode =        { rep_const, 5'd7,       n,   pc_x,     am_p, addr_x, addr_x,  addr_x,       n,     n,        n,    b_imm_x, immed_type_x,          y,  bm_imm, fn_add,   carry_in_0, fn_and, fn_shift_zero,fn_type_arith,     n, shift_right, n, n, y };
   
 
   wire [cs_sz-1:0] cs_default = { rep_const, 5'd0,       n,   pc_x,     am_p, addr_x, addr_x,  addr_x,       n,     n,        n,    b_imm_x, immed_type_x,          y,  bm_imm, fn_add,   carry_in_0, fn_and, fn_shift_zero,fn_type_arith,     y, shift_right, n, n,   n };
