@@ -487,7 +487,8 @@ end
 
   wire       mem_access_Dhl       = cs_mux_out[22];
 
-  wire       wb_en_Dhl            = cs_mux_out[21];
+  wire       wb_en_Dhl;
+  assign     wb_en_Dhl            = cs_mux_out[21];
         
   // ALU Inputs
   // Immediate handling
