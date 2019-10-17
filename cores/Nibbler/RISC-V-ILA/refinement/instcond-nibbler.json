@@ -5,77 +5,77 @@
     {
       "instruction" : "ADD",
       "ready bound" : 11 ,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "SUB",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "AND",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "OR",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "XOR",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "SLT",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "ADDI",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "ANDI",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "ORI",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "XORI",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "SLTI",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "LUI",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "AUIPC",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "JALR",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     },
     {
       "instruction" : "BNE",
       "ready bound" : 11,
-      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl == 0"]
+      "start condition" : ["$decode$", "m1.ctrl.a_subword_off_Dhl && m1.ctrl.b_subword_off_Dhl == 0", "m1.ctrl.wb_en_Dhl == 1"]
     }
   ]
 }
