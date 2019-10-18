@@ -267,7 +267,7 @@ AES_128::AES_128() : model("AES_128_Rnd") {
     instr.SetUpdate(round, round + 1);
   }
 
-  { // FirstRound
+  { // FinalRound
     auto instr = model.NewInstr("FinalRound");
 
     instr.SetDecode((round == 10));
