@@ -86,8 +86,13 @@ sudo docker run -it byhuang/ilang:posh-demo
 source init.sh
 ```
 
-If you see a command line prompt starting with `(ilang-env)`, you have 
-successfully downloaded and started the demo docker image.
+If you see a command line prompt starting with `(ilang-env)`, you have successfully downloaded and started the demo docker image. 
+
+The SMT solver Boolector is not installed by default. To install it (recommended), run:
+
+```bash
+pysmt-install --btor
+```
 
 ### Checking Correctness Using ILA Verification
 
