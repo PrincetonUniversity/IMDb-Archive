@@ -411,10 +411,13 @@ assign csrw_microcode[1] = { rep_const, 5'd0, y, pc_n, am_r, rs1, addr_x, addr_x
 
 reg [cs_sz-1:0] selected_uop;
 
+wire [2:0] uop_idx_tmp;
+assign uop_idx_tmp = uop_idx[2:0];
+
 always @ (*) begin
   casez ( ir )
   //   `TINYRV2_INST_MSG_NOP  : selected_uop = nop_microcode[uop_idx];
-    `TINYRV2_INST_MSG_ADD  : selected_uop = add_microcode[uop_idx];
+    `TINYRV2_INST_MSG_ADD  : selected_uop = add_microcode[uop_idx_tmp];
     `TINYRV2_INST_MSG_SUB  : selected_uop = sub_microcode[uop_idx];
     `TINYRV2_INST_MSG_AND  : selected_uop = and_microcode[uop_idx];
     `TINYRV2_INST_MSG_OR   : selected_uop = or_microcode[uop_idx];
