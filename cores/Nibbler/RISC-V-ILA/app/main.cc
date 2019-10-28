@@ -20,7 +20,7 @@ void verifyNibbler(
   vtg_cfg.CosaAddKeep = false;
 
   vtg_cfg.MemAbsReadAbstraction = true;
-  vtg_cfg.ForceInstCheckReset = true;
+  //vtg_cfg.ForceInstCheckReset = true;
 
 
   std::string RootPath = "..";

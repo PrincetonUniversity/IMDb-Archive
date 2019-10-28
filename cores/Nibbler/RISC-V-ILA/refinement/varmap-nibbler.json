@@ -53,7 +53,7 @@
      "cp0_status": "**KEEP**"
   },
 
-  "global invariants" : [],
+  "global invariants" : ["m1.ctrl.imemreq_val && m1.ctrl.imemresp_rdy == 0"],
 
   "mapping control" : [ "__IMEM_mem_0_rdata == m1.ctrl.ir_next"
   ]
