@@ -1,7 +1,9 @@
 {
   "global invariants" : ["(m1.ctrl.imemreq_val && m1.ctrl.imemresp_rdy) == 0", 
     "((m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy) && m1.ctrl.last_uop_Xhl) == 0",
-    "((m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy) && m1.ctrl.done_fetch) == 0"],
+    "((m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy) && m1.ctrl.done_fetch) == 0",
+    "((m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy) && m1.ctrl.dmemreq_pending_next) == 0",
+    "((m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy) && m1.ctrl.wb_en_Xhl) == 0"],
 
   "instructions": [
     {
