@@ -1,5 +1,5 @@
 {
-  "global invariants": [],
+  "global invariants" : ["m1.ctrl.imemreq_val && m1.ctrl.imemresp_rdy == 0", "(m1.ctrl.imemresp_val && m1.strl.imemresp_rdy) && m1.ctrl.last_uop_Xhl == 0"],
 
   "instructions": [
     {
