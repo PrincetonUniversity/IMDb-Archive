@@ -12,13 +12,13 @@
       "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
     },
     {
-      "instruction" : "SUB",
-      "ready bound" : 12,
+      "instruction" : "JALR",
+      "ready bound" : 20,
       "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
     },
     {
-      "instruction" : "AND",
-      "ready bound" : 12,
+      "instruction" : "BNE",
+      "ready bound" : 20,
       "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
     },
     {
@@ -72,12 +72,12 @@
       "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
     },
     {
-      "instruction" : "JALR",
+      "instruction" : "SUB",
       "ready bound" : 12,
       "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
     },
     {
-      "instruction" : "BNE",
+      "instruction" : "AND",
       "ready bound" : 12,
       "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
     }

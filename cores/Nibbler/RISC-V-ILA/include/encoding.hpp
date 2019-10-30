@@ -64,6 +64,8 @@
 #define BLTU    BvConst(0x6, FUNCT3_LEN)
 #define BGEU    BvConst(0x7, FUNCT3_LEN)
 
+#define JARL    BvConst(0x0, FUNCT3_LEN)
+
 // funct 3 for L/S
 #define BYTE    BvConst(0x0 , FUNCT3_LEN)
 #define HALF    BvConst(0x1 , FUNCT3_LEN)

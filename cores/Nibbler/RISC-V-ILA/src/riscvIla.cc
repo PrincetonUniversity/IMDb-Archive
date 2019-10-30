@@ -205,7 +205,7 @@ void riscvILA_user::addInstructions() {
     // ------------------------------ //
     {
       auto instr = model.NewInstr("JALR");
-      auto decode = (opcode == JALR);
+      auto decode = (opcode == JALR) & (funct3 == JARL);
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, (rs1_val + immI) & bv(0xFFFFFFFE));
