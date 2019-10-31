@@ -20,7 +20,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 ##
 ## ilang
 ##
-find_package(ilang REQUIRED)
+find_package(ilang REQUIRED 1.0.1)
 
 
 # ---------------------------------------------------------------------------- #
