@@ -7,33 +7,50 @@ using namespace ilang;
 VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration();
 VerilogVerificationTargetGenerator::vtg_config_t HandleArguments(int argc, char **argv);
 
-void verifyNibblerInstCosa(
-  Ila& model,
+/// To verify the exact AES128 ILA
+void verifyNibbler(
+  Ila& model, 
   VerilogVerificationTargetGenerator::vtg_config_t vtg_cfg,
   const std::vector<std::string> & design_files,
   const std::string & varmap,
   const std::string & instcont
   ) {
-  VerilogGeneratorBase::VlgGenConfig vlg_cfg;
+  VerilogGeneratorBase::VlgGenConfig vlg_cfg; 
   vlg_cfg.pass_node_name = true;
   vtg_cfg.CosaAddKeep = false;
+  vtg_cfg.InvariantSynthesisReachableCheckKeepOldInvariant = false;
+  vtg_cfg.InvariantSynthesisKeepMemory = false;
+  vtg_cfg.InvariantCheckKeepMemory = false;
 
   vtg_cfg.MemAbsReadAbstraction = true;
-  vtg_cfg.target_select = vtg_cfg.INST;
+  vtg_cfg.CosaAddKeep = false;
+  vtg_cfg.VerificationSettingAvoidIssueStage = true;
+  vtg_cfg.YosysSmtFlattenDatatype = false;
+  vtg_cfg.YosysSmtFlattenHierarchy = true;
+  vtg_cfg.CosaPyEnvironment = "/home/hongce/cosaEnv/bin/activate";
+  vtg_cfg.CosaPath = "/home/hongce/CoSA/";
+  vtg_cfg.AbcPath = "/home/hongce/abc/";
+  vtg_cfg.AbcUseGla = false; // gla will result in too coarse approximate 
+  vtg_cfg.AbcUseAiger = true;
+  vtg_cfg.AbcAssumptionStyle = vtg_cfg.AssumptionRegister; // you have to do it this way!
+  vtg_cfg.CosaSolver = "btor";
   //vtg_cfg.ForceInstCheckReset = true;
+  vtg_cfg.InvariantSynthesisResetSetup.no_reset_after_starting_state = true;
+  vtg_cfg.InvariantSynthesisResetSetup.reset_sequence = std::vector<std::pair<std::string,bool>>({"rst", true},10);
+  
 
 
   std::string RootPath = "..";
   std::string VerilogPath = RootPath + "/verilog/";
   std::string IncludePath = VerilogPath + "include/";
   std::string RefrelPath = RootPath + "/refinement/";
-  std::string OutputPath = RootPath + "/verification/";
+  std::string OutputPath = RootPath + "/verification-invsyn/";
 
   std::vector<std::string> path_to_design_files; // update path
   for(auto && f : design_files)
     path_to_design_files.push_back( VerilogPath + f );
 
-  VerilogVerificationTargetGenerator vg(
+  InvariantSynthesizerCegar vg(
       {IncludePath},                             // no include
       path_to_design_files,           // designs
       "param_riscv_Core",             // top_module_name
@@ -42,59 +59,54 @@ void verifyNibblerInstCosa(
       OutputPath,                     // output path
       model.get(),                    // model
       VerilogVerificationTargetGenerator::backend_selector::COSA, // backend: COSA
+      VerilogVerificationTargetGenerator::synthesis_backend_selector::ABC, // synthesis backend: Z3
       vtg_cfg,  // target generator configuration
       vlg_cfg); // verilog generator configuration
 
-  vg.GenerateTargets();
+  std::vector<std::string> to_drop_states = {
+    "m1.encrypted_data_buf[127:0]",
+    "m1.mem_data_buf[127:0]",
+    "m1.data_out_reg[7:0]",
+    "m1.aes_128_i.out_reg[127:0]",
+    "m1.aes_reg_oplen_i.reg_out[15:0]",
+    "m1.aes_reg_opaddr_i.reg_out[15:0]",
+    "m1.aes_reg_key0_i.reg_out[127:0]",
+  }; // 
+
+  do{
+    vg.GenerateVerificationTarget();
+    if(vg.RunVerifAuto("ADD")) {// the OPERATE 
+      std::cerr << "No more Cex has been found! Cegar completes." << std::endl;
+      break; // no more cex found
+    }
+    vg.ExtractVerificationResult();
+    vg.CexGeneralizeRemoveStates(to_drop_states);
+    vg.GenerateSynthesisTarget();
+    if(vg.RunSynAuto()) {
+      std::cerr << "Cex is reachable! Cegar failed" << std::endl;
+      break; // cex is really reachable!!!
+    }
+    vg.ExtractSynthesisResult();
+    vg.GenerateInvariantVerificationTarget();
+
+
+    InvariantObject invs(vg.GetInvariants());
+    invs.ExportToFile(OutputPath+"inv-syn.txt");
+
+  }while(not vg.in_bad_state());
+
+
+   auto design_stat = vg.GetDesignStatistics();
+   std::cout << "========== Design Info =========="  << std::endl;
+   std::cout << "#bits=" << design_stat.NumOfDesignStateBits << std::endl;
+   std::cout << "#vars=" << design_stat.NumOfDesignStateVars << std::endl;
+   std::cout << "#extra_bits=" << design_stat.NumOfExtraStateBits << std::endl;
+   std::cout << "#extra_vars=" << design_stat.NumOfExtraStateVars << std::endl;
+   std::cout << "t(eq)= " << design_stat.TimeOfEqCheck << std::endl;
+   std::cout << "t(syn)=" << design_stat.TimeOfInvSyn << std::endl;
+   std::cout << "t(proof)= " << design_stat.TimeOfInvProof << std::endl;
+   std::cout << "t(validate)=" << design_stat.TimeOfInvValidate << std::endl;
 }
-
-
-void verifyNibblerInvPdr(
-  Ila& model,
-  VerilogVerificationTargetGenerator::vtg_config_t vtg_cfg,
-  const std::vector<std::string> & design_files,
-  const std::string & varmap,
-  const std::string & instcont
-  ) {
-  VerilogGeneratorBase::VlgGenConfig vlg_cfg;
-  vlg_cfg.pass_node_name = true;
-  vtg_cfg.CosaAddKeep = false;
-
-  vtg_cfg.MemAbsReadAbstraction = true;
-  vtg_cfg.target_select = vtg_cfg.INV;
-  vtg_cfg.InvariantSynthesisKeepMemory = false;
-  vtg_cfg.InvariantCheckKeepMemory = false;
-  vtg_cfg.YosysSmtFlattenHierarchy = true;
-  // vtg_cfg.AbcPath = "~/abc/";
-  // vtg_cfg.YosysPropertyCheckShowProof = true;
-  // vtg_cfg.YosysSmtStateSort = vtg_cfg.BitVec;
-  // vtg_cfg.ForceInstCheckReset = true;
-
-  std::string RootPath = "..";
-  std::string VerilogPath = RootPath + "/verilog/";
-  std::string IncludePath = VerilogPath + "include/";
-  std::string RefrelPath = RootPath + "/refinement/";
-  std::string OutputPath = RootPath + "/verification/";
-
-  std::vector<std::string> path_to_design_files; // update path
-  for(auto && f : design_files)
-    path_to_design_files.push_back( VerilogPath + f );
-
-  VerilogVerificationTargetGenerator vg(
-      {IncludePath},                             // no include
-      path_to_design_files,           // designs
-      "param_riscv_Core",             // top_module_name
-      RefrelPath + varmap,            // variable mapping
-      RefrelPath + instcont,          // conditions of start/ready
-      OutputPath,                     // output path
-      model.get(),                    // model
-      VerilogVerificationTargetGenerator::backend_selector::Z3PDR, // backend: Z3PDR, COSA
-      vtg_cfg,  // target generator configuration
-      vlg_cfg); // verilog generator configuration
-
-  vg.GenerateTargets();
-}
-
 
 
 int main(int argc, char **argv) {
@@ -120,9 +132,7 @@ int main(int argc, char **argv) {
   riscvILA_user nibbler;
   nibbler.addInstructions(); // 37 base integer instructions
 
-  verifyNibblerInstCosa(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler.json");
-
-  verifyNibblerInvPdr(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler.json");
+  verifyNibbler(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler.json");
 
   // riscvILA_user riscvILA(0);
   return 0;
