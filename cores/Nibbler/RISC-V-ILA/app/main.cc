@@ -65,8 +65,8 @@ void verifyNibblerInvPdr(
   vtg_cfg.InvariantSynthesisKeepMemory = false;
   vtg_cfg.InvariantCheckKeepMemory = false;
   vtg_cfg.YosysSmtFlattenHierarchy = true;
-  // vtg_cfg.AbcPath = "~/abc/";
-  // vtg_cfg.YosysPropertyCheckShowProof = true;
+  vtg_cfg.AbcPath = "~/abc/";
+  vtg_cfg.YosysPropertyCheckShowProof = true;
   // vtg_cfg.YosysSmtStateSort = vtg_cfg.BitVec;
   // vtg_cfg.ForceInstCheckReset = true;
 
@@ -88,7 +88,7 @@ void verifyNibblerInvPdr(
       RefrelPath + instcont,          // conditions of start/ready
       OutputPath,                     // output path
       model.get(),                    // model
-      VerilogVerificationTargetGenerator::backend_selector::Z3PDR, // backend: Z3PDR, COSA
+      VerilogVerificationTargetGenerator::backend_selector::ABCPDR, // backend: Z3PDR, COSA
       vtg_cfg,  // target generator configuration
       vlg_cfg); // verilog generator configuration
 

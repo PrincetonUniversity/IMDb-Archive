@@ -1,5 +1,6 @@
 #include "riscvIla.hpp"
 #include <ilang/vtarget-out/vtarget_gen.h>
+#include <ilang/vtarget-out/inv-syn/inv_syn_cegar.h>
 
 using namespace ilang;
 
@@ -35,8 +36,6 @@ void verifyNibbler(
   vtg_cfg.AbcAssumptionStyle = vtg_cfg.AssumptionRegister; // you have to do it this way!
   vtg_cfg.CosaSolver = "btor";
   //vtg_cfg.ForceInstCheckReset = true;
-  vtg_cfg.InvariantSynthesisResetSetup.no_reset_after_starting_state = true;
-  vtg_cfg.InvariantSynthesisResetSetup.reset_sequence = std::vector<std::pair<std::string,bool>>({"rst", true},10);
   
 
 
@@ -59,53 +58,71 @@ void verifyNibbler(
       OutputPath,                     // output path
       model.get(),                    // model
       VerilogVerificationTargetGenerator::backend_selector::COSA, // backend: COSA
-      VerilogVerificationTargetGenerator::synthesis_backend_selector::ABC, // synthesis backend: Z3
+      VerilogVerificationTargetGenerator::synthesis_backend_selector::Z3, // synthesis backend: Z3
       vtg_cfg,  // target generator configuration
       vlg_cfg); // verilog generator configuration
 
   std::vector<std::string> to_drop_states = {
-    "m1.encrypted_data_buf[127:0]",
-    "m1.mem_data_buf[127:0]",
-    "m1.data_out_reg[7:0]",
-    "m1.aes_128_i.out_reg[127:0]",
-    "m1.aes_reg_oplen_i.reg_out[15:0]",
-    "m1.aes_reg_opaddr_i.reg_out[15:0]",
-    "m1.aes_reg_key0_i.reg_out[127:0]",
   }; // 
 
-  do{
-    vg.GenerateVerificationTarget();
-    if(vg.RunVerifAuto("ADD")) {// the OPERATE 
-      std::cerr << "No more Cex has been found! Cegar completes." << std::endl;
-      break; // no more cex found
-    }
-    vg.ExtractVerificationResult();
-    vg.CexGeneralizeRemoveStates(to_drop_states);
-    vg.GenerateSynthesisTarget();
-    if(vg.RunSynAuto()) {
-      std::cerr << "Cex is reachable! Cegar failed" << std::endl;
-      break; // cex is really reachable!!!
-    }
-    vg.ExtractSynthesisResult();
-    vg.GenerateInvariantVerificationTarget();
+  unsigned ncegar = 0;
+  std::vector<std::string> insts({
+    "ADD",
+    "JALR",
+    "BNE",
+    "OR",
+    "XOR",
+    "SLT",
+    "ADDI",
+    "ANDI",
+    "ORI",
+    "XORI",
+    "SLTI",
+    "LUI",
+    "AUIPC",
+    "SUB",
+    "AND"});
+
+  for (auto && inst : insts) {
+    std::cout << "------------------- " << inst << "------------------- " << std::endl;
+    do{
+      vg.GenerateVerificationTarget();
+      if(vg.RunVerifAuto("/"+inst+"/")) {// the OPERATE 
+        std::cerr << "No more Cex has been found! Cegar completes." << std::endl;
+        break; // no more cex found
+      }
+      vg.ExtractVerificationResult();
+      vg.CexGeneralizeRemoveStates(to_drop_states);
+      vg.GenerateSynthesisTarget();
+      if(vg.RunSynAuto()) {
+        std::cerr << "Cex is reachable! Cegar failed" << std::endl;
+        break; // cex is really reachable!!!
+      }
+      vg.ExtractSynthesisResult();
+      vg.GenerateInvariantVerificationTarget();
 
 
-    InvariantObject invs(vg.GetInvariants());
-    invs.ExportToFile(OutputPath+"inv-syn.txt");
+      InvariantObject invs(vg.GetInvariants());
+      invs.ExportToFile(OutputPath+"inv-syn.txt");
+      ncegar ++;
 
-  }while(not vg.in_bad_state());
+    }while(not vg.in_bad_state());
 
 
-   auto design_stat = vg.GetDesignStatistics();
-   std::cout << "========== Design Info =========="  << std::endl;
-   std::cout << "#bits=" << design_stat.NumOfDesignStateBits << std::endl;
-   std::cout << "#vars=" << design_stat.NumOfDesignStateVars << std::endl;
-   std::cout << "#extra_bits=" << design_stat.NumOfExtraStateBits << std::endl;
-   std::cout << "#extra_vars=" << design_stat.NumOfExtraStateVars << std::endl;
-   std::cout << "t(eq)= " << design_stat.TimeOfEqCheck << std::endl;
-   std::cout << "t(syn)=" << design_stat.TimeOfInvSyn << std::endl;
-   std::cout << "t(proof)= " << design_stat.TimeOfInvProof << std::endl;
-   std::cout << "t(validate)=" << design_stat.TimeOfInvValidate << std::endl;
+     auto design_stat = vg.GetDesignStatistics();
+     std::cout << "========== Design Info =========="  << std::endl;
+     std::cout << "#bits=" << design_stat.NumOfDesignStateBits << std::endl;
+     std::cout << "#vars=" << design_stat.NumOfDesignStateVars << std::endl;
+     std::cout << "#extra_bits=" << design_stat.NumOfExtraStateBits << std::endl;
+     std::cout << "#extra_vars=" << design_stat.NumOfExtraStateVars << std::endl;
+     std::cout << "t(eq)= " << design_stat.TimeOfEqCheck << std::endl;
+     std::cout << "t(syn)=" << design_stat.TimeOfInvSyn << std::endl;
+     std::cout << "t(proof)= " << design_stat.TimeOfInvProof << std::endl;
+     std::cout << "t(validate)=" << design_stat.TimeOfInvValidate << std::endl;
+     std::cout << "#(cegar)=" << ncegar << std::endl;
+
+    std::cout << "------------------- END of " << inst << "------------------- " << std::endl;
+  }
 }
 
 
@@ -132,7 +149,7 @@ int main(int argc, char **argv) {
   riscvILA_user nibbler;
   nibbler.addInstructions(); // 37 base integer instructions
 
-  verifyNibbler(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler.json");
+  verifyNibbler(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler-noinv.json");
 
   // riscvILA_user riscvILA(0);
   return 0;
