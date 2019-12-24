@@ -4280,7 +4280,7 @@ begin
             l15_noc1buffer_req_address = address_s3;
             noc1_homeid_source_s3 = `L15_HOMEID_SRC_CSM_MODULE;
         end
-        `L15_NOC1_GEN_DATA_ADD_REQUEST_FROM_PCX:
+        `L15_NOC1_GEN_DATA_ADD_REQUEST_FROM_PCX:  // AMO
         begin
             noc1_req_val_s3 = val_s3;
             noc1_type_s3 = `L15_NOC1_REQTYPE_AMO_ADD_REQUEST;
@@ -4521,6 +4521,8 @@ begin
     endcase
 end
 
+// ----------------------------- ADDED MONITORS ----------------------- //
+
 wire global_start;
 // this is the out startsignal
 wire global_started;
@@ -4572,5 +4574,29 @@ always @(posedge clk) begin
 end
 
 assign end_of_pipeline = monitor_s3 && val_s3 && ~monitor_s3_delay ;
+
+
+/// ----------- MSHR Operation collection -------------- ///
+
+/// NOTE: not caching address, do we need? but no address in s3
+
+reg saved_mshr_write_val_s1;
+reg [`L15_MSHR_WRITE_TYPE_WIDTH-1:0] saved_mshr_write_type_s1;
+
+always @(posedge clk) begin
+    if (global_rst) begin
+        saved_mshr_write_val_s1 <= 1'b0
+        pipe_mshr_val_s3 <= 1'b0;
+    end
+    else begin
+        if (s1_mshr_write_val_s1) begin
+            saved_mshr_write_val_s1 <= s1_mshr_write_val_s1;
+            saved_mshr_write_type_s1 <= s1_mshr_write_type_s1;
+        end
+    end
+end
+
+wire mshr_allocate_new = saved_mshr_write_val_s1 && saved_mshr_write_type_s1 == `L15_MSHR_WRITE_TYPE_ALLOCATION
+    && ! (pipe_mshr_val_s3 && pipe_mshr_op_s3 == `L15_MSHR_WRITE_TYPE_DEALLOCATION);
 
 endmodule
