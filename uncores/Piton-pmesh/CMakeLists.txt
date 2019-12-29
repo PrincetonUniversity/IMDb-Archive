@@ -48,7 +48,7 @@ endif()
 # library
 # ---------------------------------------------------------------------------- #
 add_library(${PMESHL15_TARGET}
-  src/pmesh_l15_ila.cc
+  src/pmesh_l15_pcx_ila.cc
   src/pmesh_util.cc
 )
 

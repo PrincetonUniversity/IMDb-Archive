@@ -38,18 +38,43 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
       PMESH_L15_ILA("PMESH_L15_NOC2_ILA"),
       // I/O interface: this is where the commands come from.
 
-      noc2_icache_type    (model.NewBvInput("noc2decoder_l15_icache_type", 1)),  // 2 trans/4 trans in fetch_state?
-      noc2_mshrid         (model.NewBvInput("noc2decoder_l15_mshrid"     , 2)),
-      noc2_threadid       (model.NewBvInput("noc2decoder_l15_threadid"   , 1)),
-      noc2_val            (model.NewBvInput("noc2decoder_l15_val"        , 1)),
-      noc2_reqtype        (model.NewBvInput("noc2decoder_l15_reqtype"    , 8)),
-      noc2_mesi_ack_state (model.NewBvInput("noc2decoder_l15_ack_state"  , 2)), // could be used to write to mesi (if fill ?)
-      noc2_fwdack_vector  (model.NewBvInput("noc2decoder_l15_fwd_subcacheline_vector", 4)), // use for testing last child, and fwd to cpx
-      noc2_address        (model.NewBvInput("noc2decoder_l15_address"    , 40)), 
-      noc2_data_0         (model.NewBvInput("noc2decoder_l15_data_0"     , 64)),
-      noc2_data_1         (model.NewBvInput("noc2decoder_l15_data_1"     , 64)),
-      noc2_data_2         (model.NewBvInput("noc2decoder_l15_data_2"     , 64)),
-      noc2_data_3         (model.NewBvInput("noc2decoder_l15_data_3"     , 64)),
+      noc2_icache_type    (model.NewBvInput("noc2decoder_l15_icache_type", BOOL_WIDTH)),  // 2 trans/4 trans in fetch_state?
+      noc2_mshrid         (model.NewBvInput("noc2decoder_l15_mshrid"     , MSHR_ID_WIDTH)),
+      noc2_threadid       (model.NewBvInput("noc2decoder_l15_threadid"   , THREADID_WIDTH)),
+      noc2_val            (model.NewBvInput("noc2decoder_l15_val"        , BOOL_WIDTH)),
+      noc2_reqtype        (model.NewBvInput("noc2decoder_l15_reqtype"    , NOC2_REQTYPE_WIDTH)),
+      noc2_mesi_ack_state (model.NewBvInput("noc2decoder_l15_ack_state"  , MESI_WIDTH)), // could be used to write to mesi (if fill ?)
+      noc2_fwdack_vector  (model.NewBvInput("noc2decoder_l15_fwd_subcacheline_vector", FWD_SUBCACHELINE_VECTOR)), // use for testing last child, and fwd to cpx
+      noc2_address        (model.NewBvInput("noc2decoder_l15_address"    , ADDR_WIDTH)), 
+      noc2_data_0         (model.NewBvInput("noc2decoder_l15_data_0"     , DATA_WIDTH)),
+      noc2_data_1         (model.NewBvInput("noc2decoder_l15_data_1"     , DATA_WIDTH)),
+      noc2_data_2         (model.NewBvInput("noc2decoder_l15_data_2"     , DATA_WIDTH)),
+      noc2_data_3         (model.NewBvInput("noc2decoder_l15_data_3"     , DATA_WIDTH)),
+  
+/*
+
+you may need to map these things for noc2 or maybe no need
+
+            // predecode_address_s1 = predecode_mshr_address_s1;
+            predecode_size_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_SIZE_3B -: 3];
+            // predecode_threadid_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_THREADID -: `L15_THREADID_WIDTH];
+            predecode_threadid_s1[`L15_THREADID_MASK] = noc2decoder_l15_threadid[`L15_THREADID_MASK];
+            predecode_l1_replacement_way_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_L1_REPLACEMENT_WAY_2B -: 2];
+            predecode_non_cacheable_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_NC_1B -: 1];
+            // 4.16.14: disable blockstores
+            predecode_blockstore_bit_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_BLOCKSTORE_1B -: 1];
+            predecode_blockstore_init_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_BLOCKSTOREINIT_1B -: 1];
+            predecode_prefetch_bit_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_PREFETCH_1B -: 1];
+            // predecode_invalidate_index_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_INVALIDATE_INDEX_1B -: 1];
+            predecode_l2_miss_s1 = noc2decoder_l15_l2miss;
+            predecode_f4b_s1 = noc2decoder_l15_f4b;
+            predecode_atomic_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_ATOMIC];
+            predecode_dcache_load_s1 = predecode_mshr_read_control_s1[`L15_CONTROL_LOAD];
+            predecode_fwd_subcacheline_vector_s1 = noc2decoder_l15_fwd_subcacheline_vector;
+
+
+*/
+    
       
       // Output states: l1.5 --> noc1 requests
       // not specifying these updates:
@@ -57,45 +82,58 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
       // l15_noc1buffer_req_csm_ticket 
       // l15_noc1buffer_req_homeid
       // l15_noc1buffer_req_prefetch   
-
-      noc1_address      ( model.NewBvState("l15_noc1buffer_req_address"      , 40) ),
-      noc1_noncacheable ( model.NewBvState("l15_noc1buffer_req_noncacheable" , 1) ),
-      noc1_size         ( model.NewBvState("l15_noc1buffer_req_size"         , 3) ),
-      noc1_threadid     ( model.NewBvState("l15_noc1buffer_req_threadid"     , 1) ), // not
-      noc1_mshrid       ( model.NewBvState("l15_noc1buffer_req_mshrid"       , 2) ),
-      noc1_type         ( model.NewBvState("l15_noc1buffer_req_type"         , 5) ),
-      noc1_address      ( model.NewBvState("l15_noc1buffer_req_address"      , 40) ),
-      noc1_non_cacheable( model.NewBvState("l15_noc1buffer_req_non_cacheable", 1) ),
-      noc1_data_0       ( model.NewBvState("l15_noc1buffer_req_data_0"       , 64)),
-      noc1_data_1       ( model.NewBvState("l15_noc1buffer_req_data_1"       , 64)),
+      noc1_val          ( model.NewBvState("l15_noc1buffer_req_val"          , BOOL_WIDTH) ),
+      noc1_address      ( model.NewBvState("l15_noc1buffer_req_address"      , ADDR_WIDTH) ),
+      noc1_noncacheable ( model.NewBvState("l15_noc1buffer_req_noncacheable" , BOOL_WIDTH) ),
+      noc1_size         ( model.NewBvState("l15_noc1buffer_req_size"         , NOC1_REQ_SIZE_WIDTH) ),
+      noc1_threadid     ( model.NewBvState("l15_noc1buffer_req_threadid"     , BOOL_WIDTH) ), // not
+      noc1_mshrid       ( model.NewBvState("l15_noc1buffer_req_mshrid"       , MSHR_ID_WIDTH) ),
+      noc1_type         ( model.NewBvState("l15_noc1buffer_req_type"         , NOC1_REQ_TYPE_WIDTH) ),
+      noc1_data_0       ( model.NewBvState("l15_noc1buffer_req_data_0"       , DATA_WIDTH)),
+      noc1_data_1       ( model.NewBvState("l15_noc1buffer_req_data_1"       , DATA_WIDTH)),
+      
+      
 
       // l1.5 --> noc3 requests
-      noc3_val          ( model.NewBvState("l15_noc3encoder_req_val"        , 1)),
-      noc3_type         ( model.NewBvState("l15_noc3encoder_req_type"       , 3)),
-      noc3_data_0       ( model.NewBvState("l15_noc3encoder_req_data_0"     , 64)),
-      noc3_data_1       ( model.NewBvState("l15_noc3encoder_req_data_1"     , 64)),
-      noc3_mshrid       ( model.NewBvState("l15_noc3encoder_req_mshrid"     , 2)),
-      noc3_threadid     ( model.NewBvState("l15_noc3encoder_req_threadid"   , 1)),
-      noc3_address      ( model.NewBvState("l15_noc3encoder_req_address"    , 40)),
-      noc3_invalidate   ( model.NewBvState("l15_noc3encoder_req_was_inval"  , 1)),
-      noc3_with_data    ( model.NewBvState("l15_noc3encoder_req_with_data"  , 1)),     // depends on M?
-      noc3_fwdack_vector( model.NewBvState("l15_noc3encoder_req_fwdack_vector", 4)), // seems to be a direct forwarding
+      noc3_val          ( model.NewBvState("l15_noc3encoder_req_val"        , BOOL_WIDTH)),
+      noc3_type         ( model.NewBvState("l15_noc3encoder_req_type"       , NOC3_REQ_TYPE_WIDTH)),
+      noc3_data_0       ( model.NewBvState("l15_noc3encoder_req_data_0"     , DATA_WIDTH)),
+      noc3_data_1       ( model.NewBvState("l15_noc3encoder_req_data_1"     , DATA_WIDTH)),
+      noc3_mshrid       ( model.NewBvState("l15_noc3encoder_req_mshrid"     , MSHR_ID_WIDTH)),
+      noc3_threadid     ( model.NewBvState("l15_noc3encoder_req_threadid"   , THREADID_WIDTH)),
+      noc3_address      ( model.NewBvState("l15_noc3encoder_req_address"    , ADDR_WIDTH)),
+      noc3_invalidate   ( model.NewBvState("l15_noc3encoder_req_was_inval"  , BOOL_WIDTH)),
+      noc3_with_data    ( model.NewBvState("l15_noc3encoder_req_with_data"  , BOOL_WIDTH)),     // depends on M?
+      noc3_fwdack_vector( model.NewBvState("l15_noc3encoder_req_fwdack_vector", FWD_SUBCACHELINE_VECTOR)), // seems to be a direct forwarding
 
-      // Output states: l1.5 --> core
-      l15_transducer_val             ( model.NewBvState("l15_transducer_val"              , 1)  ),
-      l15_transducer_returntype      ( model.NewBvState("l15_transducer_returntype"       , 4)  ), // 0 if hit, l15_cpxencoder_returntype
-      l15_transducer_noncacheable    ( model.NewBvState("l15_transducer_noncacheable"     , 1)  ),
-      l15_transducer_atomic          ( model.NewBvState("l15_transducer_atomic"           , 1)  ),
-      l15_transducer_data_0          ( model.NewBvState("l15_transducer_data_0"           , 64) ),
-      l15_transducer_data_1          ( model.NewBvState("l15_transducer_data_1"           , 64) ),
-      l15_transducer_data_2          ( model.NewBvState("l15_transducer_data_2"           , 64) ),
-      l15_transducer_data_3          ( model.NewBvState("l15_transducer_data_3"           , 64) ),
+     // Output states: l1.5 --> core
+      l15_transducer_val                  ( model.NewBvState("l15_transducer_val"              , BOOL_WIDTH) ), 
+      l15_transducer_returntype           ( model.NewBvState("l15_transducer_returntype"       , CPX_RETURNTYPE_WIDTH)  ), // 0 if hit, l15_cpxencoder_returntype
+      l15_transducer_noncacheable         ( model.NewBvState("l15_transducer_noncacheable"     , BOOL_WIDTH)  ),
+      l15_transducer_atomic               ( model.NewBvState("l15_transducer_atomic"           , BOOL_WIDTH)  ),
+      l15_transducer_data_0               ( model.NewBvState("l15_transducer_data_0"           , DATA_WIDTH) ),
+      l15_transducer_data_1               ( model.NewBvState("l15_transducer_data_1"           , DATA_WIDTH) ),
+      l15_transducer_data_2               ( model.NewBvState("l15_transducer_data_2"           , DATA_WIDTH) ),
+      l15_transducer_data_3               ( model.NewBvState("l15_transducer_data_3"           , DATA_WIDTH) ),
+      l15_transducer_inval_address_15_4   ( model.NewBvState("l15_transducer_inval_address_15_4", 12)), 
+      l15_transducer_inval_icache_all_way ( model.NewBvState("l15_transducer_inval_icache_all_way", BOOL_WIDTH)), 
+      l15_transducer_inval_dcache_inval   ( model.NewBvState("l15_transducer_inval_dcache_inval", BOOL_WIDTH)), // will need way map table but instead go abstract ...
+      //l15_transducer_inval_way            ( model.NewBvState("l15_transducer_inval_way", WAY_WIDTH)), 
+
+      // we don't model the way-map table, so not model here
+      // l15_transducer_inval_icache_inval // always 0
+      // l15_transducer_inval_dcache_all_way // always 0
+      // l15_transducer_cross_invalidate // always 0
+      // l15_transducer_cross_invalidate_way // always 0
 
       // We made the map as a mem (although in the design, it does not need to be so large)
-      mesi_state( NewMap( "address_to_mesi_map", 40, 2 ) ),
-      data_state( NewMap( "address_to_data_map", 40, 64) ),
-      missed_on_this( NewMap("address_to_mshr_map", 40, 1) ),
-      fetch_state_s1( model.NewBvState("fetch_state_s1", 3) ),
+
+      // We made the map as a mem (although in the design, it does not need to be so large)
+      mesi_state    ( NewMap( "address_to_mesi_map", ADDR_WIDTH, MESI_WIDTH ) ),
+      data_state    ( NewMap( "address_to_data_map", ADDR_WIDTH, DATA_WIDTH) ),
+      missed_on_this( NewMap("address_to_mshr_map", ADDR_WIDTH, BOOL_WIDTH) ),
+      fetch_state   ( model.NewBvState("fetch_state_s1", FETCH_STATE_WIDTH) ),
+      
       
       // -----------------------------------------------------------------------------------------------
 

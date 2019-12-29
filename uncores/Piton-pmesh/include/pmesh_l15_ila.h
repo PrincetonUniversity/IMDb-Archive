@@ -11,11 +11,27 @@
 
 using namespace ilang;
 
-#define MESI_INVALID 0
-#define MESI_SHARED 1
-#define MESI_EXCLUSIVE 2
-#define MESI_MODIFIED 3
+#define WAY_WIDTH  2
+#define MESI_WIDTH 2
+#define ADDR_WIDTH  40
+#define BOOL_WIDTH  1
+#define THREADID_WIDTH  1
+#define DATA_WIDTH  64
+#define MSHR_ID_WIDTH  2
+#define AMO_OP_WIDTH 4
+#define FETCH_STATE_WIDTH 3
 
+#define PCX_REQTYPE_WIDTH 5
+#define NOC1_REQ_SIZE_WIDTH  3
+#define NOC1_REQ_TYPE_WIDTH  5
+#define NOC2_REQTYPE_WIDTH 8
+#define NOC3_REQ_TYPE_WIDTH  3
+#define FWD_SUBCACHELINE_VECTOR 4
+#define CPX_RETURNTYPE_WIDTH 4
+
+#define b0 BvConst(0,1)
+#define b1 BvConst(1,1)
+#define zero_data BvConst(0,DATA_WIDTH)
 
 /// \brief the class of PMESH L1.5 ila
 class PMESH_L15_ILA {

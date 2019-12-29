@@ -71,9 +71,9 @@ int main() {
   auto vtg_cfg = SetConfiguration();
 
   // build the model
-  PMESH_L15 l15_ila_model;
+  PMESH_L15_PCX_ILA l15_ila_model;
 
-  verifyPMeshL15(l15_ila_model.model, vtg_cfg, design_files);
+  // verifyPMeshL15(l15_ila_model.model, vtg_cfg, design_files);
 
   return 0;
 }

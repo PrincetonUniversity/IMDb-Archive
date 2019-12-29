@@ -56,6 +56,16 @@ void PMESH_L15_ILA::MapUpdate(InstrRef & instr, const std::string & name, const 
 }
 
 
+void PMESH_L15_ILA::MapUpdate(InstrRef & instr, const std::string & name, const ExprRef & idx, const ExprRef & val) {
+
+  auto dummy_map_val = model.state(name+"_map_val");
+  assert (dummy_map_val.bit_width() == val.bit_width());
+
+  instr.SetUpdate( dummy_map_val, val );
+}
+
+
+
 unsigned nondet_counter = 0;
 
 FuncRef PMESH_L15_ILA::unknown(unsigned width) {
