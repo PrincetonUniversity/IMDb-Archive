@@ -58,8 +58,11 @@ protected:
   ExprRef Map(const std::string & name, unsigned retLen, const ExprRef & val);
   /// build a map relation
   ExprRef NewMap(const std::string & name, unsigned inLen, unsigned outLen);
-    
-
+  /// Set update function to a map  
+  void MapUpdate(InstrRef & instr, const std::string & name, const ExprRef & idx, const ExprRef & val) ;
+  /// Set update function to a map
+  void MapUpdate(InstrRef & instr, const std::string & name, const ExprRef & idx, 
+    const ExprRef & cond, const ExprRef & val);
 }; // class PMESH_L15_ILA
 
 #endif // PMESH_L15_ILA_H__

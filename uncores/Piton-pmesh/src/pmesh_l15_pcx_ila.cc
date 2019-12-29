@@ -82,11 +82,11 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
 
             // We made the map as a mem (although in the design, it does not need to be so large)
       mesi_state    ( NewMap( "address_to_mesi_map", ADDR_WIDTH, MESI_WIDTH ) ), // write (l15_mesi_write_data_s2[1:0]) read mesi_state_way0_s2? ?flush_state_s2
-      data_state    ( NewMap( "address_to_data_map", ADDR_WIDTH, DATA_WIDTH) ), // read (noc3: dcache_l15_dout_s3) write: (dcache_write_data_s2)
+      data_state    ( NewMap( "address_to_data_map", ADDR_WIDTH, 2*DATA_WIDTH) ), // read (noc3: dcache_l15_dout_s3) write: (dcache_write_data_s2)
       missed_on_this( NewMap("address_to_mshr_map", ADDR_WIDTH, BOOL_WIDTH) ), // 
       mshr_data     ( NewMap("address_to_mshr_data_map", ADDR_WIDTH, 2*DATA_WIDTH) ),
       // l1d_way       ( NewMap("address_to_l1d_way_map", ADDR_WIDTH, WAY_WIDTH) ), // wmt_compare_match_way_s3
-      fetch_state   ( model.NewBvState("fetch_state_s1", FETCH_STATE_WIDTH) ),
+      fetch_state   ( model.NewBvState("fetch_state_s1", FETCH_STATE_WIDTH) )
 
 
       // -----------------------------------------------------------------------------------------------
@@ -162,6 +162,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
   auto CPX_RESTYPE_FWD_REPLY        = BvConst(11, CPX_RETURNTYPE_WIDTH);
   auto CPX_RESTYPE_ATOMIC_RES       = BvConst(13, CPX_RETURNTYPE_WIDTH);
 
+  auto L15_AMO_OP_NONE  = BvConst(0x0,AMO_OP_WIDTH); // width 4
   auto L15_AMO_OP_LR    = BvConst(0x1,AMO_OP_WIDTH); // width 4
   auto L15_AMO_OP_SC    = BvConst(0x2,AMO_OP_WIDTH);
   auto L15_AMO_OP_SWAP  = BvConst(0x3,AMO_OP_WIDTH);
@@ -317,7 +318,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
 
     auto MESI_state = Map( "address_to_mesi_map",  2, address ); // Use the map
     auto DATA_cache = Map( "address_to_data_map", 128, address ); // Use the map
-    auto missed_on_this = Map( "address_to_mshr_map", 1, address ); // Use the map
+    auto missed_on_this = Map( "address_to_mshr_map", 1, address ) == 1; // Use the map
     auto mshr_data  = Map( "address_to_mshr_data_map", 2*DATA_WIDTH, address);
 
     auto hit = MESI_state != MESI_INVALID;
@@ -381,8 +382,6 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     auto MESI_state = Map( "address_to_mesi_map",  MESI_WIDTH, address ); // Use the map
     auto DATA_cache = Map( "address_to_data_map", 128, address ); // Use the map
 
-    auto dirty_data = Map( "address_to_data_map",  DATA_WIDTH, address ); // Use the map ???
-
     auto mod = MESI_state == MESI_MODIFIED;
     auto hit = MESI_state != MESI_INVALID;
 
@@ -426,7 +425,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( noc3_fwdack_vector , Ite( mod , BvConst(0, FWD_SUBCACHELINE_VECTOR), default_noc3_fwdack_vector ));
 
     // L15_S3_MESI_INVALIDATE_TAGCHECK_WAY_IF_MES
-    MapUpdate(inst, "address_to_mesi_map", address, hit , BvConst(MESI_INVALID,2) ); // unknown ??
+    MapUpdate(instr, "address_to_mesi_map", address, hit , MESI_INVALID ); // unknown ??
 
     // no update to data 
     // MapUpdate(instr, "address_to_data_map", address, writable & !missed_on_this, data  ); // unknown ??
@@ -445,7 +444,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetDecode( ( rqtype == PCX_REQTYPE_STORE ) & (nc == 1) & (fetch_state == L15_FETCH_STATE_NORMAL) );
 
     //`define L15_INT_VEC_DIS 40'h9800000800
-    auto predecode_int_vec_dis_s1 = (address(39,32) == BvConst(0x98,8) ) & (address(11:8) == BvConst(0x8,4) );
+    auto predecode_int_vec_dis_s1 = (address(39,32) == BvConst(0x98,8) ) & (address(11,8) == BvConst(0x8,4) );
 
     auto MESI_state = Map( "address_to_mesi_map",  2, address ); // Use the map
 
@@ -470,17 +469,17 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
 // if no interrupt L15_CPX_GEN_INVALIDATION_IF_TAGCHECK_MES_AND_WAYMAP_VALID 3983
 
     // L15_CPX_GEN_INVALIDATION_IF_TAGCHECK_MES_AND_WAYMAP_VALID 3983
-    instr.SetUpdate( l15_transducer_val                  , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , b1                                          , Ite(wmt_compare_match_s3 , b1                                                           , b0) ) , default_l15_transducer_val ));
-    instr.SetUpdate( l15_transducer_returntype           , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , CPX_RESTYPE_STORE_ACK                       , CPX_RESTYPE_INVAL )      , default_l15_transducer_returntype           ));
-    instr.SetUpdate( l15_transducer_noncacheable         , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_noncacheable         , b0                )      , default_l15_transducer_noncacheable         ));
-    instr.SetUpdate( l15_transducer_atomic               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_atomic               , b0                )      , default_l15_transducer_atomic               ));
-    instr.SetUpdate( l15_transducer_data_0               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_0               , zero_data         )      , default_l15_transducer_data_0               ));
-    instr.SetUpdate( l15_transducer_data_1               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_1               , zero_data         )      , default_l15_transducer_data_1               ));
-    instr.SetUpdate( l15_transducer_data_2               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_2               , zero_data         )      , default_l15_transducer_data_2               ));
-    instr.SetUpdate( l15_transducer_data_3               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_3               , zero_data         )      , default_l15_transducer_data_3               ));
-    instr.SetUpdate( l15_transducer_inval_address_15_4   , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_inval_address_15_4   , b1                )      , default_l15_transducer_inval_address_15_4   ));
-    instr.SetUpdate( l15_transducer_inval_icache_all_way , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_inval_icache_all_way , b0                )      , default_l15_transducer_inval_icache_all_way ));
-    instr.SetUpdate( l15_transducer_inval_dcache_inval   , Ite( hit | predecode_int_vec_dis_s1 , Ite(predecode_int_vec_dis_s1  , default_l15_transducer_inval_dcache_inval   , b1 )                     , default_l15_transducer_inval_dcache_inval )); 
+    instr.SetUpdate( l15_transducer_val                  , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , b1                                          , Ite(wmt_compare_match_s3                                   , b1                                              , b0) ) , default_l15_transducer_val ));
+    instr.SetUpdate( l15_transducer_returntype           , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , CPX_RESTYPE_STORE_ACK                       , CPX_RESTYPE_INVAL )                                        , default_l15_transducer_returntype           ));
+    instr.SetUpdate( l15_transducer_noncacheable         , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_noncacheable         , b0                )                                        , default_l15_transducer_noncacheable         ));
+    instr.SetUpdate( l15_transducer_atomic               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_atomic               , b0                )                                        , default_l15_transducer_atomic               ));
+    instr.SetUpdate( l15_transducer_data_0               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_0               , zero_data         )                                        , default_l15_transducer_data_0               ));
+    instr.SetUpdate( l15_transducer_data_1               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_1               , zero_data         )                                        , default_l15_transducer_data_1               ));
+    instr.SetUpdate( l15_transducer_data_2               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_2               , zero_data         )                                        , default_l15_transducer_data_2               ));
+    instr.SetUpdate( l15_transducer_data_3               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_3               , zero_data         )                                        , default_l15_transducer_data_3               ));
+    instr.SetUpdate( l15_transducer_inval_address_15_4   , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_inval_address_15_4   , default_l15_transducer_inval_address_15_4                ) , default_l15_transducer_inval_address_15_4   ));
+    instr.SetUpdate( l15_transducer_inval_icache_all_way , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_inval_icache_all_way , b0                )                                        , default_l15_transducer_inval_icache_all_way ));
+    instr.SetUpdate( l15_transducer_inval_dcache_inval   , Ite( hit | predecode_int_vec_dis_s1 , Ite(predecode_int_vec_dis_s1  , default_l15_transducer_inval_dcache_inval   , b1 )                                                       , default_l15_transducer_inval_dcache_inval ));
 
 // if no interrupt L15_NOC3_GEN_WRITEBACK_IF_TAGCHECK_M_FROM_DCACHE 4428
     instr.SetUpdate( noc3_val           , Ite( mod & ! predecode_int_vec_dis_s1 , b1                         , default_noc3_val           ));
@@ -495,7 +494,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( noc3_fwdack_vector , Ite( mod & ! predecode_int_vec_dis_s1 , default_noc3_fwdack_vector , default_noc3_fwdack_vector ));
 
     // L15_S3_MESI_INVALIDATE_TAGCHECK_WAY_IF_MES
-    MapUpdate(inst, "address_to_mesi_map", address, hit & ! predecode_int_vec_dis_s1 , BvConst(MESI_INVALID,2) ); // unknown ??
+    MapUpdate(instr, "address_to_mesi_map", address, hit & ! predecode_int_vec_dis_s1 , MESI_INVALID ); // unknown ??
     
     // no mshr
     // MapUpdate(instr , "address_to_mshr_data_map" , address , , ); 
@@ -510,7 +509,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     // 704
     instr.SetDecode( ( rqtype == PCX_REQTYPE_AMO ) & (amo_op != L15_AMO_OP_NONE) & (fetch_state == L15_FETCH_STATE_NORMAL) );
 
-    instr.SetUpdate(fetch_state_s1, L15_FETCH_STATE_PCX_WRITEBACK_DONE);
+    instr.SetUpdate(fetch_state, L15_FETCH_STATE_PCX_WRITEBACK_DONE);
 
     auto MESI_state = Map( "address_to_mesi_map",  2, address ); // Use the map
 
@@ -555,7 +554,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( noc3_fwdack_vector , Ite( mod , default_noc3_fwdack_vector , default_noc3_fwdack_vector ));
 
     // L15_S3_MESI_INVALIDATE_TAGCHECK_WAY_IF_MES
-    MapUpdate(inst, "address_to_mesi_map", address, hit , BvConst(MESI_INVALID,2) ); // unknown ??
+    MapUpdate(instr, "address_to_mesi_map", address, hit , MESI_INVALID ); // unknown ??
 
     // TODO: invalidation to L1
   }
@@ -684,11 +683,12 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
 
 
   { // child instruction for after write-back
-    pcx_writeback = model.NewChild(fetch_state_s1 == L15_FETCH_STATE_PCX_WRITEBACK_DONE);
+    auto pcx_writeback = model.NewChild("pcx_write_back");
+    pcx_writeback.SetValid(fetch_state == L15_FETCH_STATE_PCX_WRITEBACK_DONE);
     { // the load non-cacheable
       auto instr = pcx_writeback.NewInstr( "LOAD_nc_writeback_done" );
 
-      instr.SetDecode( ( rqtype == L15_REQTYPE_LOAD) & (nc == 1) );
+      instr.SetDecode( ( rqtype == PCX_REQTYPE_LOAD) & (nc == 1) );
       // 1162 
 
       // L15_NOC1_GEN_DATA_LD_REQUEST 4224
@@ -705,12 +705,12 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
       // L15_S1_MSHR_OP_ALLOCATE
       MapUpdate(instr , "address_to_mshr_map", address, b1);
 
-      instr.SetUpdate(fetch_state_s1, L15_FETCH_STATE_NORMAL);
+      instr.SetUpdate(fetch_state, L15_FETCH_STATE_NORMAL);
     }
     { // the store non-cacheable
       auto instr = pcx_writeback.NewInstr( "STORE_nc_writeback_done" );
 
-      instr.SetDecode( ( rqtype == L15_REQTYPE_STORE ) & (nc == 1) );
+      instr.SetDecode( ( rqtype == PCX_REQTYPE_STORE ) & (nc == 1) );
 
       // 1286
 
@@ -730,23 +730,19 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
       // L15_S1_MSHR_OP_ALLOCATE
       MapUpdate(instr , "address_to_mshr_map", address, b1);
 
-      instr.SetUpdate(fetch_state_s1, L15_FETCH_STATE_NORMAL);
+      instr.SetUpdate(fetch_state, L15_FETCH_STATE_NORMAL);
     }
     { // the load non-cacheable
       auto instr = pcx_writeback.NewInstr( "AMOs_pcx_writeback_done" );
 
       instr.SetDecode( rqtype == PCX_REQTYPE_AMO ); // 1450
-
-      instr.SetUpdate(l15_noc1buffer_req_address,      address,     );
-      instr.SetUpdate(l15_noc1buffer_req_noncacheable, BvConst(1,1) );
-      instr.SetUpdate(l15_noc1buffer_req_size,         size ,       );
       
       /*
                 decoder_mshr_allocation_type_s1 = `L15_MSHR_ID_LD;
       */
 
       auto atm_noc1_req_type = 
-        Ite( amo_op == L15_AMO_OP_SWAP , L15_NOC1_GEN_DATA_SWAP_REQUEST_FROM_PCX    ,
+        Ite( amo_op == L15_AMO_OP_SWAP , L15_NOC1_REQTYPE_SWAP_REQUEST              ,
         Ite( amo_op == L15_AMO_OP_ADD  , L15_NOC1_REQTYPE_AMO_ADD_REQUEST           ,
         Ite( amo_op == L15_AMO_OP_AND  , L15_NOC1_REQTYPE_AMO_AND_REQUEST           ,
         Ite( amo_op == L15_AMO_OP_OR   , L15_NOC1_REQTYPE_AMO_OR_REQUEST            ,
@@ -770,7 +766,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
       instr.SetUpdate( noc1_data_0       , data                      );
       instr.SetUpdate( noc1_data_1       , atm_noc1_data_1           );
 
-      instr.SetUpdate(fetch_state_s1, L15_FETCH_STATE_NORMAL);
+      instr.SetUpdate(fetch_state, L15_FETCH_STATE_NORMAL);
 
       // L15_S1_MSHR_OP_ALLOCATE
       MapUpdate(instr , "address_to_mshr_map", address, b1);
