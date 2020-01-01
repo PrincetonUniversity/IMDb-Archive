@@ -4523,57 +4523,58 @@ end
 
 // ----------------------------- ADDED MONITORS ----------------------- //
 
-wire global_start;
-// this is the out startsignal
-wire global_started;
-wire global_rst;
+wire monitor_s1;
+reg  monitor_s1_delay; 
 
-reg monitor_s1;
 reg monitor_s2;
+wire monitor_s2_nxt;
+reg monitor_s2_already;
+
 reg monitor_s3;
-reg monitor_s3_delay;
-wire end_of_pipeline;
-
 wire monitor_s3_nxt;
-assign monitor_s3_nxt = monitor_s2 && val_s2 && ~ stall_s2 && ( global_start || global_started ) ? 1'b1 : monitor_s3;
+reg monitor_s3_delay;
 
+
+assign monitor_s1 = val_s1 & ~monitor_s1_already;
 always @(posedge clk) begin
-    if(global_rst)
-        monitor_s1 <= 1'b0;
+    if(rst)
+        monitor_s1_already <= 0;
+    else if (monitor_s1 && monitor_s2_nxt)
+        monitor_s1_already <= 1;
 end
 
-
+assign monitor_s2_nxt = stall_s2 ? monitor_s2 : monitor_s1;
 always @(posedge clk) begin
-    if(global_rst)
-        monitor_s2 <= 1'b0;
+    if(rst) begin
+        monitor_s2 <= 0;
+        monitor_s2_already <= 0;
+    end
     else begin
-        if(val_s1 && ~stall_s1 && ( global_start || global_started ) )
-            monitor_s2 <= 1'b1;
+        monitor_s2 <= monitor_s2_nxt;
+        if (monitor_s2 & monitor_s3_nxt)
+            monitor_s2_already <= 1;
     end
 end
 
+
+assign monitor_s3_nxt = stall_s3 ? monitor_s3 : monitor_s2;
 always @(posedge clk) begin
-    if(global_rst)
-        monitor_s3 <= 1'b0;
+    if(rst) begin
+        monitor_s3 <= 0;
+        monitor_s3_delay <= 0;
+    end
     else begin
         monitor_s3 <= monitor_s3_nxt;
+        if (monitor_s3)
+            monitor_s3_delay <= 1'b1; // enough
     end
 end
 
+assert property (! (monitor_s1_already && monitor_s1));
+assert property (! (monitor_s2_already && monitor_s2));
+assert property ( (monitor_s3_delay && !monitor_s3) |=>  (!monitor_s3) );
 
-
-
-always @(posedge clk) begin
-  if(global_rst) begin
-    monitor_s3_delay <= 1'b0;
-  end
-  else begin
-    if(monitor_s3)
-        monitor_s3_delay <= 1'b1;
-  end
-end
-
-assign end_of_pipeline = monitor_s3 && val_s3 && ~monitor_s3_delay ;
+assign end_of_pipeline = monitor_s3 && ~monitor_s3_delay ; // just check one cycle
 
 
 /// ----------- MSHR Operation collection -------------- ///
@@ -4584,19 +4585,19 @@ reg saved_mshr_write_val_s1;
 reg [`L15_MSHR_WRITE_TYPE_WIDTH-1:0] saved_mshr_write_type_s1;
 
 always @(posedge clk) begin
-    if (global_rst) begin
+    if (rst) begin
         saved_mshr_write_val_s1 <= 1'b0
         pipe_mshr_val_s3 <= 1'b0;
     end
     else begin
-        if (s1_mshr_write_val_s1) begin
+        if (s1_mshr_write_val_s1 && monitor_s1) begin
             saved_mshr_write_val_s1 <= s1_mshr_write_val_s1;
             saved_mshr_write_type_s1 <= s1_mshr_write_type_s1;
         end
     end
 end
 
-wire mshr_allocate_new = saved_mshr_write_val_s1 && saved_mshr_write_type_s1 == `L15_MSHR_WRITE_TYPE_ALLOCATION
-    && ! (pipe_mshr_val_s3 && pipe_mshr_op_s3 == `L15_MSHR_WRITE_TYPE_DEALLOCATION);
+wire mshr_allocate_new = ( saved_mshr_write_val_s1 && saved_mshr_write_type_s1 == `L15_MSHR_WRITE_TYPE_ALLOCATION
+    && ! (monitor_s3 && pipe_mshr_val_s3 && pipe_mshr_op_s3 == `L15_MSHR_WRITE_TYPE_DEALLOCATION) );
 
 endmodule
