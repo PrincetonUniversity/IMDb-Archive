@@ -61,6 +61,7 @@ protected:
   ExprRef l15_transducer_returntype           ;
   ExprRef l15_transducer_noncacheable         ;
   ExprRef l15_transducer_atomic               ;
+  ExprRef l15_transducer_threadid             ;
   ExprRef l15_transducer_data_0               ;
   ExprRef l15_transducer_data_1               ;
   ExprRef l15_transducer_data_2               ;

@@ -65,6 +65,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
       l15_transducer_returntype           ( model.NewBvState("l15_transducer_returntype"           , CPX_RETURNTYPE_WIDTH)  ) , // 0 if hit                                            , l15_cpxencoder_returntype
       l15_transducer_noncacheable         ( model.NewBvState("l15_transducer_noncacheable"         , BOOL_WIDTH)  )           ,
       l15_transducer_atomic               ( model.NewBvState("l15_transducer_atomic"               , BOOL_WIDTH)  )           ,
+      l15_transducer_threadid             ( model.NewBvState("l15_transducer_threadid"             , THREADID_WIDTH) )        ,
       l15_transducer_data_0               ( model.NewBvState("l15_transducer_data_0"               , DATA_WIDTH) )            ,
       l15_transducer_data_1               ( model.NewBvState("l15_transducer_data_1"               , DATA_WIDTH) )            ,
       l15_transducer_data_2               ( model.NewBvState("l15_transducer_data_2"               , DATA_WIDTH) )            ,
@@ -209,6 +210,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
   auto default_l15_transducer_returntype           = BvConst(0, CPX_RETURNTYPE_WIDTH); // unknown(CPX_RETURNTYPE_WIDTH)();
   auto default_l15_transducer_noncacheable         = nc;                               // unknown(BOOL_WIDTH)();
   auto default_l15_transducer_atomic               = b0;                               // unknown(BOOL_WIDTH)();
+  auto default_l15_transducer_threadid             = threadid;                         // unknown(THREADID_WIDTH)();
   auto default_l15_transducer_data_0               = zero_data;                        // unknown(DATA_WIDTH)();
   auto default_l15_transducer_data_1               = zero_data;                        // unknown(DATA_WIDTH)();
   auto default_l15_transducer_data_2               = zero_data;                        // unknown(DATA_WIDTH)();
@@ -282,14 +284,15 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
    
     // on the hit side : return the data on cpx
          
-    instr.SetUpdate( l15_transducer_val                  , Ite( hit , b1               ,         default_l15_transducer_val ));
-    instr.SetUpdate( l15_transducer_returntype           , Ite( hit , CPX_RESTYPE_LOAD ,         default_l15_transducer_returntype ) );
-    instr.SetUpdate( l15_transducer_data_0               , Ite( hit , DATA_cache(127,64)       , default_l15_transducer_data_0  ) );
-    instr.SetUpdate( l15_transducer_data_1               , Ite( hit , DATA_cache( 63, 0)       , default_l15_transducer_data_1  ) );
-    instr.SetUpdate( l15_transducer_noncacheable         , Ite( hit , b0               ,         default_l15_transducer_noncacheable ) );
-    instr.SetUpdate( l15_transducer_atomic               , Ite( hit , b0               ,         default_l15_transducer_atomic ) );
-    instr.SetUpdate( l15_transducer_inval_icache_all_way , Ite( hit , b0               ,         default_l15_transducer_inval_icache_all_way ));
-    instr.SetUpdate( l15_transducer_inval_dcache_inval   , Ite( hit , b0               ,         default_l15_transducer_inval_dcache_inval ));
+    instr.SetUpdate( l15_transducer_val                  , Ite( hit , b1                              , default_l15_transducer_val ));
+    instr.SetUpdate( l15_transducer_returntype           , Ite( hit , CPX_RESTYPE_LOAD                , default_l15_transducer_returntype ) );
+    instr.SetUpdate( l15_transducer_data_0               , Ite( hit , DATA_cache(127                  , 64)                                             , default_l15_transducer_data_0  ) );
+    instr.SetUpdate( l15_transducer_data_1               , Ite( hit , DATA_cache( 63                  , 0)                                              , default_l15_transducer_data_1  ) );
+    instr.SetUpdate( l15_transducer_noncacheable         , Ite( hit , b0                              , default_l15_transducer_noncacheable ) );
+    instr.SetUpdate( l15_transducer_atomic               , Ite( hit , b0                              , default_l15_transducer_atomic ) );
+    instr.SetUpdate( l15_transducer_threadid             , Ite( hit , default_l15_transducer_threadid , default_l15_transducer_threadid ) );
+    instr.SetUpdate( l15_transducer_inval_icache_all_way , Ite( hit , b0                              , default_l15_transducer_inval_icache_all_way ));
+    instr.SetUpdate( l15_transducer_inval_dcache_inval   , Ite( hit , b0                              , default_l15_transducer_inval_dcache_inval ));
 
     MapUpdate(instr, "address_to_mshr_map", address, Ite(hit, b0, b1) );
 
@@ -348,6 +351,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( l15_transducer_returntype            , Ite( missed_on_this | writable , CPX_RESTYPE_STORE_ACK , default_l15_transducer_returntype));
     instr.SetUpdate( l15_transducer_noncacheable          , Ite( missed_on_this | writable , b0                    , default_l15_transducer_noncacheable));
     instr.SetUpdate( l15_transducer_atomic                , Ite( missed_on_this | writable , b0                    , default_l15_transducer_atomic));
+    instr.SetUpdate( l15_transducer_threadid              , default_l15_transducer_threadid ) ;
     //instr.SetUpdate( l15_transducer_data_0              , Ite( missed_on_this | writable ,                       , unknown(DATA_WIDTH)() ));
     //instr.SetUpdate( l15_transducer_data_1              , Ite( missed_on_this | writable ,                       , unknown(DATA_WIDTH)() ));
     //instr.SetUpdate( l15_transducer_data_2              , Ite( missed_on_this | writable ,                       , unknown(DATA_WIDTH)() ));
@@ -410,6 +414,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( l15_transducer_data_3                , Ite( hit                        , zero_data         , default_l15_transducer_data_3                 ));
     instr.SetUpdate( l15_transducer_inval_address_15_4    , Ite( hit                        , default_l15_transducer_inval_address_15_4                , default_l15_transducer_inval_address_15_4     ));
     instr.SetUpdate( l15_transducer_inval_icache_all_way  , Ite( hit                        , b0                , default_l15_transducer_inval_icache_all_way   ));
+    instr.SetUpdate( l15_transducer_threadid              , default_l15_transducer_threadid ) ;
     // instr.SetUpdate( l15_transducer_inval_dcache_inval , Ite(                            ,                   ,  )); depends on way
 
     // L15_NOC3_GEN_WRITEBACK_IF_TAGCHECK_M_FROM_DCACHE 4428
@@ -480,7 +485,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( l15_transducer_inval_address_15_4   , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_inval_address_15_4   , default_l15_transducer_inval_address_15_4                ) , default_l15_transducer_inval_address_15_4   ));
     instr.SetUpdate( l15_transducer_inval_icache_all_way , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_inval_icache_all_way , b0                )                                        , default_l15_transducer_inval_icache_all_way ));
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , Ite( hit | predecode_int_vec_dis_s1 , Ite(predecode_int_vec_dis_s1  , default_l15_transducer_inval_dcache_inval   , b1 )                                                       , default_l15_transducer_inval_dcache_inval ));
-
+    instr.SetUpdate( l15_transducer_threadid              , default_l15_transducer_threadid ) ;
 // if no interrupt L15_NOC3_GEN_WRITEBACK_IF_TAGCHECK_M_FROM_DCACHE 4428
     instr.SetUpdate( noc3_val           , Ite( mod & ! predecode_int_vec_dis_s1 , b1                         , default_noc3_val           ));
     instr.SetUpdate( noc3_type          , Ite( mod & ! predecode_int_vec_dis_s1 , L15_NOC3_REQTYPE_WRITEBACK , default_noc3_type          ));
@@ -540,7 +545,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( l15_transducer_inval_address_15_4   , Ite( hit , default_l15_transducer_inval_address_15_4 , default_l15_transducer_inval_address_15_4   ));
     instr.SetUpdate( l15_transducer_inval_icache_all_way , Ite( hit , b1                                        , default_l15_transducer_inval_icache_all_way ));
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , Ite( hit , b1                                        , default_l15_transducer_inval_dcache_inval   ));
-
+    instr.SetUpdate( l15_transducer_threadid              , default_l15_transducer_threadid ) ;
     // L15_NOC3_GEN_WRITEBACK_IF_TAGCHECK_M_FROM_DCACHE
     instr.SetUpdate( noc3_val           , Ite( mod , b1                         , default_noc3_val           ));
     instr.SetUpdate( noc3_type          , Ite( mod , L15_NOC3_REQTYPE_WRITEBACK , default_noc3_type          ));
@@ -599,6 +604,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( l15_transducer_inval_address_15_4   , default_l15_transducer_inval_address_15_4   );
     instr.SetUpdate( l15_transducer_inval_icache_all_way , default_l15_transducer_inval_icache_all_way );
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , default_l15_transducer_inval_dcache_inval   );
+    instr.SetUpdate( l15_transducer_threadid              , default_l15_transducer_threadid ) ;
   }
 
   {
@@ -620,7 +626,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( l15_transducer_inval_address_15_4   , default_l15_transducer_inval_address_15_4   );
     instr.SetUpdate( l15_transducer_inval_icache_all_way , default_l15_transducer_inval_icache_all_way );
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , b1   );
-
+    instr.SetUpdate( l15_transducer_threadid              , default_l15_transducer_threadid ) ;
   }
 
   {
@@ -671,7 +677,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( l15_transducer_inval_address_15_4   , default_l15_transducer_inval_address_15_4   );
     instr.SetUpdate( l15_transducer_inval_icache_all_way , default_l15_transducer_inval_icache_all_way );
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , default_l15_transducer_inval_dcache_inval   );
-
+    instr.SetUpdate( l15_transducer_threadid              , default_l15_transducer_threadid ) ;
   }
 
   // DIAG

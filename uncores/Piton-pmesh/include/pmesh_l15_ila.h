@@ -11,6 +11,7 @@
 
 using namespace ilang;
 
+#define NOC2_MSG_WIDTH 8
 #define WAY_WIDTH  2
 #define MESI_WIDTH 2
 #define ADDR_WIDTH  40
