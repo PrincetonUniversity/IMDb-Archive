@@ -7,18 +7,13 @@
 
 #include <pmesh_l15_ila.h>
 
-/// \brief the class of PMESH L1.5 ila
+/// \brief the class of PMESH L1.5 PCX ila
 class PMESH_L15_PCX_ILA : public PMESH_L15_ILA {
 
 public:
   // --------------- CONSTRUCTOR ------ //
   /// add state, add instructions, add child
   PMESH_L15_PCX_ILA();
-
-private:
-  /// Called by the constructor to create the child-ILA
-  /// for block encryption
-  void AddChild(InstrRef& inst);
 
 protected:
   // ------------ STATE ------------ //

@@ -34,16 +34,16 @@
 // noc2decoder_l15_csm_mshrid, // to output l15_csm_req_ticket_s2 not sure the use
       
 #define L15_CONTROL_PREFETCH_1B 0
-#define L15_CONTROL_BLOCKSTOREINIT_1B (L15_CONTROL_PREFETCH_1B + 1)  // 1
-#define L15_CONTROL_LOAD (L15_CONTROL_BLOCKSTOREINIT_1B + 1) // 2
-#define L15_CONTROL_ATOMIC (L15_CONTROL_LOAD + 1) // 3
-#define L15_CONTROL_ICACHE (L15_CONTROL_ATOMIC + 1) // 4
-#define L15_CONTROL_SIZE_3B (L15_CONTROL_ICACHE + 3) // 7
-#define L15_CONTROL_THREADID (L15_CONTROL_SIZE_3B + L15_THREADID_WIDTH) // 7+1 = 8
-#define L15_CONTROL_L1_REPLACEMENT_WAY_2B (L15_CONTROL_THREADID + L15_WAY_WIDTH) // 8 + 2
-#define L15_CONTROL_NC_1B (L15_CONTROL_L1_REPLACEMENT_WAY_2B + 1) // 11
-#define L15_CONTROL_BLOCKSTORE_1B (L15_CONTROL_NC_1B + 1) // 12
-#define L15_CONTROL_WIDTH (L15_CONTROL_BLOCKSTORE_1B + 1) // 13
+#define L15_CONTROL_BLOCKSTOREINIT_1B (L15_CONTROL_PREFETCH_1B + 1)
+#define L15_CONTROL_LOAD (L15_CONTROL_BLOCKSTOREINIT_1B + 1)
+#define L15_CONTROL_ATOMIC (L15_CONTROL_LOAD + 1)
+#define L15_CONTROL_ICACHE (L15_CONTROL_ATOMIC + 1)
+#define L15_CONTROL_SIZE_3B (L15_CONTROL_ICACHE + 3)
+#define L15_CONTROL_THREADID (L15_CONTROL_SIZE_3B + 1)
+#define L15_CONTROL_L1_REPLACEMENT_WAY_2B (L15_CONTROL_THREADID + 2)
+#define L15_CONTROL_NC_1B (L15_CONTROL_L1_REPLACEMENT_WAY_2B + 1)
+#define L15_CONTROL_BLOCKSTORE_1B (L15_CONTROL_NC_1B + 1)
+#define L15_CONTROL_WIDTH (L15_CONTROL_BLOCKSTORE_1B + 1)
 
 
 PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
@@ -134,11 +134,6 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
 
     {
 
-  auto wmt_compare_func = FuncRef("wmt_compare_match_s3", SortRef::BOOL());
-  auto wmt_compare_match_s3 = wmt_compare_func();
-
-  auto lru_state_mes_func = FuncRef("lru_state_mes_s3", SortRef::BOOL());
-  auto lru_state_mes_s3 = lru_state_mes_func();
   // ------------------------------ CONSTANTS ---------------------------------- //
 
   auto L15_REQTYPE_WIDTH                    = 6;
@@ -266,7 +261,6 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
 
 
   // predecoder operations
-  auto L15_REQTYPE_SWP_LOADSTUB = BvConst(0x5, 6);
   auto L15_REQTYPE_AMO_LR       = BvConst(35 , 6);
   auto L15_REQTYPE_AMO_SC       = BvConst(36 , 6);
   auto L15_REQTYPE_AMO_ADD      = BvConst(38 , 6);
@@ -277,12 +271,28 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
   auto L15_REQTYPE_AMO_MAXU     = BvConst(43 , 6);
   auto L15_REQTYPE_AMO_MIN      = BvConst(44 , 6);
   auto L15_REQTYPE_AMO_MINU     = BvConst(45 , 6);
-  auto L15_REQTYPE_CAS          = BvConst(0x4, 6);
 
   auto MSG_TYPE_LOAD_FWD        = BvConst(16, NOC2_MSG_WIDTH);
   auto MSG_TYPE_STORE_FWD       = BvConst(17, NOC2_MSG_WIDTH);
   auto MSG_TYPE_INV_FWD         = BvConst(18, NOC2_MSG_WIDTH);
+  auto MSG_TYPE_NODATA_ACK      = BvConst(28, NOC2_MSG_WIDTH);
+  auto MSG_TYPE_DATA_ACK        = BvConst(29, NOC2_MSG_WIDTH);
+  auto MSG_TYPE_ERROR           = BvConst(30, NOC2_MSG_WIDTH);
+  auto MSG_TYPE_INTERRUPT       = BvConst(33, NOC2_MSG_WIDTH);
 
+  // ------------------------------ FUNCS ---------------------------------- //
+
+  auto wmt_compare_func = FuncRef("wmt_compare_match_s3", SortRef::BOOL());
+  auto wmt_compare_match_s3 = wmt_compare_func();
+
+  auto lru_state_s3_func = FuncRef("lru_state_s3", SortRef::BV(MESI_WIDTH));
+  auto lru_state_s3 = lru_state_s3_func();
+  auto lru_state_mes_s3 = (lru_state_s3 == MESI_MODIFIED) | (lru_state_s3 == MESI_EXCLUSIVE) | (lru_state_s3 == MESI_SHARED);
+  auto lru_state_m_s3 = (lru_state_s3 == MESI_MODIFIED);
+
+  auto lru_way_address_s3 = FuncRef("lru_way_address_s3", SortRef::BV(ADDR_WIDTH) )(); // s3
+
+  
   // ------------------------------ Shared Expressions ---------------------------------- //
 
 
@@ -311,7 +321,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
   // predecode_f4b_s1 = f4b;
   auto predecode_atomic_s1 = predecode_mshr_read_control_s1(L15_CONTROL_ATOMIC);
   auto predecode_dcache_load_s1 = predecode_mshr_read_control_s1(L15_CONTROL_LOAD);
-  auto predecode_fwd_subcacheline_vector_s1 = noc2decoder_l15_fwd_subcacheline_vector;
+  auto predecode_fwd_subcacheline_vector_s1 = fwdack_vector;
 
   auto predecode_dcache_noc2_store_im_s1 = Ite(predecode_threadid_s1 == 0, mshr_st_state_array[0], mshr_st_state_array[1] ) == L15_MESI_TRANSITION_STATE_IM;
   auto predecode_dcache_noc2_store_sm_s1 = Ite(predecode_threadid_s1 == 0, mshr_st_state_array[0], mshr_st_state_array[1] ) == L15_MESI_TRANSITION_STATE_SM;
@@ -336,6 +346,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
   auto tagcheck_state_mes_s2 = ( tagcheck_state == MESI_MODIFIED ) | ( tagcheck_state == MESI_SHARED ) | ( tagcheck_state == MESI_EXCLUSIVE );
   auto tagcheck_state_me_s2 = ( tagcheck_state == MESI_MODIFIED ) | ( tagcheck_state == MESI_EXCLUSIVE );
   auto tagcheck_state_m_s3 = (tagcheck_state == MESI_MODIFIED);
+  auto tagcheck_state_mes_s3 = tagcheck_state_mes_s2;
 
 // ------------------------------ DEFAULT VALUES ---------------------------------- //
 // noc1 default values : 4191
@@ -457,7 +468,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
 
       //                                                                                 L15_NOC3_GEN_ICACHE_INVAL_ACK                                        L15_NOC3_GEN_INVAL_ACK_FROM_DCACHE , L15_NOC3_GEN_INVAL_ACK_IF_TAGCHECK_M_FROM_DCACHE
 
-      instr.SetUpdate( noc3_val           , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , b1                                , default_noc3_val           ) , Ite(predecode_is_last_inval_s1 , b1                         , tagcheck_state_m_s3   )   ) ) ;
+      instr.SetUpdate( noc3_val           , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , b1                                , default_noc3_val           ) , Ite(predecode_is_last_inval_s1 , b1                         , Ite(tagcheck_state_m_s3,b1,b0)   )   ) ) ;
       instr.SetUpdate( noc3_type          , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , L15_NOC3_REQTYPE_ICACHE_INVAL_ACK , default_noc3_type          ) , Ite(predecode_is_last_inval_s1 , L15_NOC3_REQTYPE_INVAL_ACK , L15_NOC3_REQTYPE_INVAL_ACK                )   ) ) ;
       instr.SetUpdate( noc3_data_0        , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , default_noc3_data_0               , default_noc3_data_0        ) , Ite(predecode_is_last_inval_s1 , default_noc3_data_0        , default_noc3_data_0     )   ) ) ;
       instr.SetUpdate( noc3_data_1        , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , default_noc3_data_1               , default_noc3_data_1        ) , Ite(predecode_is_last_inval_s1 , default_noc3_data_1        , default_noc3_data_1     )   ) ) ;
@@ -603,7 +614,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
         /*  ;*/
 
       // L15_S3_MESI_WRITE_TAGCHECK_WAY_S_IF_ME
-      MapUpdate(instr, "address_to_mesi_map", address, (icache_type == 0) & tagcheck_state_me_s2, L15_MESI_STATE_S ) ; // s2 ?
+      MapUpdate(instr, "address_to_mesi_map", address, (icache_type == 0) & tagcheck_state_me_s2, MESI_SHARED ) ; // s2 ?
       
       // icache  == 0 is different
 
@@ -650,7 +661,20 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
 
     instr.SetUpdate(fetch_state, fetch_state_nxt );
 
-  }
+  } // LOAD_FWD
+  
+  {
+    auto instr = model.NewInstr("DATA_ACK");
+
+    instr.SetDecode( ( reqtype == MSG_TYPE_DATA_ACK)  );
+    auto predecode_address = 
+      Ite ( mshrid == L15_MSHR_ID_LD, 
+        Ite( threadid == 0 , mshr_ld_address_array[0], mshr_ld_address_array[1] ),
+      Ite ( mshrid == L15_MSHR_ID_ST,
+        Ite( threadid == 0 , mshr_st_address_array[0], mshr_st_address_array[1] ),
+      BvConst(0,ADDR_WIDTH)));
+
+
     auto stbuf_compare_match_s3_0 = (mshr_val_array[0](3) == 1)
                                 & (mshr_st_state_array[0] == L15_MESI_TRANSITION_STATE_SM) 
                                 & (mshr_st_address_array[0](39,4) == predecode_address(39,4));
@@ -660,30 +684,20 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
 
   auto stbuf_compare_match_val_s3 = stbuf_compare_match_s3_0 | stbuf_compare_match_s3_1;
 
-  {
-    auto instr = model.NewInstr("DATA_ACK");
-
-    instr.SetDecode( ( reqtype == MSG_TYPE_DATA_ACK)  );
-    auto predecode_address_s1 = 
-      Ite ( mshrid == L15_MSHR_ID_LD, 
-        Ite( noc2decoder_l15_threadid == 0 , mshr_ld_address_array[0], mshr_ld_address_array[1] ),
-      Ite ( mshrid == L15_MSHR_ID_ST,
-        Ite( noc2decoder_l15_threadid == 0 , mshr_st_address_array[0], mshr_st_address_array[1] ),
-      default_predecode_address_s1));
 
     auto predecode_icache_bit_s1 = predecode_mshr_read_control_s1(L15_CONTROL_ICACHE);
 
-    auto predecode_reqtype_s1 = Ite(nc, 
-      Ite(predecode_icache_bit_s1, L15_REQTYPE_ACKDT_IFILL, 
-      Ite(predecode_dcache_load_s1, L15_REQTYPE_ACKDT_LD_NC,
-      Ite(predecode_atomic_s1, L15_REQTYPE_ACK_ATOMIC,
+    auto predecode_reqtype_s1 = Ite(nc == 1, 
+      Ite(predecode_icache_bit_s1 == 1, L15_REQTYPE_ACKDT_IFILL, 
+      Ite(predecode_dcache_load_s1 == 1, L15_REQTYPE_ACKDT_LD_NC,
+      Ite(predecode_atomic_s1 == 1, L15_REQTYPE_ACK_ATOMIC,
         L15_REQTYPE_IGNORE
         ))),
 
-      Ite(predecode_icache_bit_s1, L15_REQTYPE_ACKDT_IFILL, 
-      Ite(predecode_dcache_load_s1, L15_REQTYPE_ACKDT_LD,
-      Ite(predecode_dcache_noc2_store_im_s1, L15_REQTYPE_ACKDT_ST_IM,
-      Ite(predecode_dcache_noc2_store_sm_s1, L15_REQTYPE_ACKDT_ST_SM,
+      Ite(predecode_icache_bit_s1 == 1, L15_REQTYPE_ACKDT_IFILL, 
+      Ite(predecode_dcache_load_s1 == 1, L15_REQTYPE_ACKDT_LD,
+      Ite(predecode_dcache_noc2_store_im_s1 == 1, L15_REQTYPE_ACKDT_ST_IM,
+      Ite(predecode_dcache_noc2_store_sm_s1 == 1, L15_REQTYPE_ACKDT_ST_SM,
         L15_REQTYPE_IGNORE
         ))))
       );
@@ -715,7 +729,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
     ))))))));
 
   // invlidate dcache:
-  l15_transducer_inval_dcache_inval_next = 
+  auto l15_transducer_inval_dcache_inval_next = 
     Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_IFILL,  default_l15_transducer_inval_dcache_inval, // L15_CPX_GEN_IFILL_RESPONSE_FROM_NOC2
     Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD_NC, default_l15_transducer_inval_dcache_inval,  // L15_CPX_GEN_LD_RESPONSE_FROM_NOC2
     Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), b1, // L15_CPX_GEN_INVALIDATION_IF_LRU_MES_AND_WAYMAP_VALID
@@ -723,7 +737,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
     Ite(predecode_reqtype_s1 == L15_REQTYPE_ACK_ATOMIC, default_l15_transducer_inval_dcache_inval, // L15_CPX_GEN_ATOMIC_ACK_FROM_NOC2
     Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), b1,  // L15_CPX_GEN_INVALIDATION_IF_LRU_MES_AND_WAYMAP_VALID
     Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state != L15_FETCH_STATE_NORMAL), default_l15_transducer_inval_dcache_inval,  // L15_CPX_GEN_ST_ACK
-    Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_SM, Ite(wmt_compare_match_s3 && stbuf_compare_match_val_s3, b1, b0), // L15_CPX_GEN_ST_ACK_WITH_POSSIBLE_INVAL
+    Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_SM, Ite(wmt_compare_match_s3 & stbuf_compare_match_val_s3, b1, b0), // L15_CPX_GEN_ST_ACK_WITH_POSSIBLE_INVAL
     default_l15_transducer_inval_dcache_inval
     ))))))));
 
@@ -799,7 +813,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
   instr.SetUpdate( l15_transducer_data_1               , l15_transducer_data_1_next               );
   instr.SetUpdate( l15_transducer_data_2               , l15_transducer_data_2_next               );
   instr.SetUpdate( l15_transducer_data_3               , l15_transducer_data_3_next               );
-  instr.SetUpdate( l15_transducer_inval_address_15_4   , predecode_address_s1(15,4) );
+  instr.SetUpdate( l15_transducer_inval_address_15_4   , predecode_address(15,4) );
   instr.SetUpdate( l15_transducer_inval_icache_all_way , b0 );
   instr.SetUpdate( l15_transducer_inval_dcache_inval   , l15_transducer_inval_dcache_inval_next );
 
@@ -807,17 +821,17 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
       Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), Ite( lru_state_m_s3, b1, b0), // L15_NOC1_GEN_WRITEBACK_GUARD_IF_LRU_M
       Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), Ite( lru_state_m_s3, b1, b0), // L15_NOC1_GEN_WRITEBACK_GUARD_IF_LRU_M
       default_noc1_val
-      );
+      ));
   auto noc1_address_next =    
       Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), lru_way_address_s3, // L15_NOC1_GEN_WRITEBACK_GUARD_IF_LRU_M
       Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), lru_way_address_s3, // L15_NOC1_GEN_WRITEBACK_GUARD_IF_LRU_M
       default_noc1_address
-      );
+      ));
   auto noc1_type_next =  
       Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), L15_NOC1_REQTYPE_WRITEBACK_GUARD, // L15_NOC1_GEN_WRITEBACK_GUARD_IF_LRU_M
       Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), L15_NOC1_REQTYPE_WRITEBACK_GUARD, // L15_NOC1_GEN_WRITEBACK_GUARD_IF_LRU_M
       default_noc1_type
-      );      
+      ));      
 
 
   instr.SetUpdate( noc1_val          , noc1_val_next             ) ;
@@ -830,7 +844,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
   instr.SetUpdate( noc1_data_0       , default_noc1_data_0       ) ;
   instr.SetUpdate( noc1_data_1       , default_noc1_data_1       ) ;
 
-
+/*
   Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_IFILL,  // default
   Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD_NC,  // default
   Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
@@ -840,49 +854,49 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
   Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state != L15_FETCH_STATE_NORMAL), // default
   Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_SM, // default
   // default
-  )
+  ))))))))*/
 
-auto noc3_val_next =     
-      Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), Ite(lru_state_m_s3, b1, b0), // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
-      Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), Ite(lru_state_m_s3, b1, b0), // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
-      default_noc1_type
-      );            
-auto noc3_type_next =    
-      Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), L15_NOC3_REQTYPE_WRITEBACK, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
-      Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), L15_NOC3_REQTYPE_WRITEBACK, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
-      default_noc1_type
-      );                  
-auto noc3_address_next =  
-      Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), lru_way_address_s3, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
-      Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), lru_way_address_s3, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
-      default_noc1_type
-      );                 
-auto noc3_with_data_next = 
-      Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), b1, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
-      Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), b1, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
-      default_noc1_type
-      );                
+    auto noc3_val_next =     
+          Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), Ite(lru_state_m_s3, b1, b0), // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
+          Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), Ite(lru_state_m_s3, b1, b0), // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
+          default_noc3_val
+          ));            
+    auto noc3_type_next =    
+          Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), L15_NOC3_REQTYPE_WRITEBACK, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
+          Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), L15_NOC3_REQTYPE_WRITEBACK, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
+          default_noc3_type
+          ));                  
+    auto noc3_address_next =  
+          Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), lru_way_address_s3, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
+          Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), lru_way_address_s3, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
+          default_noc3_address
+          ));                 
+    auto noc3_with_data_next = 
+          Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) & (fetch_state == L15_FETCH_STATE_NORMAL), b1, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
+          Ite( (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM) & (fetch_state == L15_FETCH_STATE_NORMAL), b1, // L15_NOC3_GEN_WRITEBACK_IF_LRU_M_FROM_DCACHE
+          default_noc3_with_data
+          ));                
 
-instr.SetUpdate( noc3_val          , noc3_val_next              ) ;
-instr.SetUpdate( noc3_type         , noc3_type_next             ) ;
-instr.SetUpdate( noc3_data_0       , default_noc3_data_0        ) ;
-instr.SetUpdate( noc3_data_1       , default_noc3_data_1        ) ;
-instr.SetUpdate( noc3_mshrid       , default_noc3_mshrid        ) ;
-instr.SetUpdate( noc3_threadid     , default_noc3_threadid      ) ;
-instr.SetUpdate( noc3_address      , noc3_address_next          ) ;
-instr.SetUpdate( noc3_invalidate   , default_noc3_invalidate    ) ;
-instr.SetUpdate( noc3_with_data    , noc3_with_data_next        ) ;
-instr.SetUpdate( noc3_fwdack_vector, default_noc3_fwdack_vector ) ;
+    instr.SetUpdate( noc3_val          , noc3_val_next              ) ;
+    instr.SetUpdate( noc3_type         , noc3_type_next             ) ;
+    instr.SetUpdate( noc3_data_0       , default_noc3_data_0        ) ;
+    instr.SetUpdate( noc3_data_1       , default_noc3_data_1        ) ;
+    instr.SetUpdate( noc3_mshrid       , default_noc3_mshrid        ) ;
+    instr.SetUpdate( noc3_threadid     , default_noc3_threadid      ) ;
+    instr.SetUpdate( noc3_address      , noc3_address_next          ) ;
+    instr.SetUpdate( noc3_invalidate   , default_noc3_invalidate    ) ;
+    instr.SetUpdate( noc3_with_data    , noc3_with_data_next        ) ;
+    instr.SetUpdate( noc3_fwdack_vector, default_noc3_fwdack_vector ) ;
 
 
-      auto fetch_state_nxt = 
-        Ite(fetch_state == L15_FETCH_STATE_NORMAL,
-          Ite( 
-            (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) | 
-            (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM), 
-            L15_FETCH_STATE_NOC2_WRITEBACK_DONE, L15_FETCH_STATE_NORMAL),
-        Ite(fetch_state == L15_FETCH_STATE_NOC2_WRITEBACK_DONE, L15_FETCH_STATE_NORMAL,
-            L15_FETCH_STATE_NORMAL ) );
+    auto fetch_state_nxt = 
+      Ite(fetch_state == L15_FETCH_STATE_NORMAL,
+        Ite( 
+          (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD) | 
+          (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM), 
+          L15_FETCH_STATE_NOC2_WRITEBACK_DONE, L15_FETCH_STATE_NORMAL),
+      Ite(fetch_state == L15_FETCH_STATE_NOC2_WRITEBACK_DONE, L15_FETCH_STATE_NORMAL,
+          L15_FETCH_STATE_NORMAL ) );
 
     instr.SetUpdate(fetch_state, fetch_state_nxt );
 
@@ -896,9 +910,9 @@ instr.SetUpdate( noc3_fwdack_vector, default_noc3_fwdack_vector ) ;
 
     MapUpdate(instr, "address_to_mshr_map", threadid, 
       ! (
-      (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD & fetch_state == L15_FETCH_STATE_NORMAL) |
-      (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM & fetch_state == L15_FETCH_STATE_NORMAL) )
-       , b0);
+      (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD & fetch_state != L15_FETCH_STATE_NORMAL) |
+      (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM & fetch_state != L15_FETCH_STATE_NORMAL) )
+       , BvConst(0,8) ); // deal with the width !!!
 
     // s3_mshr_val_s3 = val_s3 && stbuf_compare_lru_match_val_s3; but we don't care
     MapUpdate(instr, "address_to_mshr_st_state", threadid, 
@@ -906,7 +920,7 @@ instr.SetUpdate( noc3_fwdack_vector, default_noc3_fwdack_vector ) ;
       (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM & fetch_state == L15_FETCH_STATE_NORMAL) // L15_S3_MSHR_OP_UPDATE_ST_MSHR_IM_IF_INDEX_LRU_WAY_MATCHES
       , Concat(L15_MESI_TRANSITION_STATE_IM,L15_MESI_TRANSITION_STATE_IM) ); // if ME deallocate
       
-  }
+  } // DATA_ACK
 
   {
     auto instr = model.NewInstr("NODATA_ACK");
@@ -915,7 +929,7 @@ instr.SetUpdate( noc3_fwdack_vector, default_noc3_fwdack_vector ) ;
 
     // 612
     auto predecode_icache_bit_s1 = predecode_mshr_read_control_s1(L15_CONTROL_ICACHE);
-    auto predecode_address_s1 = Ite( threadid == 0, mshr_st_address_array[0], mshr_st_address_array[1] );
+    auto predecode_address = Ite( threadid == 0, mshr_st_address_array[0], mshr_st_address_array[1] );
 
     /*
     Ite(mshrid == L15_MSHR_ID_ST,
@@ -940,8 +954,8 @@ instr.SetUpdate( noc3_fwdack_vector, default_noc3_fwdack_vector ) ;
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , Ite(mshrid == L15_MSHR_ID_ST , b0                                        , default_l15_transducer_inval_dcache_inval   ));
 
     // L15_S3_MSHR_OP_DEALLOCATION
-    MapUpdate(instr, "address_to_mshr_map", threadid, mshrid == L15_MSHR_ID_ST, b0 ); // if ME deallocate
-  }
+    MapUpdate(instr, "address_to_mshr_map", threadid, mshrid == L15_MSHR_ID_ST, BvConst(0,8) ); // if ME deallocate // deal with the width in refinement map
+  }  // NODATA_ACK
 
   {
     auto instr = model.NewInstr("INTERRUPT");
@@ -962,15 +976,13 @@ instr.SetUpdate( noc3_fwdack_vector, default_noc3_fwdack_vector ) ;
     instr.SetUpdate( l15_transducer_inval_address_15_4   , BvConst(0,12));
     instr.SetUpdate( l15_transducer_inval_icache_all_way , b0);
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , b0);
-  }
-// not specifying these updates:
-// l15_noc1buffer_req_data0  
-// l15_noc1buffer_req_data1  
-// l15_noc1buffer_csm_data   
-// l15_noc1buffer_csm_ticket 
-// l15_noc1buffer_req_homeid 
-// l15_noc1buffer_req_mshrid 
-// l15_noc1buffer_req_noncacheable
-// l15_noc1buffer_req_prefetch   
-// l15_noc1buffer_req_threadid 
+  } // INTERRUPT
+
+  // not specifying these updates:
+  // l15_noc1buffer_csm_data   
+  // l15_noc1buffer_csm_ticket 
+  // l15_noc1buffer_req_homeid 
+  // l15_noc1buffer_req_prefetch   
+
+
 }

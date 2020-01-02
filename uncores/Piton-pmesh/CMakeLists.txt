@@ -49,6 +49,7 @@ endif()
 # ---------------------------------------------------------------------------- #
 add_library(${PMESHL15_TARGET}
   src/pmesh_l15_pcx_ila.cc
+  src/pmesh_l15_noc2_ila.cc
   src/pmesh_util.cc
 )
 
@@ -61,11 +62,23 @@ target_link_libraries(${PMESHL15_TARGET} PUBLIC ilang::ilang)
 # TARGET
 # executable
 # ---------------------------------------------------------------------------- #
-add_executable(${PMESHL15_TARGET}Exe
-  app/main.cc
+add_executable(${PMESHL15_TARGET}-pcx-verify
+  app/main-pcx-verify.cc
 )
 
-target_include_directories(${PMESHL15_TARGET}Exe PRIVATE include)
+target_include_directories(${PMESHL15_TARGET}-pcx-verify PRIVATE include)
 
-target_link_libraries(${PMESHL15_TARGET}Exe ${PMESHL15_TARGET})
+target_link_libraries(${PMESHL15_TARGET}-pcx-verify ${PMESHL15_TARGET})
 
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${PMESHL15_TARGET}-noc2-verify
+  app/main-noc2-verify.cc
+)
+
+target_include_directories(${PMESHL15_TARGET}-noc2-verify PRIVATE include)
+
+target_link_libraries(${PMESHL15_TARGET}-noc2-verify ${PMESHL15_TARGET})

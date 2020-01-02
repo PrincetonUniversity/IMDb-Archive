@@ -5,73 +5,81 @@
 #ifndef PMESH_L15_NOC2_ILA_H__
 #define PMESH_L15_NOC2_ILA_H__
 
-#include <ilang/ilang++.h>
-#include <vector>
+#include <pmesh_l15_ila.h>
 
-#define MESI_INVALID 0
-#define MESI_SHARED 1
-#define MESI_EXCLUSIVE 2
-#define MESI_MODIFIED 3
+/// \brief the class of PMESH L1.5 NOC2 ila
+class PMESH_L15_NOC2_ILA : public PMESH_L15_ILA {
 
-using namespace ilang;
-
-/// \brief the class of PMESH L1.5 ila
-class PMESH_L15 {
 
 public:
   // --------------- CONSTRUCTOR ------ //
   /// add state, add instructions, add child
-  PMESH_L15();
-  // --------------- MEMBERS ----------- //
-  /// the ila mode
-  Ila model;
-
-private:
-  /// Called by the constructor to create the child-ILA
-  /// for block encryption
-  void AddChild(InstrRef& inst);
-
-protected:
-  // --------------- HELPERS -------- //
-  /// specify a nondeterministic value within range [low,high]
-  ExprRef unknown_range(unsigned low, unsigned high);
-  /// a nondeterministic choice of a or b
-  static ExprRef unknown_choice(const ExprRef& a, const ExprRef& b);
-  /// a nondeterminstic bitvector const of width
-  static FuncRef unknown(unsigned width);
-  /// a helper function to concat a vector of express
-  static ExprRef lConcat(const std::vector<ExprRef> & l);
-  /// use a relation
-  ExprRef Map(const std::string & name, unsigned retLen, const ExprRef & val);
-  /// build a map relation
-  ExprRef NewMap(const std::string & name, unsigned inLen, unsigned outLen);
+  PMESH_L15_NOC2_ILA();
 
 
 protected:
-  // ------------ STATE ------------ //
+  // ------------ INPUTS ------------ //
   // I/O interface: this is where the commands come from.
-  ExprRef address;
-  ExprRef data   ;
-  ExprRef nc     ;
-  ExprRef rqtype ;
-  ExprRef size   ;
-  ExprRef val    ;
+  ExprRef icache_type    ;
+  ExprRef mshrid         ;
+  ExprRef threadid       ;
+  ExprRef val            ;
+  ExprRef reqtype        ;
+  ExprRef mesi_ack_state ;
+  ExprRef fwdack_vector  ;
+  ExprRef address        ;
+  ExprRef data_0         ;
+  ExprRef data_1         ;
+  ExprRef data_2         ;
+  ExprRef data_3         ;
 
-  // arch state.
-  ExprRef l15_noc1buffer_req_address;
-  ExprRef l15_noc1buffer_req_noncacheable;
-  ExprRef l15_noc1buffer_req_size        ;
-  ExprRef l15_noc1buffer_req_type        ;
-
+  // ------------ STATES ------------ //
   // output state l15->core
-  ExprRef l15_transducer_val       ;
-  ExprRef l15_transducer_returntype;
-  ExprRef l15_transducer_data_0    ;
+  ExprRef l15_transducer_val                 ;
+  ExprRef l15_transducer_returntype          ;
+  ExprRef l15_transducer_noncacheable        ;
+  ExprRef l15_transducer_atomic              ;
+  ExprRef l15_transducer_threadid            ;
+  ExprRef l15_transducer_data_0              ;
+  ExprRef l15_transducer_data_1              ;
+  ExprRef l15_transducer_data_2              ;
+  ExprRef l15_transducer_data_3              ;
+  ExprRef l15_transducer_inval_address_15_4  ;
+  ExprRef l15_transducer_inval_icache_all_way;
+  ExprRef l15_transducer_inval_dcache_inval  ;
+  // output state l15->noc1
+  ExprRef noc1_val          ;
+  ExprRef noc1_address      ;
+  ExprRef noc1_noncacheable ;
+  ExprRef noc1_size         ;
+  ExprRef noc1_threadid     ;
+  ExprRef noc1_mshrid       ;
+  ExprRef noc1_type         ;
+  ExprRef noc1_data_0       ;
+  ExprRef noc1_data_1       ;
+  // output state l15->noc3
+  ExprRef noc3_val          ;
+  ExprRef noc3_type         ;
+  ExprRef noc3_data_0       ;
+  ExprRef noc3_data_1       ;
+  ExprRef noc3_mshrid       ;
+  ExprRef noc3_threadid     ;
+  ExprRef noc3_address      ;
+  ExprRef noc3_invalidate   ;
+  ExprRef noc3_with_data    ;
+  ExprRef noc3_fwdack_vector;
 
   // internal state : map (mem)
-  ExprRef mesi_state;
-  ExprRef data_state;
-
+  ExprRef mesi_state      ;
+  ExprRef data_state      ;
+  ExprRef mshr_val        ;
+  ExprRef mshr_ld_address ;
+  ExprRef mshr_st_address ;
+  ExprRef mshr_st_state   ;
+  ExprRef mshr_st_way     ;
+  ExprRef mshr_data       ;
+  ExprRef mshr_ctrl       ;
+  ExprRef fetch_state     ;
 
 }; // class PMESH_L15_NOC2_ILA
 

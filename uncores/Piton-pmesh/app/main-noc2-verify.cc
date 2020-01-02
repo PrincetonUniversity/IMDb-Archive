@@ -1,4 +1,4 @@
-#include <pmesh_l15_pcx_ila.h>
+#include <pmesh_l15_noc2_ila.h>
 #include <ilang/vtarget-out/vtarget_gen.h>
 
 /// the function to generate configuration
@@ -16,7 +16,7 @@ void verifyPMeshL15(
   std::string VerilogPath = RootPath    + "/verilog/";
   std::string IncludePath = VerilogPath + "include/";
   std::string RefrelPath  = RootPath    + "/refinement/";
-  std::string OutputPath  = RootPath    + "/verification/";
+  std::string OutputPath  = RootPath    + "/verification-noc2/";
 
   std::vector<std::string> path_to_design_files;
   for(auto && f : design_files)
@@ -27,8 +27,8 @@ void verifyPMeshL15(
       {IncludePath},                                         // one include path
       path_to_design_files,                                  // designs
       "l15_wrap",                                            // top_module_name
-      RefrelPath + "ref-rel-var-map.json",                   // variable mapping
-      RefrelPath + "ref-rel-inst-cond.json",                 // conditions of start/ready
+      RefrelPath + "ref-rel-var-map-noc2.json",                   // variable mapping
+      RefrelPath + "ref-rel-inst-cond-noc2.json",                 // conditions of start/ready
       OutputPath,                                            // output path
       model.get(),                                           // model
       VerilogVerificationTargetGenerator::backend_selector::COSA, // backend: COSA
@@ -71,7 +71,7 @@ int main() {
   auto vtg_cfg = SetConfiguration();
 
   // build the model
-  PMESH_L15_PCX_ILA l15_ila_model;
+  PMESH_L15_NOC2_ILA l15_ila_model;
 
   // verifyPMeshL15(l15_ila_model.model, vtg_cfg, design_files);
 
