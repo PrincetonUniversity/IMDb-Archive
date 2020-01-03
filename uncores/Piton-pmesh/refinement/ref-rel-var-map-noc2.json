@@ -1,0 +1,354 @@
+{
+  "models": { "ILA":"m0" , "VERILOG": "m1" },
+  "state mapping": { 
+
+  "l15_noc1buffer_req_val"              : "m1.l15.pipeline.l15_noc1buffer_req_val",
+  "l15_noc1buffer_req_address"          : "m1.l15.pipeline.l15_noc1buffer_req_address",
+  "l15_noc1buffer_req_noncacheable"     : "m1.l15.pipeline.l15_noc1buffer_req_noncacheable",
+  "l15_noc1buffer_req_size"             : "m1.l15.pipeline.l15_noc1buffer_req_size",
+  "l15_noc1buffer_req_threadid"         : "m1.l15.pipeline.l15_noc1buffer_req_threadid",
+  "l15_noc1buffer_req_mshrid"           : "m1.l15.pipeline.l15_noc1buffer_req_mshrid",
+  "l15_noc1buffer_req_type"             : "m1.l15.pipeline.l15_noc1buffer_req_type",
+  "l15_noc1buffer_req_data_0"           : "m1.l15.pipeline.l15_noc1buffer_req_data_0",
+  "l15_noc1buffer_req_data_1"           : "m1.l15.pipeline.l15_noc1buffer_req_data_1",
+
+  "l15_noc3encoder_req_val"             : "m1.l15.pipeline.l15_noc3encoder_req_val",
+  "l15_noc3encoder_req_type"            : "m1.l15.pipeline.l15_noc3encoder_req_type",
+  "l15_noc3encoder_req_data_0"          : "m1.l15.pipeline.l15_noc3encoder_req_data_0",
+  "l15_noc3encoder_req_data_1"          : "m1.l15.pipeline.l15_noc3encoder_req_data_1",
+  "l15_noc3encoder_req_mshrid"          : "m1.l15.pipeline.l15_noc3encoder_req_mshrid",
+  "l15_noc3encoder_req_threadid"        : "m1.l15.pipeline.l15_noc3encoder_req_threadid",
+  "l15_noc3encoder_req_address"         : "m1.l15.pipeline.l15_noc3encoder_req_address",
+  "l15_noc3encoder_req_was_inval"       : "m1.l15.pipeline.l15_noc3encoder_req_was_inval",
+  "l15_noc3encoder_req_with_data"       : "m1.l15.pipeline.l15_noc3encoder_req_with_data",
+  "l15_noc3encoder_req_fwdack_vector"   : "m1.l15.pipeline.l15_noc3encoder_req_fwdack_vector",
+
+  "l15_transducer_val"                  : "m1.l15_transducer_val",
+  "l15_transducer_returntype"           : "m1.l15_transducer_returntype",
+  "l15_transducer_noncacheable"         : "m1.l15_transducer_noncacheable",
+  "l15_transducer_atomic"               : "m1.l15_transducer_atomic",
+  "l15_transducer_data_0"               : "m1.l15_transducer_data_0",
+  "l15_transducer_data_1"               : "m1.l15_transducer_data_1",
+  "l15_transducer_data_2"               : "m1.l15_transducer_data_2",
+  "l15_transducer_data_3"               : "m1.l15_transducer_data_3",
+  "l15_transducer_inval_address_15_4"   : "m1.l15_transducer_inval_address_15_4",
+  "l15_transducer_inval_icache_all_way" : "m1.l15_transducer_inval_icache_all_way",
+  "l15_transducer_inval_dcache_inval"   : "m1.l15_transducer_inval_dcache_inval",
+
+  "fetch_state_s1" : [["__START__","m1.l15.fetch_state_s1"],["__IEND__","#fetch_state_s1_write#"]],
+
+  "address_to_mesi_map_map_val"      : [["__START__","#address_to_mesi_read#"], ["__IEND__", "#address_to_mesi_write#"]],
+  "address_to_data_map_map_val"      : [["__START__","#address_to_data_read#"], ["__IEND__", "#address_to_data_write#"]],
+  
+  "thread_to_mshr_map_map_val"      : [["__START__","#thread_to_mshr_map_read#"], ["__IEND__", "{8{#thread_to_mshr_map_write#}}"]],
+  "thread_to_mshr_ld_address_map_val":"#thread_to_mshr_ld_address_map_val#",
+  "thread_to_mshr_st_address_map_val":"#thread_to_mshr_st_address_map_val#",
+  "thread_to_mshr_st_state_map_val": [["__START__","#thread_to_mshr_st_state_read#"], ["__IEND__", "#thread_to_mshr_st_state_write#"]], // you need to care about this
+  "thread_to_mshr_st_way_map_val":"#thread_to_mshr_st_way_map_val#",
+  "thread_to_mshr_data_map_map_val" : "thread_to_mshr_data_map_read", // no one write to it
+  "thread_to_mshr_control_map_val"  : "#thread_to_mshr_control_read#"
+  },
+
+  "value-holder": {
+    "address_to_mesi_read" : {
+      "cond": "#monitor_s2# && ~ #monitor_s3#",
+      "val" : "m1.l15.pipeline.tagcheck_state_s2",
+      "width" : "auto"
+    },
+
+    "address_to_mesi_write" : {
+      "cond": "#monitor_s2# && ~ #monitor_s3#",
+      "val" : "m1.l15.pipeline.mesi_write_state_s2",
+      "width" : "auto"
+    },
+
+    "address_to_data_read" : {
+      "cond": "#monitor_s3#",
+      "val" : "m1.l15.pipeline.dcache_l15_dout_s3",
+      "width" : "auto"
+    },
+
+    "address_to_data_write" : {
+      "cond": "#monitor_s2# && ~ #monitor_s3#",
+      "val" : "m1.l15.pipeline.l15_dcache_write_data_s2",
+      "width" : "auto"
+    },
+    "fetch_state_s1_write" : {
+      "cond": "#monitor_s2# && ~ #monitor_s3#",
+      "val" : "m1.l15.pipeline.fetch_state_s1",
+      "width" : "auto"
+    },
+
+    "thread_to_mshr_st_state_read" : {
+      "cond": "#monitor_s1#",
+      "val" : "m1.l15.pipeline.mshr_pipe_st_state_s1",
+      "width" : "auto"
+    },
+    
+    "thread_to_mshr_st_state_write" : {
+      "cond": "#monitor_s3#",
+      "val" : "m1.l15.pipeline.pipe_mshr_write_update_state_s3",
+      "width" : "auto"
+    },
+
+"thread_to_mshr_map_read"  : { "cond" : "#monitor_s1#", "val" : "m1.l15.pipeline.mshr_pipe_vals_s1", "width": "auto"},
+"thread_to_mshr_map_write" : { "cond" : "#monitor_s3#", "val" : "#mshr_allocate_new#", "width": "1"},
+
+"thread_to_mshr_ld_address_map_val" : { "cond" : "#monitor_s1#", "val" : "m1.l15.pipeline.mshr_ld_address_array", "width": "auto"}, // mshr_ld_address_array
+"thread_to_mshr_st_address_map_val" : { "cond" : "#monitor_s1#", "val" : "m1.l15.pipeline.mshr_st_address_array", "width": "auto"}, // mshr_st_address_array
+"thread_to_mshr_st_state_map_val"   : { "cond" : "", "val" : "m1.l15.pipeline.", "width": "auto"}, // mshr_pipe_st_state_s1
+"thread_to_mshr_st_way_map_val"     : { "cond" : "#monitor_s1#", "val" : "m1.l15.pipeline.mshr_pipe_st_way_s1", "width": "auto"}, // mshr_pipe_st_way_s1
+"thread_to_mshr_data_map_read"   : { "cond" : "#monitor_s2#", "val" : "m1.l15.pipeline.mshr_pipe_write_buffer_s2", "width": "auto"}, // mshr_pipe_write_buffer_s2
+
+// mshr_pipe_readres_control_s1
+"thread_to_mshr_control_read" : {"cond" : "#monitor_s1#", "val": "m1.l15.pipeline.predecode_mshr_read_control_s1", "width" : "auto"},
+
+    // use to maintain constant value while exec
+    "noc2decoder_l15_icache_type_keep"             : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_icache_type"             , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_mshrid_keep"                  : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_mshrid"                  , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_threadid_keep"                : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_threadid"                , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_val_keep"                     : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_val"                     , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_reqtype_keep"                 : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_reqtype"                 , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_ack_state_keep"               : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_ack_state"               , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_fwd_subcacheline_vector_keep" : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_fwd_subcacheline_vector" , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_address_keep"                 : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_address"                 , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_data_0_keep"                  : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_data_0"                  , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_data_1_keep"                  : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_data_1"                  , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_data_2_keep"                  : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_data_2"                  , "width": "auto"} , // forcing no change condition
+    "noc2decoder_l15_data_3_keep"                  : {"cond" : "1'b1" , "val" : "m1.l15.noc2decoder_l15_data_3"                  , "width": "auto"} , // forcing no change condition
+
+  },
+
+
+
+
+  "verilog-inline-monitors":{
+    "stage_tracker" : {
+      "verilog": 
+        [
+          "always @(*) begin monitor_s1 = m1.l15.pipeline.val_s1 & ~monitor_s1_already; end",
+          "always @(posedge clk) begin",
+          "    if(rst)",
+          "        monitor_s1_already <= 0;",
+          "    else if (monitor_s1 && monitor_s2_nxt)",
+          "        monitor_s1_already <= 1;",
+          "end",
+          "always @(*) begin monitor_s2_nxt = m1.l15.pipeline.stall_s2 ? monitor_s2 : monitor_s1; end",
+          "always @(posedge clk) begin",
+          "    if(rst) begin",
+          "        monitor_s2 <= 0;",
+          "        monitor_s2_already <= 0;",
+          "    end",
+          "    else begin",
+          "        monitor_s2 <= monitor_s2_nxt;",
+          "        if (monitor_s2 & monitor_s3_nxt)",
+          "            monitor_s2_already <= 1;",
+          "    end",
+          "end",
+          "always @(*) begin monitor_s3_nxt = m1.l15.pipeline.stall_s3 ? monitor_s3 : monitor_s2; end",
+          "always @(posedge clk) begin",
+          "    if(rst) begin",
+          "        monitor_s3 <= 0;",
+          "        monitor_s3_delay <= 0;",
+          "    end",
+          "    else begin",
+          "        monitor_s3 <= monitor_s3_nxt;",
+          "        if (monitor_s3)",
+          "            monitor_s3_delay <= 1'b1; // enough",
+          "    end",
+          "end",
+          "monitor_correctness_1 : assert property (! (monitor_s1_already && monitor_s1));",
+          "monitor_correctness_2 : assert property (! (monitor_s2_already && monitor_s2));",
+          "monitor_correctness_3 : assert property ( (monitor_s3_delay && !monitor_s3) |=>  (!monitor_s3) );",
+          "always @(*) begin end_of_pipeline = monitor_s3 && ~monitor_s3_delay ; end // just check one cycle",
+        ],
+      "defs" :
+          [
+          ["end_of_pipeline"     , 1 , "reg"]  ,
+          ["monitor_s1"          , 1 , "reg"]  ,
+          ["monitor_s1_delay"    , 1 , "reg"]  ,
+          ["monitor_s2"          , 1 , "reg"]  ,
+          ["monitor_s2_nxt"      , 1 , "reg"]  ,
+          ["monitor_s2_already"  , 1 , "reg"]  ,
+          ["monitor_s3"          , 1 , "reg"]  ,
+          ["monitor_s3_nxt"      , 1 , "reg"]  ,
+          ["monitor_s3_delay"    , 1 , "reg"]] ,
+
+      "refs" :["m1.l15.pipeline.val_s1", "m1.l15.pipeline.stall_s2", "m1.l15.pipeline.stall_s3" ]
+    },
+
+    "mshr_tracker" : {
+      "verilog":
+        [
+        "always @(posedge clk) begin",
+        "    if (rst) begin",
+        "        saved_mshr_write_val_s1 <= 1'b0",
+        "    end",
+        "    else begin",
+        "        if (m1.l15.pipeline.s1_mshr_write_val_s1 && monitor_s1) begin",
+        "            saved_mshr_write_val_s1 <= m1.l15.pipeline.s1_mshr_write_val_s1;",
+        "            saved_mshr_write_type_s1 <= m1.l15.pipeline.s1_mshr_write_type_s1;",
+        "        end",
+        "    end",
+        "end",
+        "always @(*) begin mshr_allocate_new = ( saved_mshr_write_val_s1 && saved_mshr_write_type_s1 == `L15_MSHR_WRITE_TYPE_ALLOCATION",
+        "    && ! (monitor_s3 && pipe_mshr_val_s3 && pipe_mshr_op_s3 == `L15_MSHR_WRITE_TYPE_DEALLOCATION) );",
+        "end"],
+      "defs" :[ ["saved_mshr_write_val_s1", 1, "reg"] ,["saved_mshr_write_type_s1", 3, "reg"] 
+              ],
+      "refs" :[ "m1.l15.pipeline.s1_mshr_write_val_s1", "m1.l15.pipeline.s1_mshr_write_type_s1" ]
+    }
+  },
+
+  "interface mapping": {
+     "rst_n"         :           "**NRESET**", 
+     "clk"           :           "**CLOCK**",
+
+      "transducer_l15_address"             :"**KEEP**" ,
+      "transducer_l15_data"                :"**KEEP**" ,
+      "transducer_l15_data_next_entry"     :"**KEEP**" ,
+      "transducer_l15_nc"                  :"**KEEP**" ,
+      "transducer_l15_rqtype"              :"**KEEP**" ,
+      "transducer_l15_size"                :"**KEEP**" ,
+      "transducer_l15_threadid"            :"**KEEP**" ,
+      "transducer_l15_val"                 :"**KEEP**" ,
+      "transducer_l15_amo_op"              :"**KEEP**" ,
+      "transducer_l15_invalidate_cacheline":"**KEEP**" ,
+
+      "transducer_l15_prefetch"       : "**KEEP**",
+      "transducer_l15_blockstore"     : "**KEEP**",
+      "transducer_l15_blockinitstore" : "**KEEP**",
+      "transducer_l15_l1rplway"       : "**KEEP**",
+      "transducer_l15_csm_data"       : "**KEEP**",
+
+      "l15_transducer_ack"        : "**KEEP**",
+      "l15_transducer_header_ack" : "**KEEP**",
+
+      "l15_transducer_val"                  : "**SO**",
+      "l15_transducer_returntype"           : "**SO**",
+      "l15_transducer_noncacheable"         : "**SO**",
+      "l15_transducer_atomic"               : "**SO**",
+      "l15_transducer_data_0"               : "**SO**",
+      "l15_transducer_data_1"               : "**SO**",
+      "l15_transducer_data_2"               : "**SO**",
+      "l15_transducer_data_3"               : "**SO**",
+      "l15_transducer_inval_address_15_4"   : "**SO**",
+      "l15_transducer_inval_icache_all_way" : "**SO**",
+      "l15_transducer_inval_dcache_inval"   : "**SO**",
+      "l15_transducer_threadid            " : "**SO**",
+
+      "l15_transducer_l2miss"   : "**KEEP**",
+      "l15_transducer_error"    : "**KEEP**",
+      "l15_transducer_prefetch" : "**KEEP**",
+      "l15_transducer_f4b"      : "**KEEP**",
+
+      "l15_transducer_inval_dcache_all_way" : "**KEEP**",
+      "l15_transducer_cross_invalidate"     : "**KEEP**",
+      "l15_transducer_cross_invalidate_way" : "**KEEP**",
+      "l15_transducer_inval_icache_inval"   : "**KEEP**",
+      "l15_transducer_inval_way"            : "**KEEP**",
+      "l15_transducer_blockinitstore"       : "**KEEP**",
+
+      "transducer_l15_req_ack" : "**KEEP**",
+
+      "noc1_out_rdy"   : "**KEEP**",
+      "noc2_in_val"    : "**KEEP**",
+      "noc2_in_data"   : "**KEEP**",
+      "noc3_out_rdy"   : "**KEEP**",
+      "dmbr_l15_stall" : "**KEEP**",
+      "chipid"         : "**KEEP**",
+      "coreid_x"       : "**KEEP**",
+      "coreid_y"       : "**KEEP**",
+
+      "config_l15_read_res_data_s3"  : "**KEEP**",
+      "config_csm_en"                : "**KEEP**",
+      "config_system_tile_count_5_0" : "**KEEP**",
+      "config_home_alloc_method"     : "**KEEP**",
+      "config_hmt_base"              : "**KEEP**",
+
+      "noc1_out_val"  : "**KEEP**",
+      "noc1_out_data" : "**KEEP**",
+      "noc2_in_rdy"   : "**KEEP**",
+      "noc3_out_val"  : "**KEEP**",
+      "noc3_out_data" : "**KEEP**",
+
+      "l15_dmbr_l1missIn"     : "**KEEP**",
+      "l15_dmbr_l1missTag"    : "**KEEP**",
+      "l15_dmbr_l2responseIn" : "**KEEP**",
+      "l15_dmbr_l2missIn"     : "**KEEP**",
+      "l15_dmbr_l2missTag"    : "**KEEP**",
+
+      "l15_config_req_val_s2"        : "**KEEP**",
+      "l15_config_req_rw_s2"         : "**KEEP**",
+      "l15_config_write_req_data_s2" : "**KEEP**",
+      "l15_config_req_address_s2"    : "**KEEP**",
+
+      "srams_rtap_data"         : "**KEEP**",
+      "rtap_srams_bist_command" : "**KEEP**",
+      "rtap_srams_bist_data"    : "**KEEP**"
+  },
+
+  "assumptions" : [ 
+    "__VLG_I_transducer_l15_prefetch == 0",
+    "__VLG_I_transducer_l15_blockstore == 0",
+    "__VLG_I_transducer_l15_blockinitstore == 0",
+    "__VLG_I_transducer_l15_l1rplway == 0",
+    "__VLG_I_transducer_l15_csm_data == 0",
+    "__VLG_I_transducer_l15_val == 0",
+
+    "__VLG_I_noc1_out_rdy == 1"   ,
+    "__VLG_I_noc3_out_rdy == 1"   ,
+     // "__VLG_I_noc2_in_val == 0"    ,
+    "__VLG_I_dmbr_l15_stall == 0" ,
+    "__VLG_I_chipid == 0"         ,
+    "__VLG_I_coreid_x == 0"       ,
+    "__VLG_I_coreid_y == 0"       ,
+
+    "__VLG_I_config_l15_read_res_data_s3 == 0",
+    "__VLG_I_config_csm_en == 0",
+    "__VLG_I_config_system_tile_count_5_0 == 1",
+    "__VLG_I_config_home_alloc_method == 2'b11",
+    "__VLG_I_config_hmt_base == 0",
+
+    "__VLG_I_rtap_srams_bist_command == 0",
+    "__VLG_I_rtap_srams_bist_data == 0",
+
+    "~ (__VLG_O_l15_transducer_ack) ||  ( __VLG_I_transducer_l15_req_ack == 1) ",
+
+    "m1.l15.pipeline.global_start == __START__",
+    "m1.l15.pipeline.global_started == __STARTED__",
+    "m1.l15.pipeline.global_rst == rst"
+    ],
+
+  "functions":{
+    "wmt_compare_match_s3" : [["#monitor_s3#","m1.l15.wmt_compare_match_s3"]],
+    "lru_state_s3" : [["#monitor_s3#", "m1.l15.lru_state_s3"]],
+    "lru_way_address_s3" : [["#monitor_s3#","lru_way_address_s3"]],
+    "dcache_write_merge_mshr_noc2_s2" : [[
+      "#monitor_s2#", "m1.l15.dcache_write_merge_mshr_noc2_s2",  // result
+      "#monitor_s2#", "m1.l15.noc2decoder_l15_data_0",  
+      "#monitor_s2#", "m1.l15.noc2decoder_l15_data_1",  
+      "#monitor_s2#", "m1.l15.mshr_pipe_write_buffer_s2",  
+      ]]
+  },
+
+  // help maps the input
+  "mapping control" : [
+    "~( __START__ ) || ( m0.noc2decoder_l15_icache_type             == m1.l15.noc2decoder_l15_icache_type             ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_mshrid                  == m1.l15.noc2decoder_l15_mshrid                  ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_threadid                == m1.l15.noc2decoder_l15_threadid                ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_val                     == m1.l15.noc2decoder_l15_val                     ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_reqtype                 == m1.l15.noc2decoder_l15_reqtype                 ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_ack_state               == m1.l15.noc2decoder_l15_ack_state               ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_fwd_subcacheline_vector == m1.l15.noc2decoder_l15_fwd_subcacheline_vector ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_address                 == m1.l15.noc2decoder_l15_address                 ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_data_0                  == m1.l15.noc2decoder_l15_data_0                  ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_data_1                  == m1.l15.noc2decoder_l15_data_1                  ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_data_2                  == m1.l15.noc2decoder_l15_data_2                  ) ",
+    "~( __START__ ) || ( m0.noc2decoder_l15_data_3                  == m1.l15.noc2decoder_l15_data_3                  ) ",
+
+  ]
+
+
+
+}

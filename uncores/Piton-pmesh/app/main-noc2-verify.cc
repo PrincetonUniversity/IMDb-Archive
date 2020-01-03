@@ -73,7 +73,7 @@ int main() {
   // build the model
   PMESH_L15_NOC2_ILA l15_ila_model;
 
-  // verifyPMeshL15(l15_ila_model.model, vtg_cfg, design_files);
+  verifyPMeshL15(l15_ila_model.model, vtg_cfg, design_files);
 
   return 0;
 }

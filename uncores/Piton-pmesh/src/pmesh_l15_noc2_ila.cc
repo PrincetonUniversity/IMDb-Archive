@@ -118,14 +118,14 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
       mesi_state      ( NewMap           ( "address_to_mesi_map"        , THREADID_WIDTH  , MESI_WIDTH ) )             , // write ( l15_mesi_write_data_s2[1:0]) read mesi_state_way0_s2? ?flush_state_s2
       data_state      ( NewMap           ( "address_to_data_map"        , THREADID_WIDTH  , 2*DATA_WIDTH) )            , // read  ( noc3: dcache_l15_dout_s3) write: ( dcache_write_data_s2)
 
-      mshr_val        ( NewMap           ( "address_to_mshr_map"        , THREADID_WIDTH  , 4*2*BOOL_WIDTH) )          , // mshr_pipe_vals_s1
-      mshr_ld_address ( NewMap           ( "address_to_mshr_ld_address" , THREADID_WIDTH  , 2*ADDR_WIDTH*BOOL_WIDTH) ) , // mshr_ld_address_array
-      mshr_st_address ( NewMap           ( "address_to_mshr_st_address" , THREADID_WIDTH  , 2*ADDR_WIDTH*BOOL_WIDTH) ) , // mshr_st_address_array
-      mshr_st_state   ( NewMap           ( "address_to_mshr_st_state"   , THREADID_WIDTH  , 2*2) )                     , // mshr_pipe_st_state_s1
+      mshr_val        ( NewMap           ( "thread_to_mshr_map"        , THREADID_WIDTH  , 2*4*BOOL_WIDTH) )          , // mshr_pipe_vals_s1
+      mshr_ld_address ( NewMap           ( "thread_to_mshr_ld_address" , THREADID_WIDTH  , 2*ADDR_WIDTH*BOOL_WIDTH) ) , // mshr_ld_address_array
+      mshr_st_address ( NewMap           ( "thread_to_mshr_st_address" , THREADID_WIDTH  , 2*ADDR_WIDTH*BOOL_WIDTH) ) , // mshr_st_address_array
+      mshr_st_state   ( NewMap           ( "thread_to_mshr_st_state"   , THREADID_WIDTH  , 2*2) )                     , // mshr_pipe_st_state_s1
       // be careful of the threadid issue, the update is width 2
-      mshr_st_way     ( NewMap           ( "address_to_mshr_st_way"     , THREADID_WIDTH  , 2*2) )                     , // mshr_pipe_st_way_s1
-      mshr_data       ( NewMap           ( "address_to_mshr_data_map"   , THREADID_WIDTH  , 2*DATA_WIDTH) )            , // mshr_pipe_write_buffer_s2
-      mshr_ctrl       ( NewMap           ( "address_to_mshr_control"    , THREADID_WIDTH  , 13))                       , // mshr_pipe_readres_control_s1
+      mshr_st_way     ( NewMap           ( "thread_to_mshr_st_way"     , THREADID_WIDTH  , 2*2) )                     , // mshr_pipe_st_way_s1
+      mshr_data       ( NewMap           ( "thread_to_mshr_data_map"   , THREADID_WIDTH  , 2*DATA_WIDTH) )            , // mshr_pipe_write_buffer_s2
+      mshr_ctrl       ( NewMap           ( "thread_to_mshr_control"    , THREADID_WIDTH  , 13))                       , // mshr_pipe_readres_control_s1
 
       fetch_state     ( model.NewBvState ( "fetch_state_s1"             , FETCH_STATE_WIDTH) )
       // l1d_way      ( NewMap           ( "address_to_l1d_way_map"     , ADDR_WIDTH           , WAY_WIDTH) )               , // wmt_compare_match_way_s3
@@ -447,7 +447,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
         /*   (mshr_st_address_array[0](39,4) == predecode_address(39,4)))*/
         /*  ;*/
 
-      MapUpdate(instr, "address_to_mshr_st_state", threadid, (icache_type == 0), Concat(L15_MESI_TRANSITION_STATE_IM,L15_MESI_TRANSITION_STATE_IM) ); // if ME deallocate
+      MapUpdate(instr, "thread_to_mshr_st_state", threadid, (icache_type == 0), Concat(L15_MESI_TRANSITION_STATE_IM,L15_MESI_TRANSITION_STATE_IM) ); // if ME deallocate
       // L15_S3_MESI_INVALIDATE_TAGCHECK_WAY_IF_MES 2824
       MapUpdate(instr, "address_to_mesi_map", address, (icache_type == 0) & tagcheck_state_mes_s2, MESI_INVALID ) ; // s2 ?
       // L15_CPX_GEN_INVALIDATION_IF_TAGCHECK_MES_AND_WAYMAP_VALID 3983
@@ -539,7 +539,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
         /*   (mshr_st_address_array[0](39,4) == predecode_address(39,4)))*/
         /*  ;*/
 
-      MapUpdate(instr, "address_to_mshr_st_state", threadid, (icache_type == 0), Concat(L15_MESI_TRANSITION_STATE_IM,L15_MESI_TRANSITION_STATE_IM) ); // if ME deallocate
+      MapUpdate(instr, "thread_to_mshr_st_state", threadid, (icache_type == 0), Concat(L15_MESI_TRANSITION_STATE_IM,L15_MESI_TRANSITION_STATE_IM) ); // if ME deallocate
       // L15_S3_MESI_INVALIDATE_TAGCHECK_WAY_IF_MES 2824
       MapUpdate(instr, "address_to_mesi_map", address, (icache_type == 0) & tagcheck_state_mes_s2, MESI_INVALID ) ; // s2 ?
       // L15_CPX_GEN_INVALIDATION_IF_TAGCHECK_MES_AND_WAYMAP_VALID 3983
@@ -908,18 +908,78 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
       )  , mesi_ack_state
       );
 
-    MapUpdate(instr, "address_to_mshr_map", threadid, 
+    MapUpdate(instr, "thread_to_mshr_map", threadid, 
       ! (
       (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD & fetch_state != L15_FETCH_STATE_NORMAL) |
       (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM & fetch_state != L15_FETCH_STATE_NORMAL) )
-       , BvConst(0,8) ); // deal with the width !!!
+       , BvConst(0,8) ); // deal with the width !!! , should be on the threadid actually
 
     // s3_mshr_val_s3 = val_s3 && stbuf_compare_lru_match_val_s3; but we don't care
-    MapUpdate(instr, "address_to_mshr_st_state", threadid, 
+    MapUpdate(instr, "thread_to_mshr_st_state", threadid, 
       (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD & fetch_state == L15_FETCH_STATE_NORMAL) |  // L15_S3_MSHR_OP_UPDATE_ST_MSHR_IM_IF_INDEX_LRU_WAY_MATCHES: 3921
       (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM & fetch_state == L15_FETCH_STATE_NORMAL) // L15_S3_MSHR_OP_UPDATE_ST_MSHR_IM_IF_INDEX_LRU_WAY_MATCHES
       , Concat(L15_MESI_TRANSITION_STATE_IM,L15_MESI_TRANSITION_STATE_IM) ); // if ME deallocate
       
+    //MapUpdate(instr, "thread_to_mshr_data_map", threadid,
+    //  (
+    //  (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD & fetch_state != L15_FETCH_STATE_NORMAL) |    // do nothing
+    //  (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM & fetch_state != L15_FETCH_STATE_NORMAL) | // L15_S2_MSHR_OP_READ_WRITE_CACHE
+    //  (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_SM)                                           // L15_S2_MSHR_OP_READ_WRITE_CACHE
+    //  )
+    //  );
+
+    auto mshr_data = Map("thread_to_mshr_data_map", 2*DATA_WIDTH, threadid); // read s2 mshr_pipe_write_buffer_s2
+
+    MapUpdate(instr, "address_to_data_map", address,
+      (
+      (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD & fetch_state != L15_FETCH_STATE_NORMAL) |    // L15_DCACHE_WRITE_LRU_WAY_FROM_NOC2  2685
+      (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM & fetch_state != L15_FETCH_STATE_NORMAL) | // L15_DCACHE_WRITE_LRU_WAY_FROM_NOC2_AND_MSHR
+      (predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_SM)                                           // L15_DCACHE_WRITE_MSHR_WAY_FROM_MSHR
+      ),
+
+      Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_LD & fetch_state != L15_FETCH_STATE_NORMAL, Concat(data_0, data_1),
+      Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_IM & fetch_state != L15_FETCH_STATE_NORMAL,
+          FuncRef("dcache_write_merge_mshr_noc2_s2", 
+            SortRef::BV(2*DATA_WIDTH), // dcache_write_merge_mshr_noc2_s2
+            {
+              SortRef::BV(DATA_WIDTH),   // noc2decoder_l15_data_0
+              SortRef::BV(DATA_WIDTH),   // noc2decoder_l15_data_1
+              SortRef::BV(2*DATA_WIDTH)} // mshr_pipe_write_buffer_s2
+            ) 
+            ({data_0, data_1, mshr_data}),
+      Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_SM, mshr_data,  BvConst(0,32) )))
+
+     );
+    /*
+        `L15_DCACHE_WRITE_LRU_WAY_FROM_NOC2:
+        begin
+            dcache_val_s2 = 1'b1;
+            dcache_rw_s2 = `L15_DTAG_RW_WRITE;
+            dcache_index_s2 = cache_index_s2;
+            dcache_way_s2 = lru_way_s3_bypassed; // need to be from S3, shouldn't change behavior but...
+            dcache_source_s2 = `L15_DCACHE_SOURCE_NOC2;
+        end
+        `L15_DCACHE_WRITE_LRU_WAY_FROM_NOC2_AND_MSHR:
+        begin
+            dcache_val_s2 = 1'b1;
+            dcache_rw_s2 = `L15_DTAG_RW_WRITE;
+            dcache_index_s2 = cache_index_s2;
+            dcache_way_s2 = lru_way_s3_bypassed; // need to be from S3, shouldn't change behavior but...
+            dcache_source_s2 = `L15_DCACHE_SOURCE_NOC2_AND_MSHR;
+        end
+        `L15_DCACHE_WRITE_MSHR_WAY_FROM_MSHR:
+        begin
+            // writing to dcache the mshr way stored in st_mshr
+            dcache_val_s2 = 1'b1;
+            dcache_rw_s2 = `L15_DTAG_RW_WRITE;
+            dcache_index_s2 = cache_index_s2;
+            dcache_way_s2 = way_mshr_st_s2;
+            dcache_source_s2 = `L15_DCACHE_SOURCE_MSHR;
+        end
+
+    */
+
+
   } // DATA_ACK
 
   {
@@ -954,7 +1014,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , Ite(mshrid == L15_MSHR_ID_ST , b0                                        , default_l15_transducer_inval_dcache_inval   ));
 
     // L15_S3_MSHR_OP_DEALLOCATION
-    MapUpdate(instr, "address_to_mshr_map", threadid, mshrid == L15_MSHR_ID_ST, BvConst(0,8) ); // if ME deallocate // deal with the width in refinement map
+    MapUpdate(instr, "thread_to_mshr_map", threadid, mshrid == L15_MSHR_ID_ST, BvConst(0,8) ); // if ME deallocate // deal with the width in refinement map
   }  // NODATA_ACK
 
   {
