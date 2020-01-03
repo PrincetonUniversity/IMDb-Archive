@@ -947,7 +947,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
               SortRef::BV(2*DATA_WIDTH)} // mshr_pipe_write_buffer_s2
             ) 
             ({data_0, data_1, mshr_data}),
-      Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_SM, mshr_data,  BvConst(0,32) )))
+      Ite(predecode_reqtype_s1 == L15_REQTYPE_ACKDT_ST_SM, mshr_data,  BvConst(0,2*DATA_WIDTH) )))
 
      );
     /*

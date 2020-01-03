@@ -90,6 +90,7 @@ VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration() {
   ret.CosaPyEnvironment = "~/cosaEnv/bin/activate";
   ret.CosaPath = "~/CoSA";
   ret.CosaGenTraceVcd = true;
+  ret.CosaAddKeep = false;
 
   /// other configurations
   ret.PortDeclStyle = VlgVerifTgtGenBase::vtg_config_t::NEW;
