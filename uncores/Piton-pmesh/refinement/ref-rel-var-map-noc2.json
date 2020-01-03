@@ -126,7 +126,7 @@
     "stage_tracker" : {
       "verilog": 
         [
-          "always @(*) begin monitor_s1 = m1.l15.pipeline.val_s1 & ~monitor_s1_already; end",
+          "always @(*) begin monitor_s1 = m1.l15.pipeline.val_s1 & ~monitor_s1_already & __START__; end",
           "always @(posedge clk) begin",
           "    if(rst)",
           "        monitor_s1_already <= 0;",
