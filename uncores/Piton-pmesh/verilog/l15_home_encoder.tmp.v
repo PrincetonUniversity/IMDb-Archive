@@ -54,6 +54,7 @@ module l15_home_encoder(
     output reg [`HOME_ID_WIDTH-1:0] lhid_out
 );
 
+`ifndef NOMEM
 reg [`HOME_ID_WIDTH-1:0] home_mask;
 reg [`HOME_ID_WIDTH-1:0] home_low_mask;
 reg [`HOME_ID_WIDTH-1:0] home_mod;
@@ -128,4 +129,5 @@ begin
     end
 end
 
+`endif //NOMEM
 endmodule

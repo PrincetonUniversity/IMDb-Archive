@@ -76,12 +76,13 @@ module rf_l15_wmt(
 // assign read_data = data_out_f;
 
 
-reg [`L15_WMT_MASK] data_out_f;
+(* keep *) reg [`L15_WMT_MASK] data_out_f;
 reg [`L1D_SET_IDX_MASK] write_index_f;
 reg [`L15_WMT_MASK] write_data_f;
 reg [`L15_WMT_MASK] write_mask_f;
 reg write_valid_f;
 
+`ifndef NOMEM
 reg [`L15_WMT_MASK] regfile [0:`L15_WMT_ENTRY_COUNT-1];
 
 always @ (posedge clk)
@@ -89,6 +90,7 @@ begin
    if (read_valid)
       data_out_f <= regfile[read_index];
 end
+`endif // NOMEM
 
 
 assign read_data = data_out_f;
@@ -106,6 +108,7 @@ begin
    end
 end
 
+`ifndef NOMEM
 always @ (posedge clk)
 begin
    if (!rst_n)
@@ -631,4 +634,5 @@ regfile[127][`L15_WMT_ENTRY_3_VALID_MASK] <= 1'b0;
       regfile[write_index_f] <= (write_data_f & write_mask_f) | (regfile[write_index_f] & ~write_mask_f);
    end
 end
+`endif //NOMEM
 endmodule

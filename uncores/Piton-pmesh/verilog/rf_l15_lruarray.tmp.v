@@ -66,7 +66,9 @@ module rf_l15_lruarray(
 // reg read_valid_f;
 reg [`L15_CACHE_INDEX_WIDTH-1:0] read_index_f;
 
+`ifndef NOMEM
 reg [5:0] regfile [0:`L15_CACHE_INDEX_VECTOR_WIDTH-1];
+`endif
 
 always @ (posedge clk)
 begin
@@ -81,6 +83,7 @@ begin
       read_index_f <= read_index_f;
 end
 
+`ifndef NOMEM
 // read port
 assign read_data = regfile[read_index_f];
 
@@ -226,4 +229,5 @@ regfile[127] <= 6'b0;
       regfile[write_index] <= (write_data & write_mask) | (regfile[write_index] & ~write_mask);
    end
 end
+`endif //NOMEM
 endmodule

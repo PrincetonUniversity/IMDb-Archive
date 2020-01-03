@@ -102,6 +102,7 @@ module noc1buffer(
 
 );
 
+`ifndef NOMEM
 reg [`L15_COMMAND_BUFFER_LEN-1:0] command_buffer [0:`NOC1_BUFFER_NUM_SLOTS-1];
 reg [63:0] data_buffer [0:`NOC1_BUFFER_NUM_DATA_SLOTS-1];
 reg [`L15_COMMAND_BUFFER_LEN-1:0] command_buffer_next [0:`NOC1_BUFFER_NUM_SLOTS-1];
@@ -109,6 +110,7 @@ reg [63:0] data_buffer_next [0:`NOC1_BUFFER_NUM_DATA_SLOTS-1];
 
 reg command_buffer_val [0:`NOC1_BUFFER_NUM_SLOTS-1];
 reg command_buffer_val_next [0:`NOC1_BUFFER_NUM_SLOTS-1];
+`endif // NOMEM
 
 reg [`NOC1_BUFFER_NUM_SLOTS_LOG-1:0] command_wrindex;
 reg [`NOC1_BUFFER_NUM_SLOTS_LOG-1:0] command_wrindex_next;
@@ -122,6 +124,8 @@ reg [`NOC1_BUFFER_NUM_DATA_SLOTS_LOG-1:0] data_wrindex_plus_2;
 reg [`NOC1_BUFFER_NUM_DATA_SLOTS_LOG-1:0] data_rdindex;
 reg [`NOC1_BUFFER_NUM_DATA_SLOTS_LOG-1:0] data_rdindex_plus1;
 
+
+`ifndef NOMEM
 always @ (posedge clk)
 begin
    if (!rst_n)
@@ -248,10 +252,13 @@ data_buffer_next[1] = data_buffer[1];
       end
    end
 end
+`endif // NOMEM
 
 // issue port to noc1encoder
 reg [`PACKET_HOME_ID_WIDTH-1:0] homeid;
 reg homeid_val;
+
+`ifndef NOMEM
 always @ *
 begin
    // noc1buffer_l15_req_ack = noc1encoder_noc1buffer_req_ack;    // deprecated as noc1 is non-blocking
@@ -278,6 +285,7 @@ begin
 
    noc1buffer_noc1encoder_req_val = command_buffer_val[command_rdindex] && homeid_val;
 end
+`endif // NOMEM
 
 
 // Tri: for now just issue FIFO. we can try OoO issuing later when CSM is verified and stable.
@@ -289,6 +297,8 @@ reg fetch_homeid_val;
    //  the normal value is from reading the csm module (in case the translation wasn't cached)
    //  However for this "blocking single issue" the normal value is just as fast as cached
 // CSM and homeid
+
+`ifndef  NOMEM
 always @ *
 begin
    cached_homeid_val = command_buffer[command_rdindex][`L15_NOC1BUFFER_HOMEID_VAL];
@@ -311,10 +321,12 @@ begin
    noc1buffer_mshr_homeid_write_threadid_s4 = noc1buffer_noc1encoder_req_threadid;
    noc1buffer_mshr_homeid_write_data_s4 = homeid;
 end
+`endif
 
 
 
 // handling valid array (and conflicts)
+`ifndef  NOMEM
 always @ *
 begin
    
@@ -383,6 +395,7 @@ begin
    
 
 end
+`endif
 
 // data credit logic
 always @ *
@@ -416,4 +429,5 @@ begin
       endcase
    end
 end
+
 endmodule

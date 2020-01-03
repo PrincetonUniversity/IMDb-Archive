@@ -81,10 +81,12 @@ module l15_csm(
    output wire  [`PCX_SIZE_WIDTH-1:0] csm_noc1encoder_req_size
 
 );
-
+`ifndef NOMEM
 // storage for ticketed ghid translations
 reg [`PACKET_HOME_ID_WIDTH-1:0] ghid_ticketed_cache [`L15_CSM_NUM_TICKETS-1:0];
 reg [`L15_HMC_ADDR_WIDTH-1:0] ghid_ticketed_cache_addr [`L15_CSM_NUM_TICKETS-1:0];
+`endif //NOMEM
+
 reg [`L15_CSM_NUM_TICKETS-1:0] ghid_ticketed_cache_val;
 // write to the ticketed ghid trans
 reg [`L15_CSM_NUM_TICKETS_LOG2-1:0] write_index_s2;
@@ -252,7 +254,7 @@ end
 
 
 
-
+`ifndef NOMEM
 always @ *
 begin  
     case(ghid_ticketed_cache_addr[write_index_s2][`L15_HMC_ADDR_OFFSET])
@@ -278,7 +280,6 @@ begin
     end
     endcase
 end
-
 
 always @ (posedge clk)
 begin
@@ -329,7 +330,6 @@ ghid_ticketed_cache[7] <= 0;
    end
 end
 
-
 always @ *
 begin
     if (write_val_s2)
@@ -341,6 +341,7 @@ begin
         addr_in_s2_next = addr_in_s2;
     end
 end
+`endif //NOMEM
 
 //Stage 2 => Stage 3
 
@@ -558,7 +559,7 @@ end
 */
 
 
-
+`ifndef NOMEM
 always @ (posedge clk)
 begin
    if (!rst_n)
@@ -583,11 +584,10 @@ ghid_ticketed_cache_addr[7] <= 0;
 end
 
 
-
-
 // read port for ghid
 assign csm_l15_read_res_data = ghid_ticketed_cache[l15_csm_read_ticket];
 assign csm_l15_read_res_val = ghid_ticketed_cache_val[l15_csm_read_ticket];
+`endif //NOMEM
 
 //Output buffer
 
@@ -893,6 +893,5 @@ flat_id_to_xy lhid_to_xy (
     );
 
 `endif
-
 
 endmodule

@@ -339,4 +339,5 @@ begin
     else
         noc3encoder_l15_req_ack = 1'b0;
 end
+
 endmodule

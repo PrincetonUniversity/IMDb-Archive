@@ -73,6 +73,12 @@ bram_1rw_wrapper #(
       
 `else
 
+
+   reg [`L15_HMT_ENTRY_WIDTH-1:0] dout_f;
+
+   assign DOUT = dout_f;
+   
+`ifndef NOMEM
 reg [`L15_HMT_ENTRY_WIDTH-1:0] cache [`L15_NUM_ENTRIES-1:0];
 
 integer i;
@@ -86,10 +92,6 @@ end
 
 
 
-   reg [`L15_HMT_ENTRY_WIDTH-1:0] dout_f;
-
-   assign DOUT = dout_f;
-
    always @ (posedge MEMCLK)
    begin
       if (CE)
@@ -100,6 +102,7 @@ end
             dout_f <= cache[A];
       end
    end
+`endif //NOMEM
 
 `endif 
 

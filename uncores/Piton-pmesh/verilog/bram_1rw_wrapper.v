@@ -102,7 +102,7 @@ assign bram_ren         = (read_en | write_en) & ~rw_conflict;             // do
 assign bram_wen      = wen_r;
 
 assign DOUT          = ren_r ? up_to_date_data : DOUT_r;
-
+`ifndef NOMEM
 // BRAM
 reg [DATA_WIDTH-1:0] ram [DEPTH-1:0];
 // reg [%d-1:0] bram_data_out;
@@ -115,7 +115,7 @@ always @(posedge MEMCLK) begin
   end
 end
 // END BRAM
-
+`endif
 `ifndef CONFIG_DISABLE_BIST_CLEAR // undefined by default
 
 /* BIST logic for resetting RAM content to 0s on reset*/

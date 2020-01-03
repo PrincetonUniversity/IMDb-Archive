@@ -127,7 +127,7 @@ end
 assign bram_write_en      = write_enable_in_reg;
 assign bram_read_en         = (read_enable_in) & ~rw_conflict;             // do not read in case of a conflict
 assign bram_write_read_en         = (write_enable_in) & ~ww_conflict;             // do not read in case of a conflict
-
+`ifndef NOMEM
 reg [DATA_WIDTH-1:0] ram [DEPTH-1:0];
 // reg [%d-1:0] bram_data_write_read_out_reg;
 always @(posedge MEMCLK) begin
@@ -142,6 +142,7 @@ always @(posedge MEMCLK) begin
   end
 end
 // END BRAM
+`endif
 
 
 /* BIST logic for resetting RAM content to 0s on reset*/

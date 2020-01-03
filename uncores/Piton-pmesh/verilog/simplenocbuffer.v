@@ -170,4 +170,5 @@ begin
          state_next = `NOC2_STATE_WAITING_ACK;
    end
 end
+
 endmodule

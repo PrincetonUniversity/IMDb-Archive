@@ -79,7 +79,6 @@ module l15_hmc(
 );
 
 
-
 reg [`L15_HMC_ENTRIES-1:0] entry_used_f;
 reg [`L15_HMC_ENTRIES-1:0] entry_used_next;
 reg [`L15_HMC_ENTRIES-1:0] entry_used_and_mask;
@@ -88,12 +87,18 @@ reg [`L15_HMC_ENTRIES-1:0] entry_locked_f;
 reg [`L15_HMC_ENTRIES-1:0] entry_locked_next;
 reg [`L15_HMC_ENTRIES-1:0] entry_locked_and_mask;
 reg [`L15_HMC_ENTRIES-1:0] entry_locked_or_mask;
+
+`ifndef NOMEM
+
 reg [`L15_HMC_ARRAY_WIDTH-1:0] data_mem_f [`L15_HMC_ENTRIES-1:0];
 
 reg [`L15_HMC_TAG_WIDTH-1:0] smc_tag [`L15_HMC_ENTRIES-1:0];
 reg [`L15_HMC_VALID_WIDTH-1:0] smc_valid [`L15_HMC_ENTRIES-1:0];
 reg [`L15_HMC_DATA_WIDTH-1:0] smc_data [`L15_HMC_ENTRIES-1:0];
 reg [`MSG_SDID_WIDTH-1:0] smc_sdid [`L15_HMC_ENTRIES-1:0];
+
+`endif
+
 reg [`L15_HMC_TAG_WIDTH-1:0] rd_tag_in;
 reg [`L15_HMC_TAG_WIDTH-1:0] wr_tag_in;
 reg [`L15_HMC_INDEX_WIDTH-1:0] rd_index_in;
@@ -109,6 +114,7 @@ reg wr_hit;
 reg [`L15_HMC_INDEX_WIDTH-1:0] wr_hit_index;
 reg [`L15_HMC_INDEX_WIDTH-1:0] wr_index;
 
+`ifndef NOMEM
 
 always @ *
 begin
@@ -193,6 +199,7 @@ begin
     smc_sdid[15] = data_mem_f[15][`L15_HMC_SDID];
 
 end
+`endif
 
 
 always @ *
@@ -225,6 +232,7 @@ wire tag_hit;
 
 reg [15:0] smc_tag_cmp;
 
+`ifndef NOMEM
 always @ *
 begin
 
@@ -261,6 +269,7 @@ begin
     smc_tag_cmp[15] = (smc_tag[15] == rd_tag_in) && smc_valid[15][rd_offset_in];
 
 end
+`endif // NOMEM
 
 
 l15_priority_encoder_4 priority_encoder_cmp_4bits( 
@@ -400,6 +409,7 @@ wire tag_wr_hit;
 
 reg [15:0] smc_tag_wr_cmp;
 
+`ifndef NOMEM
 always @ *
 begin
 
@@ -436,7 +446,7 @@ begin
     smc_tag_wr_cmp[15] = (smc_tag[15] == wr_tag_in) && (smc_valid[15] != 0);
 
 end
-
+`endif
 
 
 l15_priority_encoder_4 priority_encoder_wr_cmp_4bits( 
@@ -567,12 +577,14 @@ begin
 end
 */
 
+`ifndef NOMEM
 always @ *
 begin
     data_out = smc_data[hit_index]>>(rd_offset_in * `L15_HMC_DATA_OUT_WIDTH);
     valid_out = smc_valid[hit_index];
     tag_out = smc_tag[hit_index];
 end
+`endif
 
 
 always @ *
@@ -818,7 +830,7 @@ begin
     end
 end
 
-
+`ifndef NOMEM
 always @ (posedge clk)
 begin
     if (!rst_n)
@@ -969,5 +981,5 @@ begin
     end
 end
 
-
+`endif //NOMEM
 endmodule

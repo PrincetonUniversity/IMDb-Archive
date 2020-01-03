@@ -73,6 +73,11 @@ bram_1rw_wrapper #(
       
 `else
 
+   reg [`L15_CACHE_TAG_RAW_SRAM_WIDTH-1:0] dout_f;
+
+   assign DOUT = dout_f;
+
+`ifndef NOMEM
 reg [`L15_CACHE_TAG_RAW_SRAM_WIDTH-1:0] cache [`L15_CACHE_INDEX_VECTOR_WIDTH-1:0];
 
 integer i;
@@ -83,12 +88,6 @@ begin
       cache[i] = 0;
    end
 end
-
-
-
-   reg [`L15_CACHE_TAG_RAW_SRAM_WIDTH-1:0] dout_f;
-
-   assign DOUT = dout_f;
 
    always @ (posedge MEMCLK)
    begin
@@ -101,6 +100,7 @@ end
       end
    end
 
+`endif //NOMEM
 `endif 
 
  endmodule

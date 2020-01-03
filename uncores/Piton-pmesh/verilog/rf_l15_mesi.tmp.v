@@ -72,7 +72,9 @@ reg [7:0] write_data_f;
 reg [7:0] write_mask_f;
 reg write_valid_f;
 
+`ifndef NOMEM
 reg [7:0] regfile [0:`L15_CACHE_INDEX_VECTOR_WIDTH-1];
+`endif //NOMEM
 
 always @ (posedge clk)
 begin
@@ -87,8 +89,6 @@ begin
       read_index_f <= read_index_f;
 end
 
-// read port
-assign read_data = regfile[read_index_f];
 
 // Write port
 always @ (posedge clk)
@@ -102,6 +102,9 @@ begin
    end
 end
 
+`ifndef NOMEM
+// read port
+assign read_data = regfile[read_index_f];
 always @ (posedge clk)
 begin
    if (!rst_n)
@@ -244,4 +247,5 @@ regfile[127] <= 8'b0;
       regfile[write_index_f] <= (write_data_f & write_mask_f) | (regfile[write_index_f] & ~write_mask_f);
    end
 end
+`endif //NOMEM
 endmodule

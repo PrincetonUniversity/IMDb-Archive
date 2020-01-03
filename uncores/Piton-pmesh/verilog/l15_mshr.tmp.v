@@ -64,7 +64,7 @@ module l15_mshr(
     // s1/2/3 (address conflict checking)
     output reg [(`L15_NUM_MSHRID_PER_THREAD*`L15_NUM_THREADS)-1:0] mshr_pipe_vals_s1,
     output reg [(40*`L15_NUM_THREADS)-1:0] mshr_pipe_ld_address,
-    output reg [(40*`L15_NUM_THREADS)-1:0] mshr_pipe_st_address,
+    (* keep *) output reg [(40*`L15_NUM_THREADS)-1:0] mshr_pipe_st_address,
     output reg [(2*`L15_NUM_THREADS)-1:0] mshr_pipe_st_way_s1,
     output reg [(`L15_MESI_TRANS_STATE_WIDTH*`L15_NUM_THREADS)-1:0] mshr_pipe_st_state_s1,
 
@@ -505,4 +505,5 @@ begin
         end
     end
 end
+
 endmodule
