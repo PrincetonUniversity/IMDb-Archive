@@ -19,7 +19,7 @@ void verifyNibblerInstCosa(
   vtg_cfg.CosaAddKeep = false;
 
   vtg_cfg.MemAbsReadAbstraction = true;
-  vtg_cfg.target_select = vtg_cfg.INST;
+  //vtg_cfg.target_select = vtg_cfg.INST;
   //vtg_cfg.ForceInstCheckReset = true;
 
 
