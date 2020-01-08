@@ -264,7 +264,9 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     auto instr = model.NewInstr("LOAD_normal");
 
     instr.SetDecode( 
-      ( rqtype == PCX_REQTYPE_LOAD) & (nc == 0) & (invalidate == 0)  & (fetch_state == L15_FETCH_STATE_NORMAL) );
+      ( rqtype == PCX_REQTYPE_LOAD) & (nc == 0) & (invalidate == 0)  & (fetch_state == L15_FETCH_STATE_NORMAL) &
+        (predecode_is_pcx_config_asi_s1 == 0) & (predecode_is_pcx_diag_data_access_s1 == 0) &
+        (predecode_is_hmc_diag_access_s1 == 0) & (predecode_prefetch_bit_s1 == 0) );
 
     auto MESI_state = Map( "address_to_mesi_map",  2, address ); // Use the map
     auto DATA_cache = Map( "address_to_data_map", 128, address ); // Use the map
@@ -272,22 +274,23 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     auto hit = MESI_state != MESI_INVALID;
 
     // on miss : send out noc1 request eventually
+    // `L15_NOC1_GEN_DATA_LD_REQUEST_IF_TAGCHECK_MISS 4232
     instr.SetUpdate(noc1_val          , Ite(! hit , b1                          , default_noc1_val         ));
-    instr.SetUpdate(noc1_address      , Ite(! hit , address                     , default_noc1_address     ));
+    instr.SetUpdate(noc1_address      , address );
     instr.SetUpdate(noc1_noncacheable , Ite(! hit , b0                          , default_noc1_noncacheable));
     instr.SetUpdate(noc1_size         , Ite(! hit , size                        , default_noc1_size        ));
-    instr.SetUpdate(noc1_type         , Ite(! hit , L15_NOC1_REQTYPE_LD_REQUEST , default_noc1_type        ));
+    instr.SetUpdate(noc1_type         , L15_NOC1_REQTYPE_LD_REQUEST );
     instr.SetUpdate(noc1_threadid     , Ite(! hit , threadid                    , default_noc1_threadid    ));
-    instr.SetUpdate(noc1_mshrid       , Ite(! hit , L15_MSHR_ID_LD              , default_noc1_mshrid      ));
+    instr.SetUpdate(noc1_mshrid       , L15_MSHR_ID_LD );
     instr.SetUpdate(noc1_data_0       , Ite(! hit , zero_data                   , default_noc1_data_0      ));
     instr.SetUpdate(noc1_data_1       , Ite(! hit , zero_data                   , default_noc1_data_1      ));
    
     // on the hit side : return the data on cpx
-         
+    // `L15_CPX_GEN_LD_RESPONSE_IF_TAGCHECK_MES_FROM_DCACHE 4016
     instr.SetUpdate( l15_transducer_val                  , Ite( hit , b1                              , default_l15_transducer_val ));
-    instr.SetUpdate( l15_transducer_returntype           , Ite( hit , CPX_RESTYPE_LOAD                , default_l15_transducer_returntype ) );
-    instr.SetUpdate( l15_transducer_data_0               , Ite( hit , DATA_cache(127                  , 64)                                             , default_l15_transducer_data_0  ) );
-    instr.SetUpdate( l15_transducer_data_1               , Ite( hit , DATA_cache( 63                  , 0)                                              , default_l15_transducer_data_1  ) );
+    instr.SetUpdate( l15_transducer_returntype           , CPX_RESTYPE_LOAD);
+    instr.SetUpdate( l15_transducer_data_0               , DATA_cache(127                  , 64) );
+    instr.SetUpdate( l15_transducer_data_1               , DATA_cache( 63                  , 0)  );
     instr.SetUpdate( l15_transducer_noncacheable         , Ite( hit , b0                              , default_l15_transducer_noncacheable ) );
     instr.SetUpdate( l15_transducer_atomic               , Ite( hit , b0                              , default_l15_transducer_atomic ) );
     instr.SetUpdate( l15_transducer_threadid             , Ite( hit , default_l15_transducer_threadid , default_l15_transducer_threadid ) );

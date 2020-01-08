@@ -73,7 +73,7 @@ int main() {
   // build the model
   PMESH_L15_PCX_ILA l15_ila_model;
 
-  // verifyPMeshL15(l15_ila_model.model, vtg_cfg, design_files);
+  verifyPMeshL15(l15_ila_model.model, vtg_cfg, design_files);
 
   return 0;
 }
@@ -90,6 +90,9 @@ VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration() {
   ret.CosaPyEnvironment = "~/cosaEnv/bin/activate";
   ret.CosaPath = "~/CoSA";
   ret.CosaGenTraceVcd = true;
+  ret.CosaAddKeep = false;
+  ret.IteUnknownAutoIgnore = true;
+  // ret.WrapperPreheader = "`define NOMEM 1"
 
   /// other configurations
   ret.PortDeclStyle = VlgVerifTgtGenBase::vtg_config_t::NEW;
