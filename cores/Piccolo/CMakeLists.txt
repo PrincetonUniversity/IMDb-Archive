@@ -49,3 +49,43 @@ target_include_directories(${RISCV_RV32I_TARGET}Exe PRIVATE include)
 
 target_link_libraries(${RISCV_RV32I_TARGET}Exe ${RISCV_RV32I_TARGET})
 
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${RISCV_RV32I_TARGET}Exe_noreset
+  app/main-noreset.cc
+)
+
+target_include_directories(${RISCV_RV32I_TARGET}Exe_noreset PRIVATE include)
+
+target_link_libraries(${RISCV_RV32I_TARGET}Exe_noreset ${RISCV_RV32I_TARGET})
+
+
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${RISCV_RV32I_TARGET}Exe_invsyn_z3
+  app/inv-syn-cegar.cc
+)
+
+target_include_directories(${RISCV_RV32I_TARGET}Exe_invsyn_z3 PRIVATE include)
+
+target_link_libraries(${RISCV_RV32I_TARGET}Exe_invsyn_z3 ${RISCV_RV32I_TARGET})
+
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${RISCV_RV32I_TARGET}Exe_relchc
+  app/relchc.cc
+)
+
+target_include_directories(${RISCV_RV32I_TARGET}Exe_relchc PRIVATE include)
+
+target_link_libraries(${RISCV_RV32I_TARGET}Exe_relchc ${RISCV_RV32I_TARGET})
+

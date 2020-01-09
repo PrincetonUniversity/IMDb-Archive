@@ -119,6 +119,8 @@
   `define BSV_RESET_EDGE negedge
 `endif
 
+(* keep_hierarchy *)
+
 module mkCPU(CLK,
 	     RST_N,
 

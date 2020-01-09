@@ -3,7 +3,7 @@
   "state mapping": { 
     "pc"  : [["__START__","m1.near_mem__DOLLAR__imem_pc"],["__IEND__", "#pc_after#"]],
 
-    "x0"  : [["__START__" , "#regPull0#"]  , ["__IEND__" , "m1.gpr_regfile.regfile.arr[0]"]]  ,
+    "x0"  : "m0.x0 == 0"  ,
     "x1"  : [["__START__" , "#regPull1#"]  , ["__IEND__" , "m1.gpr_regfile.regfile.arr[1]"]]  ,
     "x2"  : [["__START__" , "#regPull2#"]  , ["__IEND__" , "m1.gpr_regfile.regfile.arr[2]"]]  ,
     "x3"  : [["__START__" , "#regPull3#"]  , ["__IEND__" , "m1.gpr_regfile.regfile.arr[3]"]]  ,
@@ -141,7 +141,7 @@
   "mapping control" : [ "(~__START__) ||  (__IMEM_mem_0_rdata == m1.near_mem__DOLLAR__imem_instr)"
   ],
 
-  "verilog-inline-monitor" : {
+  "verilog-inline-monitors" : {
     "stage_tracker" : {
       "verilog": 
         [
@@ -178,10 +178,24 @@
           "            monitor_s3_delay <= 1'b1; // enough",
           "    end",
           "end",
-          "monitor_correctness_1 : assert property (! (monitor_s1_already && monitor_s1));",
-          "monitor_correctness_2 : assert property (! (monitor_s2_already && monitor_s2));",
-          "monitor_correctness_3 : assert property ( (monitor_s3_delay && !monitor_s3) |=>  (!monitor_s3) );",
-          "always @(*) begin end_of_pipeline = monitor_s3 && ~monitor_s3_delay ; end // just check one cycle"
+          "always @(*) begin monitor_s4_nxt = ",
+          "  monitor_s3 && m1.rg_retiring__DOLLAR__EN ? 1'b1 : monitor_s4; end",
+          "always @(posedge clk) begin",
+          "    if(rst) begin",
+          "        monitor_s4 <= 0;",
+          "        monitor_s4_delay <= 0;",
+          "    end",
+          "    else begin",
+          "        monitor_s4 <= monitor_s4_nxt;",
+          "        if (monitor_s4)",
+          "            monitor_s4_delay <= 1'b1; // enough",
+          "    end",
+          "end",
+          "// monitor_correctness_1 : assert property (! (monitor_s1_already && monitor_s1));",
+          "// monitor_correctness_2 : assert property (! (monitor_s2_already && monitor_s2));",
+          "// monitor_correctness_3 : assert property ( (monitor_s3_delay && !monitor_s3) |=>  (!monitor_s3) );",
+          "// monitor_correctness_4 : assert property ( (monitor_s4_delay && !monitor_s4) |=>  (!monitor_s4) );",
+          "always @(*) begin end_of_pipeline = monitor_s4 && ~monitor_s4_delay ; end // just check one cycle"
         ],
       "defs" :
           [
@@ -194,20 +208,25 @@
           ["monitor_s2_already"  , 1 , "reg"]  ,
           ["monitor_s3"          , 1 , "reg"]  ,
           ["monitor_s3_nxt"      , 1 , "reg"]  ,
-          ["monitor_s3_delay"    , 1 , "reg"]] ,
+          ["monitor_s3_delay"    , 1 , "reg"]  ,
+          ["monitor_s4_nxt"      , 1 , "reg"]  ,
+          ["monitor_s4"          , 1 , "reg"]  ,
+          ["monitor_s4_delay"    , 1 , "reg"]
+      ] ,
 
       "refs" :[
         "m1.stage1_rg_full", 
         "m1.stage1_rg_full__DOLLAR__D_IN",
         "m1.stage1_rg_full__DOLLAR__EN",
         "m1.stage2_rg_full__DOLLAR__D_IN",
-        "m1.stage2_rg_full__DOLLAR__EN" ]
+        "m1.stage2_rg_full__DOLLAR__EN",
+        "m1.rg_retiring__DOLLAR__EN" ]
     }// stage tracker
   },
 
   "value-holder" : {
     "pc_after" : {
-        "cond":"#monitor_s1#",
+        "cond":"#monitor_s2#",
         "val":"m1.near_mem__DOLLAR__imem_pc",
         "width":"auto"
     },
@@ -250,7 +269,7 @@
     "__VLG_I_s_external_interrupt_req_set_not_clear == 0",
     "__VLG_I_software_interrupt_req_set_not_clear == 0",
     "__VLG_I_timer_interrupt_req_set_not_clear == 0",
-    "__VLG_I_nmi_req_set_not_clear == 0",
+    "__VLG_I_nmi_req_set_not_clear == 0"
   ],
 
   "annotation" : {

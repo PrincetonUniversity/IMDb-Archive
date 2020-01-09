@@ -19,15 +19,17 @@ void verifyNibblerInstCosa(
   vtg_cfg.CosaAddKeep = false;
 
   vtg_cfg.MemAbsReadAbstraction = true;
+  vtg_cfg.VerificationSettingAvoidIssueStage = true;
+  vtg_cfg.YosysSmtFlattenHierarchy = false;
   //vtg_cfg.target_select = vtg_cfg.INST;
   //vtg_cfg.ForceInstCheckReset = true;
 
 
   std::string RootPath = "..";
-  std::string VerilogPath = RootPath + "/verilog-cpu/";
+  std::string VerilogPath = RootPath + "/verilog-cpu-relchc/";
   //std::string IncludePath = VerilogPath + "include/";
   std::string RefrelPath = RootPath + "/refinement/";
-  std::string OutputPath = RootPath + "/verification/";
+  std::string OutputPath = RootPath + "/verification-relchc/";
 
   std::vector<std::string> path_to_design_files; // update path
   for(auto && f : design_files)
@@ -41,7 +43,7 @@ void verifyNibblerInstCosa(
       RefrelPath + instcont,          // conditions of start/ready
       OutputPath,                     // output path
       model.get(),                    // model
-      VerilogVerificationTargetGenerator::backend_selector::COSA, // backend: COSA
+      VerilogVerificationTargetGenerator::backend_selector::RELCHC, // backend: COSA
       vtg_cfg,  // target generator configuration
       vlg_cfg); // verilog generator configuration
 
@@ -137,7 +139,7 @@ VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration() {
   ret.PortDeclStyle = VlgVerifTgtGenBase::vtg_config_t::AUTO;
   ret.CosaGenJgTesterScript = true;
   //ret.CosaOtherSolverOptions = "--blackbox-array";
-  ret.ForceInstCheckReset = true;
+  ret.ForceInstCheckReset = false;
 
   return ret;
 }

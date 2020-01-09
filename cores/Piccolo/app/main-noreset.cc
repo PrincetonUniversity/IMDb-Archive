@@ -27,7 +27,7 @@ void verifyNibblerInstCosa(
   std::string VerilogPath = RootPath + "/verilog-cpu/";
   //std::string IncludePath = VerilogPath + "include/";
   std::string RefrelPath = RootPath + "/refinement/";
-  std::string OutputPath = RootPath + "/verification/";
+  std::string OutputPath = RootPath + "/verification-noreset/";
 
   std::vector<std::string> path_to_design_files; // update path
   for(auto && f : design_files)
@@ -137,7 +137,7 @@ VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration() {
   ret.PortDeclStyle = VlgVerifTgtGenBase::vtg_config_t::AUTO;
   ret.CosaGenJgTesterScript = true;
   //ret.CosaOtherSolverOptions = "--blackbox-array";
-  ret.ForceInstCheckReset = true;
+  // ret.ForceInstCheckReset = true;
 
   return ret;
 }
