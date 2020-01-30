@@ -1,0 +1,40 @@
+{
+  "global invariants" : [
+"m1.csr_regfile.f_reset_rsps.empty_reg == ~ m1.csr_regfile.f_reset_rsps.full_reg",
+"m1.f_reset_reqs.empty_reg == ~ m1.f_reset_reqs.full_reg",
+"m1.f_reset_rsps.empty_reg == ~ m1.f_reset_rsps.full_reg",
+"m1.gpr_regfile.f_reset_rsps.empty_reg == ~ m1.gpr_regfile.f_reset_rsps.full_reg",
+"m1.near_mem.dcache.f_fabric_write_reqs.empty_reg == ~ m1.near_mem.dcache.f_fabric_write_reqs.full_reg",
+"m1.near_mem.dcache.f_reset_reqs.empty_reg == ~ m1.near_mem.dcache.f_reset_reqs.full_reg",
+"m1.near_mem.dcache.f_reset_rsps.empty_reg == ~ m1.near_mem.dcache.f_reset_rsps.full_reg",
+"m1.near_mem.dcache.master_xactor_f_rd_addr.empty_reg == ~ m1.near_mem.dcache.master_xactor_f_rd_addr.full_reg",
+"m1.near_mem.dcache.master_xactor_f_rd_data.empty_reg == ~ m1.near_mem.dcache.master_xactor_f_rd_data.full_reg",
+"m1.near_mem.dcache.master_xactor_f_wr_addr.empty_reg == ~ m1.near_mem.dcache.master_xactor_f_wr_addr.full_reg",
+"m1.near_mem.dcache.master_xactor_f_wr_data.empty_reg == ~ m1.near_mem.dcache.master_xactor_f_wr_data.full_reg",
+"m1.near_mem.dcache.master_xactor_f_wr_resp.empty_reg == ~ m1.near_mem.dcache.master_xactor_f_wr_resp.full_reg",
+"m1.near_mem.f_reset_rsps.empty_reg == ~ m1.near_mem.f_reset_rsps.full_reg",
+"m1.near_mem.icache.f_fabric_write_reqs.empty_reg == ~ m1.near_mem.icache.f_fabric_write_reqs.full_reg",
+"m1.near_mem.icache.f_reset_reqs.empty_reg == ~ m1.near_mem.icache.f_reset_reqs.full_reg",
+"m1.near_mem.icache.f_reset_rsps.empty_reg == ~ m1.near_mem.icache.f_reset_rsps.full_reg",
+"m1.near_mem.icache.master_xactor_f_rd_addr.full_reg == ~  m1.near_mem.icache.master_xactor_f_rd_addr.empty_reg ",
+"m1.near_mem.icache.master_xactor_f_rd_data.empty_reg == ~ m1.near_mem.icache.master_xactor_f_rd_data.full_reg ",
+"m1.near_mem.icache.master_xactor_f_wr_addr.empty_reg == ~ m1.near_mem.icache.master_xactor_f_wr_addr.full_reg",
+"m1.near_mem.icache.master_xactor_f_wr_data.empty_reg == ~ m1.near_mem.icache.master_xactor_f_wr_data.full_reg",
+"m1.near_mem.icache.master_xactor_f_wr_resp.empty_reg == ~ m1.near_mem.icache.master_xactor_f_wr_resp.full_reg",
+"m1.stage1_f_reset_reqs.empty_reg == ~ m1.stage1_f_reset_reqs.full_reg",
+"m1.stage1_f_reset_rsps.empty_reg == ~ m1.stage1_f_reset_rsps.full_reg",
+"m1.stage2_f_reset_reqs.empty_reg == ~ m1.stage2_f_reset_reqs.full_reg",
+"m1.stage2_f_reset_rsps.empty_reg == ~ m1.stage2_f_reset_rsps.full_reg",
+"m1.stage3_f_reset_reqs.empty_reg == ~ m1.stage3_f_reset_reqs.full_reg",
+"m1.stage3_f_reset_rsps.empty_reg == ~ m1.stage3_f_reset_rsps.full_reg"
+  ],
+
+  "instructions": [
+    {
+      "instruction" : "ADD",
+      "ready signal" : "#end_of_pipeline#"
+      // "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
+    }
+  ]
+}
+
