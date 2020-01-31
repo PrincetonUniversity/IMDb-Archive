@@ -156,7 +156,7 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       // this is the signed comparison
-      instr.SetUpdate(pc, Ite(rs1_val < rs2_val, BTarget, NC));
+      instr.SetUpdate(pc, Ite( Slt( rs1_val, rs2_val), BTarget, NC));
       RECORD_INST("BLT");
     }
     // ------------------------- Instruction: BLTU
@@ -177,7 +177,7 @@ void riscvILA_user::addInstructions() {
       auto decode = (opcode == BRANCH) & (funct3 == BGE);
       instr.SetDecode(decode);
 
-      instr.SetUpdate(pc, Ite(rs1_val >= rs2_val, BTarget, NC));
+      instr.SetUpdate(pc, Ite( Sge(rs1_val, rs2_val), BTarget, NC));
       RECORD_INST("BGE");
     }
     // ------------------------- Instruction: BGEU
@@ -456,7 +456,7 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
-      UPDATE_R(rd, Ite(rs1_val < rs2_val, bv(1), bv(0)));
+      UPDATE_R(rd, Ite( Slt(rs1_val, rs2_val) , bv(1), bv(0)));
 
       RECORD_INST("SLT");
     }
@@ -501,7 +501,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd,
-               Ite(rs1_val < immI, bv(1), bv(0))); // This is signed comparison
+               Ite( Slt(rs1_val, immI), bv(1), bv(0))); // This is signed comparison
 
       RECORD_INST("SLTI");
     }
