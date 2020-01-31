@@ -36,6 +36,7 @@ void verifyNibbler(
   vtg_cfg.AbcUseAiger = true;
   vtg_cfg.AbcAssumptionStyle = vtg_cfg.AssumptionRegister; // you have to do it this way!
   vtg_cfg.CosaSolver = "btor";
+  vtg_cfg.WrapperPreheader = "`define BSV_NO_INITIAL_BLOCKS 1";
   //vtg_cfg.ForceInstCheckReset = true;
   
 

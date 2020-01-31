@@ -21,7 +21,7 @@ void verifyNibblerInstCosa(
   vtg_cfg.MemAbsReadAbstraction = true;
   //vtg_cfg.target_select = vtg_cfg.INST;
   //vtg_cfg.ForceInstCheckReset = true;
-
+  vtg_cfg.WrapperPreheader = "`define BSV_NO_INITIAL_BLOCKS 1";
 
   std::string RootPath = "..";
   std::string VerilogPath = RootPath + "/verilog-cpu/";

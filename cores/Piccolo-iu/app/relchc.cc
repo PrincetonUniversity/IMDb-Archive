@@ -21,6 +21,7 @@ void verifyNibblerInstCosa(
   vtg_cfg.MemAbsReadAbstraction = true;
   vtg_cfg.VerificationSettingAvoidIssueStage = true;
   vtg_cfg.YosysSmtFlattenHierarchy = false;
+  vtg_cfg.WrapperPreheader = "`define BSV_NO_INITIAL_BLOCKS 1";
   //vtg_cfg.target_select = vtg_cfg.INST;
   //vtg_cfg.ForceInstCheckReset = true;
 

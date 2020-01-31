@@ -1,0 +1,4 @@
+AUIPC: start from symbolic :  AM 8 5355.9
+       start from reset : I 13 7072.9
+
+

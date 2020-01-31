@@ -194,9 +194,9 @@
           "    end",
           "end",
           "always @(*) begin end_of_pipeline = monitor_s4 && ~monitor_s4_delay ; end // just check one cycle",
-          "m1_m2 : assert property (~(monitor_s1 && monitor_s2));",
-          "m2_m3 : assert property (~(monitor_s2 && monitor_s3));",
-          "m3_m4 : assert property (~(monitor_s3 && monitor_s4));"
+          "// m1_m2 : assert property (~(monitor_s1 && monitor_s2)); // NOTE: cosa/cosa2/yosys-targets ... will try to prove w. these",
+          "// m2_m3 : assert property (~(monitor_s2 && monitor_s3)); // NOTE: cosa/cosa2/yosys-targets ... will try to prove w. these",
+          "// m3_m4 : assert property (~(monitor_s3 && monitor_s4)); // NOTE: cosa/cosa2/yosys-targets ... will try to prove w. these"
         ],
       "defs" :
           [
