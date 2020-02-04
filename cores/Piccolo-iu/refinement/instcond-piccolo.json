@@ -45,7 +45,121 @@
     {
       "instruction" : "ADD",
       "ready signal" : "#end_of_pipeline#"
+      // "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
+    },
+    {
+      "instruction" : "AND",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "OR",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "XOR",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SUB",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SLL",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SRL",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SRA",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SLT",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SLTU",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "ADDI",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SLTI",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SLTIU",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "ANDI",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "ORI",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "XORI",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SLLI",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SRLI",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SRAI",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "LUI",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "AUIPC",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "BEQ",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "BNE",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "BLT",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "BLTU",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "BGE",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "BGEU",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "JAL",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "JALR",
+      "ready signal" : "#end_of_pipeline#"
     }
+
   ]
 }
 

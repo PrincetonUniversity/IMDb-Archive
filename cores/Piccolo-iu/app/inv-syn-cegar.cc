@@ -108,15 +108,16 @@ void verifyNibbler(
   if (restore_inv)
     vg.LoadInvariantsFromFile(OutputPath + "inv-syn-stage1.txt");
 
-  unsigned ncegar = 0;
+  std::string prev_inv_syn_file;
   std::vector<std::string> insts({
-    "ADD"});
+    "AUIPC"});
 
   for (auto && inst : insts) {
     std::cout << "------------------- " << inst << "------------------- " << std::endl;
+    unsigned ncegar = 0;
     do{
       vg.GenerateVerificationTarget();
-      if(vg.RunVerifAuto("/"+inst+"/")) {// the OPERATE 
+      if(vg.RunVerifAuto("/"+inst+"/", "", false, 1800)) {// the OPERATE 
         std::cerr << "No more Cex has been found! Cegar completes." << std::endl;
         break; // no more cex found
       }
@@ -132,8 +133,9 @@ void verifyNibbler(
 
 
       InvariantObject invs(vg.GetInvariants());
-      invs.ExportToFile(OutputPath+"inv-syn.txt");
+      invs.ExportToFile(OutputPath+ inst +"-"+"inv-syn.txt");
       ncegar ++;
+      prev_inv_syn_file = OutputPath+ inst +"-"+"inv-syn.txt";
 
     }while(not vg.in_bad_state());
 
@@ -151,7 +153,7 @@ void verifyNibbler(
      std::cout << "#(cegar)=" << ncegar << std::endl;
 
     std::cout << "------------------- END of " << inst << "------------------- " << std::endl;
-    break; // just run for one instruction
+
   }
 }
 
