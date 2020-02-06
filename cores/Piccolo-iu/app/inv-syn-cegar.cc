@@ -110,14 +110,14 @@ void verifyNibbler(
 
   std::string prev_inv_syn_file;
   std::vector<std::string> insts({
-    "AUIPC"});
+    "AUIPC", "ADD", "ADDI", "SLT", "SLL", "SLTIU", "LUI","BEQ", "JALR","JAL", "AND","OR","XOR"});
 
   for (auto && inst : insts) {
     std::cout << "------------------- " << inst << "------------------- " << std::endl;
     unsigned ncegar = 0;
     do{
       vg.GenerateVerificationTarget();
-      if(vg.RunVerifAuto("/"+inst+"/", "", false, 1800)) {// the OPERATE 
+      if(vg.RunVerifAuto("/"+inst+"/", "", false, 600)) {// the OPERATE 
         std::cerr << "No more Cex has been found! Cegar completes." << std::endl;
         break; // no more cex found
       }

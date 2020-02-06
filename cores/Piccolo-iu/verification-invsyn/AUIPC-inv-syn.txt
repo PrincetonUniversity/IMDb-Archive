@@ -1,0 +1,3 @@
+0 0 1
+(1'b1) == (((!((m1.stage2_f_reset_reqs.empty_reg) == (1'b1))) ||((m1.csr_regfile.rg_state) == (1'b0))) &&((!((m1.stage2_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.stage2_f_reset_reqs.full_reg) == (1'b0)))))
+(forall ((A wrapper_s))   (! (let ((a!1 (or (not (= (|wrapper#374| A) #b1)) (= (|wrapper#137| A) #b0)))            (a!2 (or (not (= (|wrapper#374| A) #b1))                     (not (= (|wrapper#376| A) #b0)))))        (= (INV A) (and a!1 a!2)))      :weight 0)) 

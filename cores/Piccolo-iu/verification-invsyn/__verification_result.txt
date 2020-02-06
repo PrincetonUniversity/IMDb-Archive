@@ -1,3 +1,3 @@
 Parsing file "wrapper.v"... DONE
 Parsing file "rst.ets"... DONE
-Solving "variable_map_assert_0" ..run.sh: line 3: 29928 Terminated              /home/hongce/CoSA/CoSA.py --problem problem.txt --solver-name=btor --vcd
+Solving "variable_map_assert_0" ..........run.sh: line 3:  7938 Terminated              /home/hongce/CoSA/CoSA.py --problem problem.txt --solver-name=btor --vcd
