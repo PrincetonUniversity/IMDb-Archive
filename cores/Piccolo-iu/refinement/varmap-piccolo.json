@@ -138,11 +138,6 @@
          "RDY_set_verbosity"                      : "**KEEP**"
   },
 
-  "mapping control" : [ "(~__START__) ||  (__IMEM_mem_0_rdata == m1.near_mem$imem_instr)",
-    "__pc_after_init__[1:0] == 2'b00",
-    "pc_after[1:0] == 2'b00"
-  ],
-
   "verilog-inline-monitors" : {
     "stage_tracker" : {
       "verilog": 
@@ -277,10 +272,23 @@
     "m1.near_mem$imem_pc[1:0] == 2'b00"
   ],
 
+  "mapping control" : [ "(~__START__) ||  (__IMEM_mem_0_rdata == m1.near_mem$imem_instr)",
+    "__pc_after_init__[1:0] == 2'b00",
+    "pc_after[1:0] == 2'b00"
+  ],
+
   "annotation" : {
     "reset" : {
         "cycle": 1,
         "no-reset-after": true
+    },
+    "memory-ports" : {
+      "ren"   : "#monitor_s2# & m1.near_mem$dmem_valid",
+      "raddr" : "m1.near_mem$dmem_req_addr", // this is word address
+      "rdata" : "m1.near_mem$dmem_word64[31:0]",
+      "wen"   : "#monitor_s2# & m1.near_mem$dmem_req_op != 0",
+      "waddr" : "m1.near_mem$dmem_req_addr",
+      "wdata" : ""
     }
   }
 }
