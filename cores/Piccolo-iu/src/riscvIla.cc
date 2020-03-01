@@ -36,16 +36,20 @@ ExprRef riscvILA_user::FetchFromMem(const ExprRef& addr) {
   tmp_fetch_addr = addr;
   return fetch_data;
 }
-ExprRef riscvILA_user::LoadFromMem(const ExprRef& size, const ExprRef& addr, InstrRef & instr) {
-  instr.SetUpdate("load_en", BvConst(1,1));
-  instr.SetUpdate("load_addr", addr);
+ExprRef riscvILA_user::LoadFromMem(int size, const ExprRef& addr, InstrRef & instr) {
+  instr.SetUpdate(load_en, BvConst(1,1));
+  instr.SetUpdate(load_addr, addr);
+  instr.SetUpdate(load_size, BvConst(size,3) );
   // instr.SetUpdate("load_data", instr.get()->host()->state("load_data") ); // no change , no need
   return load_data;
 
 }
-ExprRef riscvILA_user::StoreToMem(const ExprRef& size, const ExprRef& addr,
-                             const ExprRef& data ) {
-
+ExprRef riscvILA_user::StoreToMem(int size, const ExprRef& addr,
+                             const ExprRef& data, InstrRef & instr ) {
+  instr.SetUpdate(store_en, BvConst(1,1));
+  instr.SetUpdate(store_addr, addr);
+  instr.SetUpdate(store_size, BvConst(size,3) );
+  instr.SetUpdate(store_data,  data);
 }
 
 
@@ -58,17 +62,18 @@ riscvILA_user::riscvILA_user() //int pc_init_val)
       mem(model.NewMemState("mem", MEM_WORD_ADDR_LEN, MEM_WORD)),
       inst(FetchFromMem(mem, pc(31, 2))),
 #else
-      fetch_addr ( NewBvState("fetch_addr" , 30 ) ) ,
-      fetch_data ( NewBvState("fetch_data" , 32 ) ) ,
-      load_en    ( NewBvState("load_en"    , 1  ) ) ,
-      load_addr  ( NewBvState("load_addr"  , 32 ) ) ,
-      load_size  ( NewBvState("load_size"  , 3  ) ) , // 4 2 1
-      load_data  ( NewBvState("load_data"  , 32 ) ) ,
-      store_en   ( NewBvState("store_en"   , 1  ) ) ,
-      store_addr ( NewBvState("store_addr" , 32 ) ) ,
-      store_size ( NewBvState("store_size" , 3  ) ) ,
-      store_data ( NewBvState("store_data" , 32 ) ) ,
-      inst(FetchFromMem(pc(31, 2))),      
+      fetch_addr ( model.NewBvState("fetch_addr" , 30 ) ) ,
+      fetch_data ( model.NewBvState("fetch_data" , 32 ) ) ,
+      load_en    ( model.NewBvState("load_en"    , 1  ) ) ,
+      load_addr  ( model.NewBvState("load_addr"  , 32 ) ) ,
+      load_size  ( model.NewBvState("load_size"  , 3  ) ) , // 4 2 1
+      load_data  ( model.NewBvState("load_data"  , 32 ) ) ,
+      store_en   ( model.NewBvState("store_en"   , 1  ) ) ,
+      store_addr ( model.NewBvState("store_addr" , 32 ) ) ,
+      store_size ( model.NewBvState("store_size" , 3  ) ) ,
+      store_data ( model.NewBvState("store_data" , 32 ) ) ,
+      inst(FetchFromMem(pc(31, 2))),  
+      tmp_fetch_addr(nullptr)    ,
 #endif
 
       opcode(inst(6, 0)), rd(inst(11, 7)), rs1(inst(19, 15)), rs2(inst(24, 20)),
@@ -314,7 +319,7 @@ void riscvILA_user::addInstructions() {
 #ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CWORD, 0));
 #else
-      auto lw_val = LoadFromMem(BvConst(CWORD,3), addr, instr);
+      auto lw_val = LoadFromMem(CWORD, addr, instr);
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CWORD, 0));
 #endif
 
@@ -332,7 +337,7 @@ void riscvILA_user::addInstructions() {
 #ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 0));
 #else
-      auto lw_val = LoadFromMem(BvConst(CHALF,3), addr, instr);
+      auto lw_val = LoadFromMem(CHALF, addr, instr);
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 0));
 #endif
       RECORD_INST("LH");
@@ -349,7 +354,7 @@ void riscvILA_user::addInstructions() {
 #ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 0));
 #else
-      auto lw_val = LoadFromMem(BvConst(CBYTE,3), addr, instr);
+      auto lw_val = LoadFromMem(CBYTE, addr, instr);
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 0));
 #endif
       RECORD_INST("LB");
@@ -365,7 +370,7 @@ void riscvILA_user::addInstructions() {
 #ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 1));
 #else
-      auto lw_val = LoadFromMem(BvConst(CHALF,3), addr, instr);
+      auto lw_val = LoadFromMem(CHALF, addr, instr);
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 1));
 #endif
       RECORD_INST("LHU");
@@ -382,7 +387,7 @@ void riscvILA_user::addInstructions() {
 #ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 1));
 #else
-      auto lw_val = LoadFromMem(BvConst(CBYTE,3), addr, instr);
+      auto lw_val = LoadFromMem(CBYTE, addr, instr);
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 1));
 #endif
       RECORD_INST("LBU");
@@ -410,8 +415,12 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
 
+#ifdef TRUE_MEM
       auto store_value = CombineSlices(rs2_val, addr(1, 0), CWORD, old_val);
       instr.SetUpdate(mem, StoreToMem(mem, word_addr, store_value));
+#else
+      StoreToMem(CWORD, addr, rs2_val, instr );
+#endif
 
       RECORD_INST("SW");
     }
@@ -425,8 +434,12 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
 
+#ifdef TRUE_MEM
       auto store_value = CombineSlices(rs2_val, addr(1, 0), CHALF, old_val);
       instr.SetUpdate(mem, StoreToMem(mem, word_addr, store_value));
+#else
+      StoreToMem(CHALF, addr, rs2_val, instr );
+#endif
 
       RECORD_INST("SH");
     }
@@ -440,8 +453,12 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
 
+#ifdef TRUE_MEM
       auto store_value = CombineSlices(rs2_val, addr(1, 0), CBYTE, old_val);
       instr.SetUpdate(mem, StoreToMem(mem, word_addr, store_value));
+#else
+      StoreToMem(CBYTE, addr, rs2_val, instr );
+#endif
 
       RECORD_INST("SB");
     }

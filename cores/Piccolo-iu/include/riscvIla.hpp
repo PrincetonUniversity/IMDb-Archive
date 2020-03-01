@@ -93,9 +93,9 @@ protected:
   }
 #else
   virtual ExprRef FetchFromMem(const ExprRef& addr);
-  virtual ExprRef LoadFromMem(const ExprRef& size, const ExprRef& addr);
-  virtual ExprRef StoreToMem(const ExprRef& size, const ExprRef& addr,
-                             const ExprRef& data );
+  virtual ExprRef LoadFromMem(int size, const ExprRef& addr, InstrRef & instr);
+  virtual ExprRef StoreToMem(int size, const ExprRef& addr,
+                             const ExprRef& data, InstrRef & instr);
 #endif
 
 public:
