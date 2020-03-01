@@ -25,7 +25,6 @@ public:
 private:
 
   ExprRef pc;
-  ExprRef mem;
   std::vector<ExprRef> GPR; // R0-R31
 
   std::set<std::string> Instrs;
@@ -47,6 +46,25 @@ private:
   ExprRef immJ;
   ExprRef csr_index;
 
+#ifdef TRUE_MEM
+  ExprRef mem;
+#else
+  ExprRef tmp_fetch_addr;
+  ExprRef fetch_addr;
+  ExprRef fetch_data;
+
+  ExprRef load_en;
+  ExprRef load_addr;
+  ExprRef load_size;
+  ExprRef load_data;
+
+  ExprRef store_en;
+  ExprRef store_addr;
+  ExprRef store_size;
+  ExprRef store_data;
+#endif
+
+
 protected:
   ExprRef indexIntoGPR(const ExprRef& idxBits);
   void UpdateGPR(InstrRef& inst, const ExprRef& idxBits, const ExprRef& val);
@@ -61,6 +79,8 @@ protected:
                         const ExprRef& old);
 
   // privileged model will overload these to insert their address translation
+  // untrue mem will make these different
+#ifdef TRUE_MEM
   virtual ExprRef FetchFromMem(const ExprRef& m, const ExprRef& addr) {
     return Load(m, addr);
   }
@@ -71,6 +91,12 @@ protected:
                              const ExprRef& data) {
     return Store(m, addr, data);
   }
+#else
+  virtual ExprRef FetchFromMem(const ExprRef& addr);
+  virtual ExprRef LoadFromMem(const ExprRef& size, const ExprRef& addr);
+  virtual ExprRef StoreToMem(const ExprRef& size, const ExprRef& addr,
+                             const ExprRef& data );
+#endif
 
 public:
   riscvILA_user(int pc_init_val);

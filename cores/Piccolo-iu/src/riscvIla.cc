@@ -11,9 +11,9 @@ using namespace ilang;
 
 #include "riscvIla.hpp"
 
-#define CBYTE 0x0
-#define CHALF 0x1
-#define CWORD 0x2
+#define CBYTE 0x1
+#define CHALF 0x2
+#define CWORD 0x4
 
 void riscvILA_user::UpdateGPR(InstrRef& inst, const ExprRef& idxBits,
                               const ExprRef& val) {
@@ -31,11 +31,45 @@ ExprRef riscvILA_user::indexIntoGPR(const ExprRef& idxBits) {
   return expr;
 }
 
+
+ExprRef riscvILA_user::FetchFromMem(const ExprRef& addr) {
+  tmp_fetch_addr = addr;
+  return fetch_data;
+}
+ExprRef riscvILA_user::LoadFromMem(const ExprRef& size, const ExprRef& addr, InstrRef & instr) {
+  instr.SetUpdate("load_en", BvConst(1,1));
+  instr.SetUpdate("load_addr", addr);
+  // instr.SetUpdate("load_data", instr.get()->host()->state("load_data") ); // no change , no need
+  return load_data;
+
+}
+ExprRef riscvILA_user::StoreToMem(const ExprRef& size, const ExprRef& addr,
+                             const ExprRef& data ) {
+
+}
+
+
+
 riscvILA_user::riscvILA_user() //int pc_init_val)
     : model(InstrLvlAbs::New("riscv")), // define ila
       pc(model.NewBvState("pc", XLEN)),
+
+#ifdef TRUE_MEM
       mem(model.NewMemState("mem", MEM_WORD_ADDR_LEN, MEM_WORD)),
       inst(FetchFromMem(mem, pc(31, 2))),
+#else
+      fetch_addr ( NewBvState("fetch_addr" , 30 ) ) ,
+      fetch_data ( NewBvState("fetch_data" , 32 ) ) ,
+      load_en    ( NewBvState("load_en"    , 1  ) ) ,
+      load_addr  ( NewBvState("load_addr"  , 32 ) ) ,
+      load_size  ( NewBvState("load_size"  , 3  ) ) , // 4 2 1
+      load_data  ( NewBvState("load_data"  , 32 ) ) ,
+      store_en   ( NewBvState("store_en"   , 1  ) ) ,
+      store_addr ( NewBvState("store_addr" , 32 ) ) ,
+      store_size ( NewBvState("store_size" , 3  ) ) ,
+      store_data ( NewBvState("store_data" , 32 ) ) ,
+      inst(FetchFromMem(pc(31, 2))),      
+#endif
 
       opcode(inst(6, 0)), rd(inst(11, 7)), rs1(inst(19, 15)), rs2(inst(24, 20)),
       funct3(inst(14, 12)), funct7(inst(31, 25)), funct12(inst(31, 20)),
@@ -58,10 +92,13 @@ riscvILA_user::riscvILA_user() //int pc_init_val)
   // model.AddInit(pc == BvConst(pc_init_val, XLEN));
 }
 
+
+#define ext(x) ((unSigned) ? zext(x) : sext(x))
+
+#ifdef TRUE_MEM
 ExprRef riscvILA_user::getSlice(const ExprRef& word, const ExprRef& lowBits,
                                 int width, bool unSigned) {
   auto nonDet = BvConst(0, 32); // FIXME: currently we don't support nondet
-#define ext(x) ((unSigned) ? zext(x) : sext(x))
   if (width == CBYTE) {
     return Ite(lowBits == BvConst(0, 2), ext(word(7, 0)),
                Ite(lowBits == BvConst(1, 2), ext(word(15, 8)),
@@ -79,6 +116,25 @@ ExprRef riscvILA_user::getSlice(const ExprRef& word, const ExprRef& lowBits,
     return nonDet;
   }
 }
+#else
+ExprRef riscvILA_user::getSlice(const ExprRef& word, const ExprRef& lowBits,
+                              int width, bool unSigned) {
+  // assumptions ...
+  auto nonDet = BvConst(0, 32); // FIXME: currently we don't support nondet
+  if (width == CBYTE)
+    return ext(word(7,0));
+  if (width == CHALF)
+    return ext(word(15,0));
+  if (width == CWORD)
+    return ext(word(31,0));
+  else {
+    std::cerr
+        << "Error : RV 32 does not support width other than Byte/Half/Word. "
+        << std::endl;
+    return nonDet;
+  }
+}
+#endif
 
 ExprRef riscvILA_user::CombineSlices(const ExprRef& word,
                                      const ExprRef& lowBits, int width,
@@ -110,11 +166,24 @@ ExprRef riscvILA_user::CombineSlices(const ExprRef& word,
   }
 }
 
+#ifndef TRUE_MEM
+#define INST_BOOKKEEP do { \
+    instr.SetUpdate(fetch_addr, tmp_fetch_addr); \
+  } while (0)
+
+#define MEM_NO_CHANGE do {instr.SetUpdate(load_en, BvConst(0,1));instr.SetUpdate(store_en, BvConst(0,1));} while(0)
+#else 
+#define INST_BOOKKEEP
+#define MEM_NO_CHANGE
+#endif
+
+// also do some fetch 
 #define RECORD_INST(name)                                                      \
   do {                                                                         \
     assert(Instrs.find(name) == Instrs.end());                                 \
     Instrs.insert(name);                                                       \
     InstrMap.insert(std::make_pair(name, instr));                              \
+    INST_BOOKKEEP;                                                             \
   } while (0)
 
 #define UPDATE_R(r, exp) UpdateGPR(instr, (r), (exp))
@@ -136,6 +205,7 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, Ite(rs1_val == rs2_val, BTarget, NC));
+      MEM_NO_CHANGE;
       RECORD_INST("BEQ");
     }
     // ------------------------- Instruction: BNE ------------------------------
@@ -146,6 +216,7 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, Ite(rs1_val != rs2_val, BTarget, NC));
+      MEM_NO_CHANGE;
       RECORD_INST("BNE");
     }
     // ------------------------- Instruction: BLT ------------------------------
@@ -157,6 +228,7 @@ void riscvILA_user::addInstructions() {
 
       // this is the signed comparison
       instr.SetUpdate(pc, Ite( Slt( rs1_val, rs2_val), BTarget, NC));
+      MEM_NO_CHANGE;
       RECORD_INST("BLT");
     }
     // ------------------------- Instruction: BLTU
@@ -168,6 +240,7 @@ void riscvILA_user::addInstructions() {
 
       // this is the unsigned comparison
       instr.SetUpdate(pc, Ite(Ult(rs1_val, rs2_val), BTarget, NC));
+      MEM_NO_CHANGE;
       RECORD_INST("BLTU");
     }
     // ------------------------- Instruction: BGE ------------------------------
@@ -178,6 +251,7 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, Ite( Sge(rs1_val, rs2_val), BTarget, NC));
+      MEM_NO_CHANGE;
       RECORD_INST("BGE");
     }
     // ------------------------- Instruction: BGEU
@@ -188,6 +262,7 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, Ite(Uge(rs1_val, rs2_val), BTarget, NC));
+      MEM_NO_CHANGE;
       RECORD_INST("BGEU");
     }
     // ------------------------- Instruction: JAL ------------------------------
@@ -199,6 +274,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, pc + immJ);
       UPDATE_R(rd, NC);
+      MEM_NO_CHANGE;
       RECORD_INST("JAL");
     }
     // ------------------------- Instruction: JALR
@@ -210,6 +286,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, (rs1_val + immI) & bv(0xFFFFFFFE));
       UPDATE_R(rd, NC);
+      MEM_NO_CHANGE;
       RECORD_INST("JALR");
     }
   }
@@ -219,7 +296,9 @@ void riscvILA_user::addInstructions() {
   {
     auto rs1_val = indexIntoGPR(rs1);
     auto addr = rs1_val + immI;
+#ifdef TRUE_MEM
     auto lw_val = LoadFromMem(mem, addr(31, 2));
+#endif
     auto nxt_pc = pc + bv(4);
 
     // we assume a hardware-level misalign resolution
@@ -232,7 +311,13 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
+#ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CWORD, 0));
+#else
+      auto lw_val = LoadFromMem(BvConst(CWORD,3), addr, instr);
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CWORD, 0));
+#endif
+
       RECORD_INST("LW");
     }
 
@@ -244,7 +329,12 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
+#ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 0));
+#else
+      auto lw_val = LoadFromMem(BvConst(CHALF,3), addr, instr);
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 0));
+#endif
       RECORD_INST("LH");
     }
 
@@ -256,7 +346,12 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
+#ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 0));
+#else
+      auto lw_val = LoadFromMem(BvConst(CBYTE,3), addr, instr);
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 0));
+#endif
       RECORD_INST("LB");
     }
     // ------------------------- Instruction: LHU ------------------------------
@@ -267,7 +362,12 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
+#ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 1));
+#else
+      auto lw_val = LoadFromMem(BvConst(CHALF,3), addr, instr);
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 1));
+#endif
       RECORD_INST("LHU");
     }
 
@@ -279,7 +379,12 @@ void riscvILA_user::addInstructions() {
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
+#ifdef TRUE_MEM
       UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 1));
+#else
+      auto lw_val = LoadFromMem(BvConst(CBYTE,3), addr, instr);
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 1));
+#endif
       RECORD_INST("LBU");
     }
   }
@@ -291,7 +396,9 @@ void riscvILA_user::addInstructions() {
     auto rs2_val = indexIntoGPR(rs2);
     auto addr = rs1_val + immS;
     auto word_addr = addr(31, 2);
+#ifdef TRUE_MEM
     auto old_val = LoadFromMem(mem, word_addr);
+#endif
     auto nxt_pc = pc + bv(4);
 
     // ------------------------- Instruction: SW ------------------------------
@@ -356,6 +463,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val + rs2_val);
+      MEM_NO_CHANGE;
 
       RECORD_INST("ADD");
     }
@@ -368,6 +476,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val & rs2_val);
+      MEM_NO_CHANGE;
 
       RECORD_INST("AND");
     }
@@ -380,6 +489,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val | rs2_val);
+      MEM_NO_CHANGE;
 
       RECORD_INST("OR");
     }
@@ -393,6 +503,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val ^ rs2_val);
+      MEM_NO_CHANGE;
 
       RECORD_INST("XOR");
     }
@@ -406,6 +517,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val << shamt); // shift left
+      MEM_NO_CHANGE;
 
       RECORD_INST("SLL");
     }
@@ -418,6 +530,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, Lshr(rs1_val, shamt)); // logical shift right
+      MEM_NO_CHANGE;
 
       RECORD_INST("SRL");
     }
@@ -431,6 +544,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val - rs2_val);
+      MEM_NO_CHANGE;
 
       RECORD_INST("SUB");
     }
@@ -444,6 +558,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val >> shamt); // arithmetic shift right
+      MEM_NO_CHANGE;
 
       RECORD_INST("SRA");
     }
@@ -457,6 +572,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, Ite( Slt(rs1_val, rs2_val) , bv(1), bv(0)));
+      MEM_NO_CHANGE;
 
       RECORD_INST("SLT");
     }
@@ -469,6 +585,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, Ite(Ult(rs1_val, rs2_val), bv(1), bv(0)));
+      MEM_NO_CHANGE;
 
       RECORD_INST("SLTU");
     }
@@ -489,6 +606,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val + immI);
+      MEM_NO_CHANGE;
 
       RECORD_INST("ADDI");
     }
@@ -502,6 +620,7 @@ void riscvILA_user::addInstructions() {
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd,
                Ite( Slt(rs1_val, immI), bv(1), bv(0))); // This is signed comparison
+      MEM_NO_CHANGE;
 
       RECORD_INST("SLTI");
     }
@@ -514,6 +633,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, Ite(Ult(rs1_val, immI), bv(1), bv(0)));
+      MEM_NO_CHANGE;
 
       RECORD_INST("SLTIU");
     }
@@ -526,6 +646,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val & immI);
+      MEM_NO_CHANGE;
 
       RECORD_INST("ANDI");
     }
@@ -538,6 +659,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val | immI);
+      MEM_NO_CHANGE;
 
       RECORD_INST("ORI");
     }
@@ -550,6 +672,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val ^ immI);
+      MEM_NO_CHANGE;
 
       RECORD_INST("XORI");
     }
@@ -563,6 +686,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val << shamt); // shift left
+      MEM_NO_CHANGE;
 
       RECORD_INST("SLLI");
     }
@@ -576,6 +700,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, Lshr(rs1_val, shamt)); // logic shift right
+      MEM_NO_CHANGE;
 
       RECORD_INST("SRLI");
     }
@@ -589,6 +714,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, rs1_val >> shamt); // arithmetic shift right
+      MEM_NO_CHANGE;
 
       RECORD_INST("SRAI");
     }
@@ -607,6 +733,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, immU);
+      MEM_NO_CHANGE;
 
       RECORD_INST("LUI");
     }
@@ -619,6 +746,7 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
       UPDATE_R(rd, pc + immU);
+      MEM_NO_CHANGE;
 
       RECORD_INST("AUIPC");
     }
