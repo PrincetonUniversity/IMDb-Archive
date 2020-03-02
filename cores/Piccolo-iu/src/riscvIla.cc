@@ -36,7 +36,7 @@ ExprRef riscvILA_user::FetchFromMem(const ExprRef& addr) {
   tmp_fetch_addr = addr;
   return fetch_data;
 }
-ExprRef riscvILA_user::LoadFromMem(int size, const ExprRef& addr, InstrRef & instr) {
+ExprRef riscvILA_user::LoadFromMem(int size, const ExprRef& addr, InstrRef& instr) {
   instr.SetUpdate(load_en, BvConst(1,1));
   instr.SetUpdate(load_addr, addr);
   instr.SetUpdate(load_size, BvConst(size,3) );
@@ -44,8 +44,8 @@ ExprRef riscvILA_user::LoadFromMem(int size, const ExprRef& addr, InstrRef & ins
   return load_data;
 
 }
-ExprRef riscvILA_user::StoreToMem(int size, const ExprRef& addr,
-                             const ExprRef& data, InstrRef & instr ) {
+void riscvILA_user::StoreToMem(int size, const ExprRef& addr,
+                             const ExprRef& data, InstrRef& instr ) {
   instr.SetUpdate(store_en, BvConst(1,1));
   instr.SetUpdate(store_addr, addr);
   instr.SetUpdate(store_size, BvConst(size,3) );
@@ -72,8 +72,8 @@ riscvILA_user::riscvILA_user() //int pc_init_val)
       store_addr ( model.NewBvState("store_addr" , 32 ) ) ,
       store_size ( model.NewBvState("store_size" , 3  ) ) ,
       store_data ( model.NewBvState("store_data" , 32 ) ) ,
-      inst(FetchFromMem(pc(31, 2))),  
       tmp_fetch_addr(nullptr)    ,
+      inst(FetchFromMem(pc(31, 2))),  
 #endif
 
       opcode(inst(6, 0)), rd(inst(11, 7)), rs1(inst(19, 15)), rs2(inst(24, 20)),
@@ -317,10 +317,10 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
 #ifdef TRUE_MEM
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CWORD, 0));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CWORD, false));
 #else
       auto lw_val = LoadFromMem(CWORD, addr, instr);
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CWORD, 0));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CWORD, false));
 #endif
 
       RECORD_INST("LW");
@@ -335,10 +335,10 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
 #ifdef TRUE_MEM
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 0));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, false));
 #else
       auto lw_val = LoadFromMem(CHALF, addr, instr);
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 0));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, false));
 #endif
       RECORD_INST("LH");
     }
@@ -352,10 +352,10 @@ void riscvILA_user::addInstructions() {
 
       instr.SetUpdate(pc, nxt_pc);
 #ifdef TRUE_MEM
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 0));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, false));
 #else
       auto lw_val = LoadFromMem(CBYTE, addr, instr);
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 0));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, false));
 #endif
       RECORD_INST("LB");
     }
@@ -363,15 +363,15 @@ void riscvILA_user::addInstructions() {
     // //
     {
       auto instr = model.NewInstr("LHU");
-      auto decode = (opcode == LOAD) & (funct3 == HALF);
+      auto decode = (opcode == LOAD) & (funct3 == HU);
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
 #ifdef TRUE_MEM
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 1));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, true));
 #else
       auto lw_val = LoadFromMem(CHALF, addr, instr);
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, 1));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CHALF, true));
 #endif
       RECORD_INST("LHU");
     }
@@ -380,15 +380,15 @@ void riscvILA_user::addInstructions() {
     // //
     {
       auto instr = model.NewInstr("LBU");
-      auto decode = (opcode == LOAD) & (funct3 == BYTE);
+      auto decode = (opcode == LOAD) & (funct3 == BU);
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
 #ifdef TRUE_MEM
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 1));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, true));
 #else
       auto lw_val = LoadFromMem(CBYTE, addr, instr);
-      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, 1));
+      UPDATE_R(rd, getSlice(lw_val, addr(1, 0), CBYTE, true));
 #endif
       RECORD_INST("LBU");
     }
@@ -412,7 +412,6 @@ void riscvILA_user::addInstructions() {
       auto instr = model.NewInstr("SW");
       auto decode = (opcode == STORE) & (funct3 == WORD);
       instr.SetDecode(decode);
-
       instr.SetUpdate(pc, nxt_pc);
 
 #ifdef TRUE_MEM
@@ -429,7 +428,7 @@ void riscvILA_user::addInstructions() {
     // //
     {
       auto instr = model.NewInstr("SH");
-      auto decode = (opcode == STORE) & (funct3 == WORD);
+      auto decode = (opcode == STORE) & (funct3 == HALF);
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
@@ -448,7 +447,7 @@ void riscvILA_user::addInstructions() {
     // //
     {
       auto instr = model.NewInstr("SB");
-      auto decode = (opcode == STORE) & (funct3 == WORD);
+      auto decode = (opcode == STORE) & (funct3 == BYTE);
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);

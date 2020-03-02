@@ -30,22 +30,6 @@ private:
   std::set<std::string> Instrs;
   std::map<std::string, InstrRef> InstrMap;
 
-  ExprRef inst;
-
-  ExprRef opcode;
-  ExprRef rd;
-  ExprRef rs1;
-  ExprRef rs2;
-  ExprRef funct3;
-  ExprRef funct7;
-  ExprRef funct12;
-  ExprRef immI;
-  ExprRef immS;
-  ExprRef immB;
-  ExprRef immU;
-  ExprRef immJ;
-  ExprRef csr_index;
-
 #ifdef TRUE_MEM
   ExprRef mem;
 #else
@@ -63,6 +47,23 @@ private:
   ExprRef store_size;
   ExprRef store_data;
 #endif
+
+  ExprRef inst;
+
+  ExprRef opcode;
+  ExprRef rd;
+  ExprRef rs1;
+  ExprRef rs2;
+  ExprRef funct3;
+  ExprRef funct7;
+  ExprRef funct12;
+  ExprRef immI;
+  ExprRef immS;
+  ExprRef immB;
+  ExprRef immU;
+  ExprRef immJ;
+  ExprRef csr_index;
+
 
 
 protected:
@@ -93,9 +94,9 @@ protected:
   }
 #else
   virtual ExprRef FetchFromMem(const ExprRef& addr);
-  virtual ExprRef LoadFromMem(int size, const ExprRef& addr, InstrRef & instr);
-  virtual ExprRef StoreToMem(int size, const ExprRef& addr,
-                             const ExprRef& data, InstrRef & instr);
+  virtual ExprRef LoadFromMem(int size, const ExprRef& addr, InstrRef& instr);
+  virtual void StoreToMem(int size, const ExprRef& addr,
+                             const ExprRef& data, InstrRef& instr);
 #endif
 
 public:

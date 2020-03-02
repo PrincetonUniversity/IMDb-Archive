@@ -45,7 +45,7 @@ protected:
   ExprRef indexIntoGPR(const ExprRef& idxBits);
   void UpdateGPR(InstrRef& inst, const ExprRef& idxBits, const ExprRef& val);
 
-  ExprRef bv(int val) { return BvConst(val, XLEN); }
+  ExprRef bv(uint64_t val) { return BvConst(val, XLEN); }
   ExprRef zext(const ExprRef& v) { return ZExt(v, XLEN); }
   ExprRef sext(const ExprRef& v) { return SExt(v, XLEN); }
 

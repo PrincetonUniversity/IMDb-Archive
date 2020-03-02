@@ -1,0 +1,77 @@
+{
+  "global invariants" : [
+"! (m1.csr_regfile.f_reset_rsps.empty_reg                 == 0 && m1.csr_regfile.f_reset_rsps.full_reg ==                   0 )",
+"! (m1.f_reset_reqs.empty_reg                             == 0 && m1.f_reset_reqs.full_reg ==                               0 )",
+"! (m1.f_reset_rsps.empty_reg                             == 0 && m1.f_reset_rsps.full_reg ==                               0 )",
+"! ( m1.gpr_regfile.f_reset_rsps.empty_reg                == 0 && m1.gpr_regfile.f_reset_rsps.full_reg ==                   0 )",
+"! ( m1.near_mem.dcache.f_fabric_write_reqs.empty_reg     == 0 && m1.near_mem.dcache.f_fabric_write_reqs.full_reg ==        0 )",
+"! ( m1.near_mem.dcache.f_reset_reqs.empty_reg            == 0 && m1.near_mem.dcache.f_reset_reqs.full_reg ==               0 )",
+"! ( m1.near_mem.dcache.f_reset_rsps.empty_reg            == 0 && m1.near_mem.dcache.f_reset_rsps.full_reg ==               0 )",
+"! ( m1.near_mem.dcache.master_xactor_f_rd_addr.empty_reg == 0 && m1.near_mem.dcache.master_xactor_f_rd_addr.full_reg ==    0 )",
+"! ( m1.near_mem.dcache.master_xactor_f_rd_data.empty_reg == 0 && m1.near_mem.dcache.master_xactor_f_rd_data.full_reg ==    0 )",
+"! ( m1.near_mem.dcache.master_xactor_f_wr_addr.empty_reg == 0 && m1.near_mem.dcache.master_xactor_f_wr_addr.full_reg ==    0 )",
+"! ( m1.near_mem.dcache.master_xactor_f_wr_data.empty_reg == 0 && m1.near_mem.dcache.master_xactor_f_wr_data.full_reg ==    0 )",
+"! ( m1.near_mem.dcache.master_xactor_f_wr_resp.empty_reg == 0 && m1.near_mem.dcache.master_xactor_f_wr_resp.full_reg ==    0 )",
+"! ( m1.near_mem.f_reset_rsps.empty_reg                   == 0 && m1.near_mem.f_reset_rsps.full_reg ==                      0 )",
+"! ( m1.near_mem.icache.f_fabric_write_reqs.empty_reg     == 0 && m1.near_mem.icache.f_fabric_write_reqs.full_reg ==        0 )",
+"! ( m1.near_mem.icache.f_reset_reqs.empty_reg            == 0 && m1.near_mem.icache.f_reset_reqs.full_reg ==               0 )",
+"! ( m1.near_mem.icache.f_reset_rsps.empty_reg            == 0 && m1.near_mem.icache.f_reset_rsps.full_reg ==               0 )",
+"! ( m1.near_mem.icache.master_xactor_f_rd_addr.full_reg  == 0 &&  m1.near_mem.icache.master_xactor_f_rd_addr.empty_reg ==  0 )",
+"! ( m1.near_mem.icache.master_xactor_f_rd_data.empty_reg == 0 && m1.near_mem.icache.master_xactor_f_rd_data.full_reg  ==   0 )",
+"! ( m1.near_mem.icache.master_xactor_f_wr_addr.empty_reg == 0 && m1.near_mem.icache.master_xactor_f_wr_addr.full_reg ==    0 )",
+"! ( m1.near_mem.icache.master_xactor_f_wr_data.empty_reg == 0 && m1.near_mem.icache.master_xactor_f_wr_data.full_reg ==    0 )",
+"! ( m1.near_mem.icache.master_xactor_f_wr_resp.empty_reg == 0 && m1.near_mem.icache.master_xactor_f_wr_resp.full_reg ==    0 )",
+"! ( m1.stage1_f_reset_reqs.empty_reg                     == 0 && m1.stage1_f_reset_reqs.full_reg ==                        0 )",
+"! ( m1.stage1_f_reset_rsps.empty_reg                     == 0 && m1.stage1_f_reset_rsps.full_reg ==                        0 )",
+"! ( m1.stage2_f_reset_reqs.empty_reg                     == 0 && m1.stage2_f_reset_reqs.full_reg ==                        0 )",
+"! ( m1.stage2_f_reset_rsps.empty_reg                     == 0 && m1.stage2_f_reset_rsps.full_reg ==                        0 )",
+"! ( m1.stage3_f_reset_reqs.empty_reg                     == 0 && m1.stage3_f_reset_reqs.full_reg ==                        0 )",
+"! ( m1.stage3_f_reset_rsps.empty_reg                     == 0 && m1.stage3_f_reset_rsps.full_reg ==                        0 )",
+// for AUIPC
+"(((!((m1.stage2_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.stage3_f_reset_reqs.empty_reg) == (1'b0))) ||(!((m1.stage3_rg_full) == (1'b1)))) &&((!((m1.stage2_rg_full) == (1'b1))) ||(!((m1.stage2_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.f_reset_reqs.empty_reg) == (1'b0))) ||(!((m1.f_reset_reqs.full_reg) == (1'b0)))) &&((!((m1.stage2_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.stage3_f_reset_reqs.empty_reg) == (1'b0))) ||(!((m1.stage2_rg_full) == (1'b1)))))",
+"(((!((m1.csr_regfile.rg_state) == (1'b1))) ||(!((m1.stage2_f_reset_reqs.empty_reg) == (1'b1)))) &&((m1.stage2_f_reset_reqs.full_reg) == (1'b1)))",
+// additionally from ADD
+"(((!((m1.stage3_f_reset_rsps.full_reg) == (1'b1))) ||(!((m1.gpr_regfile.f_reset_rsps.full_reg) == (1'b0))) ||(!((m1.csr_regfile.f_reset_rsps.empty_reg) == (1'b0)))) &&((!((m1.stage3_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.stage3_f_reset_rsps.full_reg) == (1'b1))) ||(!((m1.csr_regfile.f_reset_rsps.empty_reg) == (1'b0))) ||(!((m1.stage3_f_reset_rsps.empty_reg) == (1'b0)))))",
+"(((!((m1.stage2_rg_full) == (1'b1))) ||(!((m1.csr_regfile.rg_state) == (1'b1))) ||(!((m1.rg_run_on_reset) == (1'b1))) ||(!((m1.stage3_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.stage3_f_reset_rsps.full_reg) == (1'b1))) ||(!(m1.stage2_rg_stage2[101:101])) ||((m1.near_mem.dcache.rg_addr[4:4]) == (1'b1)) ||(!((m1.near_mem.dcache.rg_pa[4:4]) == (1'b1)))) &&(!((m1.csr_regfile.rg_nmi) == (1'b1))) &&((!((m1.rg_state[0:0]) == (1'b1))) ||(!((m1.stage2_f_reset_reqs.empty_reg) == (1'b0))) ||(!((m1.csr_regfile.rg_state) == (1'b0)))) &&(((m1.stage3_f_reset_reqs.full_reg) == (1'b1)) ||(!(m1.rg_trap_instr[22:22])) ||(!(m1.rg_trap_instr[20:20])) ||(!(m1.rg_trap_instr[26:26])) ||(!((m1.stage2_f_reset_reqs.empty_reg) == (1'b0))) ||(!((m1.csr_regfile.rg_state) == (1'b0)))) &&((!((m1.stage2_rg_full) == (1'b1))) ||(!((m1.rg_run_on_reset) == (1'b1))) ||(!((m1.stage3_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.stage3_f_reset_rsps.full_reg) == (1'b1))) ||(!((m1.stage3_f_reset_reqs.full_reg) == (1'b0)))))",
+"(((!((m1.stage3_f_reset_rsps.empty_reg) == (1'b0))) ||(!((m1.stage3_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.stage3_f_reset_rsps.full_reg) == (1'b1))) ||(!((m1.stage3_f_reset_reqs.full_reg) == (1'b0)))) &&((!((m1.stage2_f_reset_reqs.empty_reg) == (1'b0))) ||(!((m1.rg_state[0:0]) == (1'b1))) ||(!((m1.stage3_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.stage3_f_reset_rsps.full_reg) == (1'b1))) ||(m1.rg_run_on_reset[0:0])) &&((!((m1.stage2_rg_full) == (1'b1))) ||(!((m1.stage2_f_reset_reqs.empty_reg) == (1'b0))) ||(!((m1.rg_state[0:0]) == (1'b1))) ||(!((m1.stage3_f_reset_reqs.empty_reg) == (1'b1))) ||(!((m1.stage3_f_reset_rsps.full_reg) == (1'b1))) ||(m1.stage2_rg_stage2[168:168]) ||(!(m1.rg_cur_priv[1:1]))))"
+],
+
+  "instructions": [
+    {
+      "instruction" : "LW",
+      "ready signal" : "#end_of_pipeline#"// "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
+    },
+    {
+      "instruction" : "LH",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "LHU",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "LB",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "LBU",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SW",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SH",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SB",
+      "ready signal" : "#end_of_pipeline#"
+    }
+
+
+
+  ]
+}
+

@@ -263,7 +263,7 @@ void riscvILA_user::addInstructions() {
     // //
     {
       auto instr = model.NewInstr("LHU");
-      auto decode = (opcode == LOAD) & (funct3 == HALF);
+      auto decode = (opcode == LOAD) & (funct3 == HU);
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
@@ -275,7 +275,7 @@ void riscvILA_user::addInstructions() {
     // //
     {
       auto instr = model.NewInstr("LBU");
-      auto decode = (opcode == LOAD) & (funct3 == BYTE);
+      auto decode = (opcode == LOAD) & (funct3 == BU);
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
@@ -313,7 +313,7 @@ void riscvILA_user::addInstructions() {
     // //
     {
       auto instr = model.NewInstr("SH");
-      auto decode = (opcode == STORE) & (funct3 == WORD);
+      auto decode = (opcode == STORE) & (funct3 == HALF);
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
@@ -328,7 +328,7 @@ void riscvILA_user::addInstructions() {
     // //
     {
       auto instr = model.NewInstr("SB");
-      auto decode = (opcode == STORE) & (funct3 == WORD);
+      auto decode = (opcode == STORE) & (funct3 == BYTE);
       instr.SetDecode(decode);
 
       instr.SetUpdate(pc, nxt_pc);
