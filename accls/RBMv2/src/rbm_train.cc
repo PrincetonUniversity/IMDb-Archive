@@ -5,7 +5,7 @@
 
 #include <rbm_ila.h>
 
-Ila & RBM::AddChildTrain(Ila& m) {
+Ila RBM::AddChildTrain(Ila& m) {
   auto uabs = m.NewChild("train");
   // TODO: add the exact computation here
   return uabs;

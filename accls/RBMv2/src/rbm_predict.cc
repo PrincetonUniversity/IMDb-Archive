@@ -5,7 +5,7 @@
 
 #include <rbm_ila.h>
 
-Ila & RBM::AddChildPredict(Ila& m) {
+Ila RBM::AddChildPredict(Ila& m) {
   auto uabs = m.NewChild("predict");
   // TODO: add the exact computation here
   return uabs;

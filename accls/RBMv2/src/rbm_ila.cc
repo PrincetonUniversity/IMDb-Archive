@@ -16,9 +16,9 @@ RBM::RBM()
       conf_num_testusers(model.NewBvInput("conf_num_testusers" , 32)) ,
       conf_num_movies   (model.NewBvInput("conf_num_movies"    , 32)) ,
       // other I/Os
-      rst               (model.NewBvInput("rst"                , 1))  ,
+      reset             (model.NewBvInput("reset"              , 1))  ,
       /// DMA read port
-      mem               (model.NewMemState("mem", 32, 32)),
+      mem               (model.NewMemState("mem", 32, 8)),
       /*
       rd_grant   (model.NewBvInput("rd_grant"   , 1))  ,
       rd_request (model.NewBvState("rd_request" , 1))  ,
@@ -44,10 +44,10 @@ RBM::RBM()
       num_users    (model.NewBvState("num_users"     , 16)) ,
       num_loops    (model.NewBvState("num_loops"     , 16)) ,
       num_testusers(model.NewBvState("num_testusers" , 16)) ,
-      num_movies   (model.NewBvState("num_movies"    , 16)) ,
+      num_movies   (model.NewBvState("num_movies"    , 16))
       // internal arch state for transmissions
-      rd_trans     (model.NewBvState("rd_trans", 1)),
-      wr_trans     (model.NewBvState("wr_trans", 1))
+      // rd_trans     (model.NewBvState("rd_trans", 1)),
+      // wr_trans     (model.NewBvState("wr_trans", 1))
   {
 
     model.AddInit(init_done     == b0);
@@ -63,7 +63,7 @@ RBM::RBM()
     // model.AddInit(rd_complete   == b0);
     // model.AddInit(wr_complete   == b0);
 
-    model.SetValid((rst == 1) | (conf_done == 1) | (rd_grant == 1) | (wr_grant == 1));
+    model.SetValid((reset == 1) | (conf_done == 1));
 
 
     { // RESET

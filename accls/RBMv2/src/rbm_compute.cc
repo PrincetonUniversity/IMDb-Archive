@@ -17,9 +17,9 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   auto i          = uabs.NewBvState("i"          , 16);
 
   auto data               = uabs.state("data");
-  auto data               = uabs.state("mem");
-
+  auto mem                = uabs.state("mem");
   auto edges_mem          = uabs.NewMemState("edges", EDGEMEM_ADDR_WIDTH ,8 ) ;
+
   auto nlp                = uabs.state("num_loops"                          ) ;
   auto nm                 = ZExt(uabs.state("num_movies"             ) , 32 ) ;
   auto nu                 = uabs.state("num_users"                          ) ;
@@ -28,8 +28,24 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   // auto out_rd_complete    = uabs.state("rd_complete"                        ) ;
   // auto out_rd_length      = uabs.state("rd_length"                          ) ;
   // auto out_rd_index       = uabs.state("rd_index"                           ) ;
-  auto train_input_done   = uabs.state("train_input_done",   1              ) ;
-  auto predict_input_done = uabs.state("predict_input_done", 1              ) ;
+  auto train_input_done   = uabs.NewBvState("train_input_done",  1) ;
+  auto predict_input_done = uabs.NewBvState("predict_input_done",1) ;
+  auto nv = uabs.state("num_visible");
+  auto train_start = uabs.NewBvState("train_start"        , 1);
+  auto predict_start = uabs.NewBvState("predict_start"        , 1);
+
+  // function for training/prediction
+  auto data_mem_sort      = SortRef::MEM(DATAMEM_ADDR_WIDTH   , 8);
+  auto edges_mem_sort     = SortRef::MEM(EDGEMEM_ADDR_WIDTH   , 8);
+  auto predict_mem_sort   = SortRef::MEM(PREDICT_RESULT_WIDTH , 8);
+  auto nh_bv_sort         = SortRef::BV(16);
+  auto nv_bv_sort         = SortRef::BV(16);
+  
+  // data, edges, nh, nv -> edges
+  auto train_func         = FuncRef("train_func", edges_mem_sort, {data_mem_sort, edges_mem_sort, nh_bv_sort, nv_bv_sort} ); 
+   // data, edges, nh, nv -> predict_result
+  auto predict_func       = FuncRef("predict_func", predict_mem_sort, {data_mem_sort, edges_mem_sort, nh_bv_sort, nv_bv_sort} );
+
 
   // init statement
   uabs.AddInit(upc                == 0);
@@ -45,6 +61,8 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   auto StartTrainOrPredict   = BvConst(1,4);
   auto WaitForTrainStartDeactivateState   = BvConst(2,4);
   auto WaitForPredictStartDeactivateState  = BvConst(3,4);
+  auto FinishState  = BvConst(4,4);
+
 
 
   auto trainUabs   = AddChildTrain(uabs); // the reason to have it here is to have the
@@ -55,7 +73,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
 
       instr.SetDecode( (upc == StartReadState) & (i < nv) );
 
-      instr.SetUpdate( data , Store(data, i, Load(mem, ZExt(index, 32) + i)));
+      instr.SetUpdate( data , Store(data, i(8,0), Load(mem, ZExt(index + i, 32) )));
       instr.SetUpdate( i, i+1);
       instr.SetUpdate( upc , StartReadState );
 
@@ -65,7 +83,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
 
       instr.SetDecode( (upc == StartReadState) & (i == nv) );
 
-      instr.SetUpdate ( data , nv, BvConst(1,32));
+      instr.SetUpdate ( data , Store(data,nv(8,0), BvConst(1,8)));
       instr.SetUpdate ( train_input_done   , Ite ( loop_count <  nlp, b1 , b0 ) ) ;
       instr.SetUpdate ( predict_input_done , Ite ( loop_count == nlp, b1 , b0 ) ) ;
 
