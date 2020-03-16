@@ -7,7 +7,7 @@
 
 #include <cmath>
 
-#include <ilang++.h>
+#include <ilang/ilang++.h>
 #include <rbm_fixpoint.h>
 
 using namespace ilang;
@@ -68,8 +68,8 @@ private:
   Ila AddChildComputeUabs(InstrRef& inst);
   // Ila AddChildLoadUabs   (InstrRef& inst);
   // Ila AddChildStoreUabs  (InstrRef& inst);
-  Ila AddChildTrain      (Ila& m);
-  Ila AddChildPredict    (Ila& m);
+  // Ila AddChildTrain      (Ila& m);
+  // Ila AddChildPredict    (Ila& m);
 protected:
   // ------------ STATE ------------ //
   // I/O interface: this is where the commands come from.
@@ -81,8 +81,9 @@ protected:
   ExprRef conf_num_testusers;
   ExprRef conf_num_movies   ;
   /// other I/Os
-  ExprRef rst       ; // I
+  ExprRef reset       ; // I
   /// DMA read port
+  /*
   ExprRef rd_grant  ; // I 1
   ExprRef rd_request; // O 1
   ExprRef rd_index  ; // O 32
@@ -94,10 +95,16 @@ protected:
   ExprRef wr_index   ; // O 32
   ExprRef wr_length  ; // O 32
   ExprRef data_out   ; // O 32
+  ExprRef rd_trans;
+  ExprRef wr_trans;
+  ExprRef rd_complete;
+  ExprRef wr_complete;
+  */
 
   // Top-level memory state
   ExprRef data          ;
   ExprRef predict_result;
+  ExprRef mem           ;
 
   // internal arch state.
   ExprRef init_done    ;
@@ -109,15 +116,8 @@ protected:
   ExprRef num_testusers;
   ExprRef num_movies   ;
   // internal arch state for transmissions
-  ExprRef rd_trans;
-  ExprRef wr_trans;
-  ExprRef rd_complete;
-  ExprRef wr_complete;
 
 
 }; // class RBM
-
-#define 
-
 
 #endif // RBM_ILA_H__

@@ -5,7 +5,7 @@
 #ifndef RBM_FIXPOINT_H__
 #define RBM_FIXPOINT_H__
 
-#include <ilang++.h>
+#include <ilang/ilang++.h>
 
 using namespace ilang;
 

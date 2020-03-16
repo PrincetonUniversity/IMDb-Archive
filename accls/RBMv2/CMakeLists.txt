@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.9.6)
 # PROJECT
 # name version language
 # ---------------------------------------------------------------------------- #
-project(starter VERSION 1.0 LANGUAGES CXX)
+project(rbm_verify VERSION 1.0 LANGUAGES CXX)
 
 # ---------------------------------------------------------------------------- #
 # VARIABLE
@@ -32,8 +32,6 @@ add_executable(${MyTarget}
   src/rbm_compute.cc
   src/rbm_util.cc
   src/rbm_ila.cc
-  src/rbm_predict.cc
-  src/rbm_train.cc
 )
 
 target_include_directories(${MyTarget} PRIVATE include)

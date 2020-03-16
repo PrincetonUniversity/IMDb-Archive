@@ -15,13 +15,15 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   auto loop_count = uabs.NewBvState("loop_count" , 16);
   auto upc        = uabs.NewBvState("upc"        , 4);
   auto i          = uabs.NewBvState("i"          , 16);
+  auto wi         = uabs.NewBvState("wi"         , 16);
 
   auto data               = uabs.state("data");
   auto mem                = uabs.state("mem");
   auto edges_mem          = uabs.NewMemState("edges", EDGEMEM_ADDR_WIDTH ,8 ) ;
+  auto predict_result     = uabs.state("predict_result");
 
   auto nlp                = uabs.state("num_loops"                          ) ;
-  auto nm                 = ZExt(uabs.state("num_movies"             ) , 32 ) ;
+  auto nm                 = uabs.state("num_movies"             ) ; // 16
   auto nu                 = uabs.state("num_users"                          ) ;
   auto ntu                = uabs.state("num_testusers"                      ) ;
   auto out_rd_request     = uabs.state("rd_request"                         ) ;
@@ -31,6 +33,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   auto train_input_done   = uabs.NewBvState("train_input_done",  1) ;
   auto predict_input_done = uabs.NewBvState("predict_input_done",1) ;
   auto nv = uabs.state("num_visible");
+  auto nh = uabs.state("num_hidden");
   auto train_start = uabs.NewBvState("train_start"        , 1);
   auto predict_start = uabs.NewBvState("predict_start"        , 1);
 
@@ -40,7 +43,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   auto predict_mem_sort   = SortRef::MEM(PREDICT_RESULT_WIDTH , 8);
   auto nh_bv_sort         = SortRef::BV(16);
   auto nv_bv_sort         = SortRef::BV(16);
-  
+
   // data, edges, nh, nv -> edges
   auto train_func         = FuncRef("train_func", edges_mem_sort, {data_mem_sort, edges_mem_sort, nh_bv_sort, nv_bv_sort} ); 
    // data, edges, nh, nv -> predict_result
@@ -58,130 +61,79 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
 
   // pc states
   auto StartReadState        = BvConst(0,4);
-  auto StartTrainOrPredict   = BvConst(1,4);
-  auto WaitForTrainStartDeactivateState   = BvConst(2,4);
-  auto WaitForPredictStartDeactivateState  = BvConst(3,4);
-  auto FinishState  = BvConst(4,4);
-
-
-
-  auto trainUabs   = AddChildTrain(uabs); // the reason to have it here is to have the
-  auto predictUabs = AddChildPredict(uabs);
+  auto StartWriteState       = BvConst(1,4);
+  auto FinishState           = BvConst(2,4);
 
   { // StartRead
       auto instr = model.NewInstr("StartRead");
 
       instr.SetDecode( (upc == StartReadState) & (i < nv) );
 
-      instr.SetUpdate( data , Store(data, i(8,0), Load(mem, ZExt(index + i, 32) )));
+      instr.SetUpdate( data , Store(data, i(8,0), Load(mem, ZExt(nv, 32) * ZExt(index, 32)  + ZExt(i, 32) )));
       instr.SetUpdate( i, i+1);
       instr.SetUpdate( upc , StartReadState );
 
   } // StartRead
-  { // FinishRead
-      auto instr = model.NewInstr("FinishRead");
 
-      instr.SetDecode( (upc == StartReadState) & (i == nv) );
+  { // FinishReadTrain
+      auto instr = model.NewInstr("FinishReadTrain");
 
-      instr.SetUpdate ( data , Store(data,nv(8,0), BvConst(1,8)));
-      instr.SetUpdate ( train_input_done   , Ite ( loop_count <  nlp, b1 , b0 ) ) ;
-      instr.SetUpdate ( predict_input_done , Ite ( loop_count == nlp, b1 , b0 ) ) ;
+      instr.SetDecode( (upc == StartReadState) & (i == nv) & (loop_count < nlp) );
 
-      instr.SetUpdate( upc , StartTrainOrPredict );
-  } // FinishRead
-  { // WaitForStartTrain
-      auto instr = model.NewInstr("WaitForStartTrain");
+      instr.SetUpdate( data , Store(data,nv(8,0), BvConst(1,8)));
 
-      instr.SetDecode( (upc == StartTrainOrPredict) & (
-         ( (train_input_done == 1) & (train_start == 1) ) 
-          ) );
-      // predict_start <- 1
-      // predict_input_done <- 0
-
-      instr.SetUpdate ( train_input_done   , b0 ) ;
-      instr.SetUpdate ( upc , WaitForTrainStartDeactivateState );
-      instr.SetProgram ( trainUabs );
-  } // WaitForStartTrain
-
-  { // WaitForStartPredict
-      auto instr = model.NewInstr("WaitForStartPredict");
-
-      instr.SetDecode( (upc == StartTrainOrPredict) & (
-         ( (predict_input_done == 1) & (predict_start == 1) )
-          ) );
-      // predict_start <- 1
-      // predict_input_done <- 0
-
-      instr.SetUpdate ( predict_input_done , b0 ) ;
-
-      instr.SetUpdate ( upc ,  WaitForPredictStartDeactivateState );
-      instr.SetProgram ( predictUabs );
-  } // WaitForStartPredict
-
-  { // WaitForStartDoNothing
-      auto instr = model.NewInstr("WaitForStartDoNothing");
-
-      instr.SetDecode( (upc == StartTrainOrPredict) & ! (
-         ( (train_input_done == 1) & (train_start == 1) ) |
-         ( (predict_input_done == 1) & (predict_start == 1) )
-          ) );
-      // predict_start <- 1
-      // predict_input_done <- 0
-
-      instr.SetUpdate ( upc , StartTrainOrPredict );
-  } // WaitForStart
-
-  { // WaitForTrainStartLoop
-      auto instr = model.NewInstr("WaitForTrainStartLoop");
-
-      instr.SetDecode( (upc == WaitForTrainStartDeactivateState) & (train_start == 0) );
-
-      instr.SetUpdate( upc, WaitForTrainStartDeactivateState );
-
-  } // WaitForTrainStartLoop
-
-  { // WaitForPredictStartLoop
-      auto instr = model.NewInstr("WaitForPredictStartLoop");
-
-      instr.SetDecode( (upc == WaitForPredictStartDeactivateState) & (predict_start == 0) );
-
-      instr.SetUpdate( upc, WaitForPredictStartDeactivateState );
-
-  } // WaitForPredictStartLoop
-
-  { // WaitForTrainStartDeactivate
-      auto instr = model.NewInstr("WaitForTrainStartDeactivate");
-
-      instr.SetDecode( (upc == WaitForTrainStartDeactivateState) & (train_start == 1) );
+      instr.SetUpdate(edges_mem, train_func({data, edges_mem, nh, nv}));
 
       instr.SetUpdate( index,
-          Ite( (index == nu - 1) & (loop_count != nlp) , h0_16,
-          Ite( (index == ntu - 1) & (loop_count == nlp) , index + 1,
-            index + 1) ) );
+          Ite( (index == nu - 1) , h0_16,
+            index + 1) );
 
       instr.SetUpdate( loop_count,
-        Ite( (index == nu - 1 ) & ( loop_count != nlp) , loop_count + 1, loop_count ));
+        Ite( (index == nu - 1 ) , loop_count + 1, loop_count ));
 
-      instr.SetUpdate( upc, Ite( (index == ntu - 1) & (loop_count == nlp) , FinishState, StartReadState) );
+      instr.SetUpdate( i, BvConst(0, 16) );
 
-  } // WaitForTrainStartDeactivate
+      instr.SetUpdate( upc , StartReadState );
+  } // FinishReadTrain
 
-  { // WaitForPredictStartDeactivate
-      auto instr = model.NewInstr("WaitForPredictStartDeactivate");
 
-      instr.SetDecode( (upc == WaitForPredictStartDeactivateState) & (predict_start == 1) );
+  { // FinishReadPredict
+      auto instr = model.NewInstr("FinishReadPredict");
 
-      instr.SetUpdate( index,
-          Ite( (index == nu - 1) & (loop_count != nlp) , h0_16,
-          Ite( (index == ntu - 1) & (loop_count == nlp) , index + 1,
-            index + 1) ) );
+      instr.SetDecode( (upc == StartReadState) & (i == nv) & (loop_count == nlp) );
 
-      instr.SetUpdate( loop_count,
-        Ite( (index == nu - 1 ) & ( loop_count != nlp) , loop_count + 1, loop_count ));
+      instr.SetUpdate( data , Store(data,nv(8,0), BvConst(1,8)));
 
-      instr.SetUpdate( upc, Ite( (index == ntu - 1) & (loop_count == nlp) , FinishState, StartReadState) );
+      instr.SetUpdate(predict_result, predict_func({data, edges_mem, nh, nv}));
 
-  } // WaitForPredictStartDeactivate
+      instr.SetUpdate( index, index + 1);
+      instr.SetUpdate( wi, BvConst(0, 16) );
+
+      instr.SetUpdate( upc , StartWriteState );
+  } // FinishReadPredict
+
+
+  { // write
+      auto instr = model.NewInstr("WriteBack");
+
+      instr.SetDecode( (upc == StartWriteState) & (wi < nm) );
+
+      instr.SetUpdate( mem, Store(mem, ZExt(nm, 32) * ZExt(index, 32) + ZExt(wi, 32), Load(predict_result, wi(6,0) ) ) );
+
+      instr.SetUpdate( wi, wi+1 );
+
+      instr.SetUpdate( upc , StartWriteState );
+  } // FinishReadPredict
+
+  { // write
+      auto instr = model.NewInstr("WriteBackDone");
+
+      instr.SetDecode( (upc == StartWriteState) & (wi == nm) );
+
+      instr.SetUpdate( i, BvConst(0,16) );
+
+      instr.SetUpdate( upc , Ite( index != ntu  , StartReadState, FinishState ));
+  } // FinishReadPredict
 
   { // Finish
       auto instr = model.NewInstr("Finish");
@@ -190,6 +142,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
       // do nothing
       instr.SetUpdate(upc, FinishState);
   } // Finish
+
 
   return uabs;
 }
