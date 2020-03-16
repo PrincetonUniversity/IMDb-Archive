@@ -1,0 +1,52 @@
+{
+  "models"         : { "ILA"                                       : "m0" , "VERILOG" : "m1" },
+    "state mapping"  : {
+      "mem"            : "**MEM**mem", // external memory
+      "data"           : null, //"m1.mem_0.mem_0/mem_1", // ping-pong buffer ?
+      "predict_result" : null, // "m1.mem_6.mem",
+      "init_done"      : "m1.acc_0.init_done",
+      "done"           : "m1.acc_0.done",
+      "num_hidden"     : "m1.acc_0.num_hidden",
+      "num_visible"    : "m1.acc_0.num_visible",
+      "num_users"      : "m1.acc_0.num_users",
+      "num_loops"      : "m1.acc_0.num_loops",
+      "num_testusers"  : "m1.acc_0.num_testusers",
+      "num_movies"     : "m1.acc_0.num_movies"
+  },
+
+  "interface mapping"    : {
+    "rst"                : "**RESET**",
+    "clk"                : "**CLOCK**",
+    "conf_done"          : "conf_done",
+    "conf_num_hidden"    : "conf_num_hidden",
+    "conf_num_loops"     : "conf_num_loops",
+    "conf_num_movies"    : "conf_num_movies",
+    "conf_num_testusers" : "conf_num_testusers",
+    "conf_num_users"     : "conf_num_users",
+    "conf_num_visible"   : "conf_num_visible",
+    "data_in_data"       : "**KEEP**",
+    "data_in_ready"      : "**KEEP**",
+    "data_in_valid"      : "**KEEP**",
+    "data_out_data"      : "**KEEP**",
+    "data_out_ready"     : "**KEEP**",
+    "data_out_valid"     : "**KEEP**",
+    "rd_grant"           : "**KEEP**",
+    "rd_index"           : "**KEEP**",
+    "rd_length"          : "**KEEP**",
+    "rd_request"         : "**KEEP**",
+    "wr_grant"           : "**KEEP**",
+    "wr_index"           : "**KEEP**",
+    "wr_length"          : "**KEEP**",
+    "wr_request"         : "**KEEP**",
+    "done"               : "**SO**"
+  },
+
+  "mapping control" : [ 
+                      ],
+
+  "functions":{
+      "unknown0":[["__IEND__","m1.aes_reg_state"]],
+      "unknown1":[["__IEND__","m1.aes_reg_state"]],
+      "unknown2":[["__IEND__","m1.aes_reg_ctr_i.reg_out"]]
+  }
+}
