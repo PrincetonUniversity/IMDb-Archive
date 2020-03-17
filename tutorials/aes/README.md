@@ -377,7 +377,7 @@ In the refinement relations, one must specify (1) the state mapping, and (2) in 
 when should be regarded as the end of an instruction. These two parts are specified in 
 two files, both in JSON format.
 
-The complete specification of the refinement map format in the JSON file can be found [here](https://github.com/Bo-Yuan-Huang/ILA-Tools/blob/master/docs/publications/How_to_Write_Refinement_Map_for_ILA_vs_Verilog_Verification.pdf).
+The complete specification of the refinement map format in the JSON file can be found [here](https://bo-yuan-huang.gitbook.io/ilang/verification/refinement).
 
 ### Verification Target Generation
 
