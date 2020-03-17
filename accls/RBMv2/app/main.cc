@@ -16,6 +16,8 @@ void verifyRBMTopLevel(Ila& model, VerilogVerificationTargetGenerator::vtg_confi
   vtg_cfg.MemAbsReadAbstraction = true; // enable read abstraction
   vtg_cfg.CosaAddKeep = false;
   vtg_cfg.VerificationSettingAvoidIssueStage = true;
+  vtg_cfg.CosaGenJgTesterScript = true;
+  vtg_cfg.ForceInstCheckReset = false;
 
   vlg_cfg.pass_node_name = true;
 
@@ -64,7 +66,7 @@ VerilogVerificationTargetGenerator::vtg_config_t LocalArguments() {
   VerilogVerificationTargetGenerator::vtg_config_t ret;
   ret.CosaSolver = "btor";
   ret.CosaPyEnvironment = "~/cosaEnv/bin/activate";
-  ret.CosaPath = "~/CoSA/CoSA.py";
+  ret.CosaPath = "~/CoSA/";
   return ret;
 }
 

@@ -15,7 +15,7 @@
   },
 
   "interface mapping"    : {
-    "rst"                : "**RESET**",
+    "rst"                : "**NRESET**",
     "clk"                : "**CLOCK**",
     "conf_done"          : "conf_done",
     "conf_num_hidden"    : "conf_num_hidden",

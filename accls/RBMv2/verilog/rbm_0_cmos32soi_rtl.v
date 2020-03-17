@@ -4457,8 +4457,8 @@ hidden_unit_A3);
       xor_ln157_0_z = {mt_bridge1_rtl_Q[20:14], mt_bridge1_rtl_Q[12:7], 
       mt_bridge1_rtl_Q[5:2], mt_bridge1_rtl_Q[0]} ^ {mt_bridge1_rtl_Q[31:25], 
       mt_bridge1_rtl_Q[23:18], mt_bridge1_rtl_Q[16:13], mt_bridge1_rtl_Q[11]};
-      xor_ln165_3_z = ^{mt_bridge1_rtl_Q[25], mt_bridge1_rtl_Q[21], 
-      mt_bridge1_rtl_Q[3]};
+      xor_ln165_3_z = mt_bridge1_rtl_Q[25] ^ mt_bridge1_rtl_Q[21] ^ 
+      mt_bridge1_rtl_Q[3];
       xor_ln73_z = mt_bridge1_rtl_Q[1:0] ^ mt_bridge1_rtl_Q[31:30];
       xor_ln73_0_z = mt_bridge1_rtl_Q[1:0] ^ mt_bridge1_rtl_Q[31:30];
       ctrlAnd_1_ln111_0_z = !add_ln271_q[23] & 
@@ -7425,7 +7425,7 @@ data_out_sync_snd_reset_valid_curr, data_out_sync_snd_valid_flop);
   reg data_out_sync_snd_reset_valid_curr_d;
 
   // synopsys async_set_reset_local rbm_0_cmos32soi_rbm_data_out_sync_snd_back_method_seq_block rst
-  always @(posedge clk or negedge rst) // rbm_0_cmos32soi_rbm_data_out_sync_snd_back_method_sequential
+  always @(posedge clk) // rbm_0_cmos32soi_rbm_data_out_sync_snd_back_method_sequential
     begin : rbm_0_cmos32soi_rbm_data_out_sync_snd_back_method_seq_block
       if (!rst) // Initialize state and outputs
       begin
