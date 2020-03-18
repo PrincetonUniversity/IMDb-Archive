@@ -38,7 +38,8 @@
     },
     {
       "instruction" : "START_ENCRYPT",
-      "ready bound" : 1
+      "ready bound" : 1,
+      "child complete signal": "m1.aes_state_idle"
     }
   ],
   

@@ -71,3 +71,16 @@ target_include_directories(${AES_TARGET}Exe PRIVATE include)
 
 target_link_libraries(${AES_TARGET}Exe ${AES_TARGET})
 
+
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${AES_TARGET}AQed
+  app/aqed-support.cc
+)
+
+target_include_directories(${AES_TARGET}AQed PRIVATE include)
+
+target_link_libraries(${AES_TARGET}AQed ${AES_TARGET})
