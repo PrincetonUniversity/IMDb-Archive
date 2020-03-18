@@ -212,9 +212,9 @@ assign __ILA_AES_decode_of_GET_STATUS__ = n56 ;
 assign __ILA_AES_decode_of_WRITE_LENGTH__ = n63 ;
 assign __ILA_AES_decode_of_WRITE_KEY__ = n70 ;
 assign __ILA_AES_decode_of_WRITE_COUNTER__ = n77 ;
-// START OF ASSUMPTIONS //
+// START OF ASSUMPTIONS : SequenceAssumtionsAny //
 any_valid_instr : assume property (__ILA_AES_decode_of_WRITE_ADDRESS__||__ILA_AES_decode_of_START_ENCRYPT__||__ILA_AES_decode_of_READ_LENGTH__||__ILA_AES_decode_of_READ_ADDRESS__||__ILA_AES_decode_of_READ_KEY__||__ILA_AES_decode_of_READ_COUNTER__||__ILA_AES_decode_of_GET_STATUS__||__ILA_AES_decode_of_WRITE_LENGTH__||__ILA_AES_decode_of_WRITE_KEY__||__ILA_AES_decode_of_WRITE_COUNTER__);
-// START OF ASSUMPTIONS //
+// START OF ASSUMPTIONS : GenSequenceOneAtATime //
 assume property (!__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_START_ENCRYPT__);
 assume property (!__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_LENGTH__);
 assume property (!__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_ADDRESS__);
