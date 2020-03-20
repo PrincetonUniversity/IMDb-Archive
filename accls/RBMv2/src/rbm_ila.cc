@@ -16,7 +16,7 @@ RBM::RBM()
       conf_num_testusers(model.NewBvInput("conf_num_testusers" , 32)) ,
       conf_num_movies   (model.NewBvInput("conf_num_movies"    , 32)) ,
       // other I/Os
-      reset             (model.NewBvInput("reset"              , 1))  ,
+      reset             (model.NewBvInput("rst"              , 1))  ,
       /// DMA read port
       mem               (model.NewMemState("mem", 32, 8)),
       /*
@@ -63,13 +63,13 @@ RBM::RBM()
     // model.AddInit(rd_complete   == b0);
     // model.AddInit(wr_complete   == b0);
 
-    model.SetValid((reset == 1) | (conf_done == 1));
+    model.SetValid((reset == 0) | (conf_done == 1));
 
 
     { // RESET
       auto instr = model.NewInstr("Reset");
 
-      instr.SetDecode( reset == 1 );
+      instr.SetDecode( reset == 0 );
       instr.SetUpdate(init_done    , b0 );
       instr.SetUpdate(done         , b0 );
       instr.SetUpdate(num_hidden   , h0_16);

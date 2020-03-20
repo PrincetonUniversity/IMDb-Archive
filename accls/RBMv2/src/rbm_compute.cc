@@ -30,12 +30,8 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   // auto out_rd_complete    = uabs.state("rd_complete"                        ) ;
   // auto out_rd_length      = uabs.state("rd_length"                          ) ;
   // auto out_rd_index       = uabs.state("rd_index"                           ) ;
-  auto train_input_done   = uabs.NewBvState("train_input_done",  1) ;
-  auto predict_input_done = uabs.NewBvState("predict_input_done",1) ;
   auto nv = uabs.state("num_visible");
   auto nh = uabs.state("num_hidden");
-  auto train_start = uabs.NewBvState("train_start"        , 1);
-  auto predict_start = uabs.NewBvState("predict_start"        , 1);
 
   // function for training/prediction
   auto data_mem_sort      = SortRef::MEM(DATAMEM_ADDR_WIDTH   , 8);
@@ -54,8 +50,6 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   uabs.AddInit(upc                == 0);
   uabs.AddInit(index              == 0);
   uabs.AddInit(loop_count         == 0);
-  uabs.AddInit(train_input_done   == 0);
-  uabs.AddInit(predict_input_done == 0);
   uabs.AddInit(i == 0);
   // uabs.AddInit(out_rd_complete    == 0);
 

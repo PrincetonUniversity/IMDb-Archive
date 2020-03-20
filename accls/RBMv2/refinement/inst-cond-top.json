@@ -3,6 +3,11 @@
     {
       "instruction" : "Configure",
       "start condition": ["$valid$","$decode$", "(m1.acc_0.state_rbm_0_cmos32soi_rbm_config[1] == 1)"],
+      "ready bound" : 1,
+      "child complete signal" : "m1.acc_0.state_rbm_0_cmos32soi_rbm_store[1]"
+    },
+    {
+      "instruction" : "Reset",
       "ready bound" : 1
     }
   ],
