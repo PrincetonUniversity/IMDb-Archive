@@ -1,0 +1,21 @@
+20
+ack output 1
+addr input 16
+aes_addr output 16
+aes_ctr output 128
+aes_key0 output 128
+aes_len output 16
+aes_state output 2
+aes_step output 1
+clk input 1
+data_in input 8
+data_out output 8
+rst input 1
+stb input 1
+wr input 1
+xram_ack input 1
+xram_addr output 16
+xram_data_in input 8
+xram_data_out output 8
+xram_stb output 1
+xram_wr output 1

@@ -17,8 +17,8 @@
      "addr"          : "cmdaddr",
      "data_in"       : "cmddata",
 
-     "xram_data_out" : "**MEM**XRAM.wdata",
-     "xram_data_in"  : "**MEM**XRAM.rdata",
+     "xram_data_out" :                           "**KEEP**",
+     "xram_data_in"  :                           "**KEEP**",
      "wr"            :                           "**KEEP**",
      "ack"           :                           "**KEEP**",
      "stb"           :                           "**KEEP**",
@@ -35,11 +35,26 @@
      "aes_step:"     :           "**SO**"
   },
 
-  "mapping control" : [ "(m1.xram_wr & m1.xram_stb) == __MEM_XRAM_0_wen" , 
+  "annotation": {
+    "memory": {
+      "XRAM":"external"
+    },
+    
+    "memory-ports":{
+      "XRAM": {
+        "wen"   : "m1.xram_wr & m1.xram_stb",
+        "waddr" : "m1.xram_addr",
+        "wdata" : "m1.xram_data_out",
+        "raddr" : "m1.xram_addr",
+        "ren"   : "~m1.xram_wr & m1.xram_stb",
+        "rdata" : "m1.xram_data_in"
+      }
+    }
+  },
+
+  "mapping control" : [
                         "(~ ( m0.cmd == 2 )) || ( m1.wr == 1)" , 
-                        "(~ ( m0.cmd == 1 )) || ( m1.wr == 0)",
-                        " m1.xram_addr ==  __MEM_XRAM_0_raddr ",
-                        " m1.xram_addr ==  __MEM_XRAM_0_waddr "
+                        "(~ ( m0.cmd == 1 )) || ( m1.wr == 0)"
                       ],
 
   "functions":{
