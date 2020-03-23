@@ -17,9 +17,9 @@ __ILA_AES_decode_of_WRITE_ADDRESS__,
 __ILA_AES_decode_of_WRITE_COUNTER__,
 __ILA_AES_decode_of_WRITE_KEY__,
 __ILA_AES_decode_of_WRITE_LENGTH__,
-cmd,
-cmdaddr,
-cmddata
+__ILA_VAR_cmd,
+__ILA_VAR_cmdaddr,
+__ILA_VAR_cmddata
 );
 input     [15:0] addr;
 input            clk;
@@ -39,9 +39,9 @@ output            __ILA_AES_decode_of_WRITE_ADDRESS__;
 output            __ILA_AES_decode_of_WRITE_COUNTER__;
 output            __ILA_AES_decode_of_WRITE_KEY__;
 output            __ILA_AES_decode_of_WRITE_LENGTH__;
-output      [1:0] cmd;
-output     [15:0] cmdaddr;
-output      [7:0] cmddata;
+output      [1:0] __ILA_VAR_cmd;
+output     [15:0] __ILA_VAR_cmdaddr;
+output      [7:0] __ILA_VAR_cmddata;
 wire            __ILA_AES_decode_of_GET_STATUS__;
 wire            __ILA_AES_decode_of_READ_ADDRESS__;
 wire            __ILA_AES_decode_of_READ_COUNTER__;
@@ -52,6 +52,9 @@ wire            __ILA_AES_decode_of_WRITE_ADDRESS__;
 wire            __ILA_AES_decode_of_WRITE_COUNTER__;
 wire            __ILA_AES_decode_of_WRITE_KEY__;
 wire            __ILA_AES_decode_of_WRITE_LENGTH__;
+(* keep *) wire      [1:0] __ILA_VAR_cmd;
+(* keep *) wire     [15:0] __ILA_VAR_cmdaddr;
+(* keep *) wire      [7:0] __ILA_VAR_cmddata;
 wire     [15:0] bv_16_65280_n11;
 wire     [15:0] bv_16_65282_n2;
 wire     [15:0] bv_16_65284_n7;
@@ -63,9 +66,6 @@ wire      [1:0] bv_2_1_n17;
 wire      [1:0] bv_2_2_n0;
 wire      [7:0] bv_8_1_n14;
 wire            clk;
-(* keep *) wire      [1:0] cmd;
-(* keep *) wire     [15:0] cmdaddr;
-(* keep *) wire      [7:0] cmddata;
 wire            n1;
 wire            n10;
 wire            n12;

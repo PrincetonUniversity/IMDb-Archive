@@ -28,7 +28,7 @@ int main(int argc, char **argv) {
       aes_ila_model.model.get());
 
   aqed_out->ExportVerilogTopLevelIOInfo(OutputPath + "io.txt");
-  aqed_out->ExportInstructionAndDecode (OutputPath + "decode.v");
+  aqed_out->ExportInstructionAndDecode (OutputPath + "decoder.v");
   aqed_out->ExportExtraSignalReferenced(OutputPath + "var_ref.txt");
 
   return 0;
