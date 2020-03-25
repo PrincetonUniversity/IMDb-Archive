@@ -2,9 +2,9 @@
   "instructions": [
     {
       "instruction" : "Configure",
-      "start condition": ["$valid$","$decode$", "(m1.acc_0.state_rbm_0_cmos32soi_rbm_config[1] == 1)"],
+      "start condition": ["$valid$","$decode$", "(m1.acc_0.state_rbm_0_cmos32soi_rbm_config >= 3'b010)"],
       "ready bound" : 1,
-      "child complete signal" : "m1.acc_0.state_rbm_0_cmos32soi_rbm_store[1]"
+      "child complete signal" : "m1.acc_0.state_rbm_0_cmos32soi_rbm_store[1:1]"
     },
     {
       "instruction" : "Reset",
@@ -14,7 +14,8 @@
   
   "global invariants": [
     "m1.acc_0.state_rbm_0_cmos32soi_rbm_config == 3'b001 || m1.acc_0.state_rbm_0_cmos32soi_rbm_config == 3'b010 || m1.acc_0.state_rbm_0_cmos32soi_rbm_config == 3'b100",
-    "~(m1.acc_0.init_done) || (!m1.acc_0.state_rbm_0_cmos32soi_rbm_config[0] && !m1.acc_0.state_rbm_0_cmos32soi_rbm_config[1])"
+    "~(m1.acc_0.init_done) || (!m1.acc_0.state_rbm_0_cmos32soi_rbm_config[0:0] && !m1.acc_0.state_rbm_0_cmos32soi_rbm_config[1:1])",
+    "~(m1.acc_0.state_rbm_0_cmos32soi_rbm_config[2:2]) || m1.acc_0.init_done"
     ]
 
 }
