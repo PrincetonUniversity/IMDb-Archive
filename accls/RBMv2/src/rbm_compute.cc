@@ -7,13 +7,16 @@
 #include <rbm_ila.h>
 
 Ila RBM::AddChildComputeUabs(InstrRef& inst) {
+  auto init_done = model.state("init_done");
+  auto done = model.state("done");
+
   auto uabs = model.NewChild("compute");
 
   uabs.SetValid( (init_done == 1) & (done == 0) );
   // states
   auto index      = uabs.NewBvState("index"      , 16);
   auto loop_count = uabs.NewBvState("loop_count" , 16);
-  auto upc        = uabs.NewBvState("upc"        , 4);
+  auto upc        = uabs.NewBvState("upc"        ,  4);
   auto i          = uabs.NewBvState("i"          , 16);
   auto wi         = uabs.NewBvState("wi"         , 16);
 
@@ -134,7 +137,8 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
 
       instr.SetDecode( (upc == FinishState) );
       // do nothing
-      instr.SetUpdate(upc, FinishState);
+      // instr.SetUpdate(upc, FinishState);
+      instr.SetUpdate(done, b1);
   } // Finish
 
 

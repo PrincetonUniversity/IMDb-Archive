@@ -57,8 +57,10 @@
       "mem.raddr":"(m1.acc_0.rd_index + m1.acc_0.acc_0.mux_mux_i_ln585_Z_v)", // ?
       "mem.wen":"(m1.data_out_valid & m1.data_out_ready)", // you can use arbitrary verilog expression here
       "mem.wdata":"m1.data_out_data",
-      "mem.waddr":"(m1.acc_0.wr_index + m1.acc_0.mux_i_ln983_z)", // ?
+      "mem.waddr":"(m1.acc_0.wr_index + m1.acc_0.mux_i_ln983_z)"// ?
     }
-  },
+    // Alternatively, you can write
+    //  "mem" : {"ren": "...", "rdata": "...", ...}
+  }
 
 }
