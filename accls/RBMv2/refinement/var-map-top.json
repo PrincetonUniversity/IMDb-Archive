@@ -1,5 +1,5 @@
 {
-  "models"         : { "ILA"                                       : "m0" , "VERILOG" : "m1" },
+  "models"         : { "ILA"  : "m0" , "VERILOG" : "m1" },
     "state mapping"  : {
       "mem"            : "**MEM**mem", // external memory
       "data"           : "m1.mem_0.mem_0", //"m1.mem_0.mem_0/mem_1", // ping-pong buffer ?
@@ -12,55 +12,55 @@
       "num_loops"      : "m1.acc_0.num_loops",
       "num_testusers"  : "m1.acc_0.num_testusers",
       "num_movies"     : "m1.acc_0.num_movies"
-  },
-
-  "interface mapping"    : {
-    "rst"                : "**NRESET**",
-    "clk"                : "**CLOCK**",
-    "conf_done"          : "conf_done",
-    "conf_num_hidden"    : "conf_num_hidden",
-    "conf_num_loops"     : "conf_num_loops",
-    "conf_num_movies"    : "conf_num_movies",
-    "conf_num_testusers" : "conf_num_testusers",
-    "conf_num_users"     : "conf_num_users",
-    "conf_num_visible"   : "conf_num_visible",
-    "data_in_data"       : "**KEEP**",
-    "data_in_ready"      : "**KEEP**",
-    "data_in_valid"      : "**KEEP**",
-    "data_out_data"      : "**KEEP**",
-    "data_out_ready"     : "**KEEP**",
-    "data_out_valid"     : "**KEEP**",
-    "rd_grant"           : "**KEEP**",
-    "rd_index"           : "**KEEP**",
-    "rd_length"          : "**KEEP**",
-    "rd_request"         : "**KEEP**",
-    "wr_grant"           : "**KEEP**",
-    "wr_index"           : "**KEEP**",
-    "wr_length"          : "**KEEP**",
-    "wr_request"         : "**KEEP**",
-    "done"               : "**SO**"
-  },
-
-  "mapping control" : [ 
-                      ],
-
-
-  "annotation": {
-    "memory" : {
-      "mem":"external",
-      "data":"internal",
-      "predict_result":"internal"
     },
-    "memory-ports" : {
-      "mem.ren":"(m1.data_in_valid & m1.data_in_ready)", // you can use arbitrary verilog expression here
-      "mem.rdata":"m1.data_in_data",
-      "mem.raddr":"(m1.acc_0.rd_index + m1.acc_0.acc_0.mux_mux_i_ln585_Z_v)", // ?
-      "mem.wen":"(m1.data_out_valid & m1.data_out_ready)", // you can use arbitrary verilog expression here
-      "mem.wdata":"m1.data_out_data",
-      "mem.waddr":"(m1.acc_0.wr_index + m1.acc_0.mux_i_ln983_z)"// ?
+
+    "interface mapping"    : {
+      "rst"                : "**NRESET**rst",
+      "clk"                : "**CLOCK**",
+      "conf_done"          : "conf_done",
+      "conf_num_hidden"    : "conf_num_hidden",
+      "conf_num_loops"     : "conf_num_loops",
+      "conf_num_movies"    : "conf_num_movies",
+      "conf_num_testusers" : "conf_num_testusers",
+      "conf_num_users"     : "conf_num_users",
+      "conf_num_visible"   : "conf_num_visible",
+      "data_in_data"       : "**KEEP**",
+      "data_in_ready"      : "**KEEP**",
+      "data_in_valid"      : "**KEEP**",
+      "data_out_data"      : "**KEEP**",
+      "data_out_ready"     : "**KEEP**",
+      "data_out_valid"     : "**KEEP**",
+      "rd_grant"           : "**KEEP**",
+      "rd_index"           : "**KEEP**",
+      "rd_length"          : "**KEEP**",
+      "rd_request"         : "**KEEP**",
+      "wr_grant"           : "**KEEP**",
+      "wr_index"           : "**KEEP**",
+      "wr_length"          : "**KEEP**",
+      "wr_request"         : "**KEEP**",
+      "done"               : "**SO**"
+    },
+
+    "mapping control" : [ 
+                        ],
+
+
+    "annotation": {
+      "memory" : {
+        "mem":"external",
+        "data":"internal",
+        "predict_result":"internal"
+      },
+      "memory-ports" : {
+        "mem.ren":"(m1.data_in_valid & m1.data_in_ready)", // you can use arbitrary verilog expression here
+        "mem.rdata":"m1.data_in_data",
+        "mem.raddr":"(m1.acc_0.rd_index + m1.acc_0.acc_0.mux_mux_i_ln585_Z_v)", // ?
+        "mem.wen":"(m1.data_out_valid & m1.data_out_ready)", // you can use arbitrary verilog expression here
+        "mem.wdata":"m1.data_out_data",
+        "mem.waddr":"(m1.acc_0.wr_index + m1.acc_0.mux_i_ln983_z)"// ?
+      }
+      // Alternatively, you can write
+      //  "mem" : {"ren": "...", "rdata": "...", ...}
     }
-    // Alternatively, you can write
-    //  "mem" : {"ren": "...", "rdata": "...", ...}
-  }
 
 }

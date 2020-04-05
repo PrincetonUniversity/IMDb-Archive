@@ -16,7 +16,7 @@ RBM::RBM()
       conf_num_testusers(model.NewBvInput("conf_num_testusers" , 32)) ,
       conf_num_movies   (model.NewBvInput("conf_num_movies"    , 32)) ,
       // other I/Os
-      reset             (model.NewBvInput("reset"              , 1))  ,
+      reset             (model.NewBvInput("rst"              , 1))  ,
       /// DMA read port
       mem               (model.NewMemState("mem", 32, 8)),
       /*
@@ -81,7 +81,7 @@ RBM::RBM()
       instr.SetUpdate(num_movies   , h0_16);
     } // RESET
 
-    { // WRITE_ADDRESS
+    { // Configure
       auto instr = model.NewInstr("Configure");
 
       instr.SetDecode( (reset == 1) & (conf_done == 1) );
@@ -96,7 +96,18 @@ RBM::RBM()
       // will start the sub-ila from this instruction
       auto child = AddChildComputeUabs(instr);
       instr.SetProgram(child);
-    } // WRITE_ADDRESS
+    } // Configure
+
+
+    // in the future we should
+    // 1. wrap this API
+    // 2. find a way to auto deduct such
+    model.AddSeqTran( InstrRef(NULL)    , model.instr("Reset")    , BoolConst(true) );
+    model.AddSeqTran( model.instr("Reset")     , model.instr("Configure"), BoolConst(true) );
+    model.AddSeqTran( model.instr("Reset")     , model.instr("Reset")    , BoolConst(true) );
+    model.AddSeqTran( model.instr("Configure") , model.instr("Reset")    , BoolConst(true) );
+    // no configure -> configure edge
+
 
 /*
     { // ReadGranted

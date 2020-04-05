@@ -62,7 +62,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   auto FinishState           = BvConst(2,4);
 
   { // StartRead
-      auto instr = model.NewInstr("StartRead");
+      auto instr = uabs.NewInstr("StartRead");
 
       instr.SetDecode( (upc == StartReadState) & (i < nv) );
 
@@ -73,7 +73,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   } // StartRead
 
   { // FinishReadTrain
-      auto instr = model.NewInstr("FinishReadTrain");
+      auto instr = uabs.NewInstr("FinishReadTrain");
 
       instr.SetDecode( (upc == StartReadState) & (i == nv) & (loop_count < nlp) );
 
@@ -95,7 +95,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
 
 
   { // FinishReadPredict
-      auto instr = model.NewInstr("FinishReadPredict");
+      auto instr = uabs.NewInstr("FinishReadPredict");
 
       instr.SetDecode( (upc == StartReadState) & (i == nv) & (loop_count == nlp) );
 
@@ -111,7 +111,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
 
 
   { // write
-      auto instr = model.NewInstr("WriteBack");
+      auto instr = uabs.NewInstr("WriteBack");
 
       instr.SetDecode( (upc == StartWriteState) & (wi < nm) );
 
@@ -123,7 +123,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   } // FinishReadPredict
 
   { // write
-      auto instr = model.NewInstr("WriteBackDone");
+      auto instr = uabs.NewInstr("WriteBackDone");
 
       instr.SetDecode( (upc == StartWriteState) & (wi == nm) );
 
@@ -133,7 +133,7 @@ Ila RBM::AddChildComputeUabs(InstrRef& inst) {
   } // FinishReadPredict
 
   { // Finish
-      auto instr = model.NewInstr("Finish");
+      auto instr = uabs.NewInstr("Finish");
 
       instr.SetDecode( (upc == FinishState) );
       // do nothing

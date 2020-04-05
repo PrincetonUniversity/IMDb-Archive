@@ -23,12 +23,13 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 find_package(ilang REQUIRED)
 
 
+
+
 # ---------------------------------------------------------------------------- #
 # TARGET
-# executable
+# library
 # ---------------------------------------------------------------------------- #
-add_executable(${MyTarget} 
-  app/main.cc
+add_library(${MyTarget}
   src/rbm_compute.cc
   src/rbm_util.cc
   src/rbm_ila.cc
@@ -36,5 +37,31 @@ add_executable(${MyTarget}
 
 target_include_directories(${MyTarget} PRIVATE include)
 
-target_link_libraries(${MyTarget} ilang::ilang)
+target_link_libraries(${MyTarget} PUBLIC ilang::ilang)
 
+
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${MyTarget}Exe
+  app/main.cc
+)
+
+target_include_directories(${MyTarget}Exe PRIVATE include)
+
+target_link_libraries(${MyTarget}Exe ${MyTarget})
+
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${MyTarget}AQed
+  app/aqed-support.cc
+)
+
+target_include_directories(${MyTarget}AQed PRIVATE include)
+
+target_link_libraries(${MyTarget}AQed ${MyTarget})
