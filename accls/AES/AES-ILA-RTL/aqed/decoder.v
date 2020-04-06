@@ -1,4 +1,7 @@
 module decoder(
+__DECODER_CLOCK__,
+__DECODER_RESET__,
+__ISSUE__,
 addr,
 clk,
 data_in,
@@ -21,6 +24,9 @@ __ILA_VAR_cmd,
 __ILA_VAR_cmdaddr,
 __ILA_VAR_cmddata
 );
+input            __DECODER_CLOCK__;
+input            __DECODER_RESET__;
+input            __ISSUE__;
 input     [15:0] addr;
 input            clk;
 input      [7:0] data_in;
@@ -42,6 +48,8 @@ output            __ILA_AES_decode_of_WRITE_LENGTH__;
 output      [1:0] __ILA_VAR_cmd;
 output     [15:0] __ILA_VAR_cmdaddr;
 output      [7:0] __ILA_VAR_cmddata;
+wire            __DECODER_CLOCK__;
+wire            __DECODER_RESET__;
 wire            __ILA_AES_decode_of_GET_STATUS__;
 wire            __ILA_AES_decode_of_READ_ADDRESS__;
 wire            __ILA_AES_decode_of_READ_COUNTER__;
@@ -55,6 +63,7 @@ wire            __ILA_AES_decode_of_WRITE_LENGTH__;
 (* keep *) wire      [1:0] __ILA_VAR_cmd;
 (* keep *) wire     [15:0] __ILA_VAR_cmdaddr;
 (* keep *) wire      [7:0] __ILA_VAR_cmddata;
+wire            __ISSUE__;
 wire     [15:0] bv_16_65280_n11;
 wire     [15:0] bv_16_65282_n2;
 wire     [15:0] bv_16_65284_n7;
@@ -65,7 +74,6 @@ wire     [15:0] bv_16_65328_n47;
 wire      [1:0] bv_2_1_n17;
 wire      [1:0] bv_2_2_n0;
 wire      [7:0] bv_8_1_n14;
-wire            clk;
 wire            n1;
 wire            n10;
 wire            n12;
@@ -134,7 +142,6 @@ wire            n76;
 wire            n77;
 wire            n8;
 wire            n9;
-wire            rst;
 assign bv_2_2_n0 = 2'h2 ;
 assign n1 =  ( __ILA_VAR_cmd ) == ( bv_2_2_n0 )  ;
 assign bv_16_65282_n2 = 16'hff02 ;
@@ -229,51 +236,51 @@ assign __ILA_VAR_cmddata = data_in ;
 assume property ((~ ( __ILA_VAR_cmd == 2 )) || ( wr == 1));
 assume property ((~ ( __ILA_VAR_cmd == 1 )) || ( wr == 0));
 // START OF ASSUMPTIONS : SequenceAssumtionsAny //
-any_valid_instr : assume property (__ILA_AES_decode_of_WRITE_ADDRESS__||__ILA_AES_decode_of_START_ENCRYPT__||__ILA_AES_decode_of_READ_LENGTH__||__ILA_AES_decode_of_READ_ADDRESS__||__ILA_AES_decode_of_READ_KEY__||__ILA_AES_decode_of_READ_COUNTER__||__ILA_AES_decode_of_GET_STATUS__||__ILA_AES_decode_of_WRITE_LENGTH__||__ILA_AES_decode_of_WRITE_KEY__||__ILA_AES_decode_of_WRITE_COUNTER__);
+any_valid_instr : assume property ( !__ISSUE__ || (__ILA_AES_decode_of_WRITE_ADDRESS__||__ILA_AES_decode_of_START_ENCRYPT__||__ILA_AES_decode_of_READ_LENGTH__||__ILA_AES_decode_of_READ_ADDRESS__||__ILA_AES_decode_of_READ_KEY__||__ILA_AES_decode_of_READ_COUNTER__||__ILA_AES_decode_of_GET_STATUS__||__ILA_AES_decode_of_WRITE_LENGTH__||__ILA_AES_decode_of_WRITE_KEY__||__ILA_AES_decode_of_WRITE_COUNTER__) );
 // START OF ASSUMPTIONS : GenSequenceOneAtATime //
-assume property (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_START_ENCRYPT__) );
-assume property (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_LENGTH__) );
-assume property (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_ADDRESS__) );
-assume property (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_KEY__) );
-assume property (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_GET_STATUS__) );
-assume property (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_WRITE_LENGTH__) );
-assume property (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_WRITE_KEY__) );
-assume property (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_WRITE_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_READ_LENGTH__) );
-assume property (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_READ_ADDRESS__) );
-assume property (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_READ_KEY__) );
-assume property (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_READ_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_GET_STATUS__) );
-assume property (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_WRITE_LENGTH__) );
-assume property (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_WRITE_KEY__) );
-assume property (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_WRITE_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_READ_ADDRESS__) );
-assume property (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_READ_KEY__) );
-assume property (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_READ_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_GET_STATUS__) );
-assume property (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_WRITE_LENGTH__) );
-assume property (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_WRITE_KEY__) );
-assume property (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_WRITE_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_READ_KEY__) );
-assume property (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_READ_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_GET_STATUS__) );
-assume property (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_WRITE_LENGTH__) );
-assume property (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_WRITE_KEY__) );
-assume property (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_WRITE_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_READ_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_GET_STATUS__) );
-assume property (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_WRITE_LENGTH__) );
-assume property (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_WRITE_KEY__) );
-assume property (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_WRITE_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_READ_COUNTER__&&__ILA_AES_decode_of_GET_STATUS__) );
-assume property (! (__ILA_AES_decode_of_READ_COUNTER__&&__ILA_AES_decode_of_WRITE_LENGTH__) );
-assume property (! (__ILA_AES_decode_of_READ_COUNTER__&&__ILA_AES_decode_of_WRITE_KEY__) );
-assume property (! (__ILA_AES_decode_of_READ_COUNTER__&&__ILA_AES_decode_of_WRITE_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_GET_STATUS__&&__ILA_AES_decode_of_WRITE_LENGTH__) );
-assume property (! (__ILA_AES_decode_of_GET_STATUS__&&__ILA_AES_decode_of_WRITE_KEY__) );
-assume property (! (__ILA_AES_decode_of_GET_STATUS__&&__ILA_AES_decode_of_WRITE_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_WRITE_LENGTH__&&__ILA_AES_decode_of_WRITE_KEY__) );
-assume property (! (__ILA_AES_decode_of_WRITE_LENGTH__&&__ILA_AES_decode_of_WRITE_COUNTER__) );
-assume property (! (__ILA_AES_decode_of_WRITE_KEY__&&__ILA_AES_decode_of_WRITE_COUNTER__) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_START_ENCRYPT__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_LENGTH__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_ADDRESS__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_READ_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_GET_STATUS__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_WRITE_LENGTH__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_WRITE_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_ADDRESS__&&__ILA_AES_decode_of_WRITE_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_READ_LENGTH__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_READ_ADDRESS__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_READ_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_READ_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_GET_STATUS__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_WRITE_LENGTH__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_WRITE_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_START_ENCRYPT__&&__ILA_AES_decode_of_WRITE_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_READ_ADDRESS__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_READ_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_READ_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_GET_STATUS__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_WRITE_LENGTH__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_WRITE_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_LENGTH__&&__ILA_AES_decode_of_WRITE_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_READ_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_READ_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_GET_STATUS__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_WRITE_LENGTH__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_WRITE_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_ADDRESS__&&__ILA_AES_decode_of_WRITE_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_READ_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_GET_STATUS__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_WRITE_LENGTH__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_WRITE_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_KEY__&&__ILA_AES_decode_of_WRITE_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_COUNTER__&&__ILA_AES_decode_of_GET_STATUS__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_COUNTER__&&__ILA_AES_decode_of_WRITE_LENGTH__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_COUNTER__&&__ILA_AES_decode_of_WRITE_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_READ_COUNTER__&&__ILA_AES_decode_of_WRITE_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_GET_STATUS__&&__ILA_AES_decode_of_WRITE_LENGTH__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_GET_STATUS__&&__ILA_AES_decode_of_WRITE_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_GET_STATUS__&&__ILA_AES_decode_of_WRITE_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_LENGTH__&&__ILA_AES_decode_of_WRITE_KEY__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_LENGTH__&&__ILA_AES_decode_of_WRITE_COUNTER__) ) );
+assume property ( !__ISSUE__ || (! (__ILA_AES_decode_of_WRITE_KEY__&&__ILA_AES_decode_of_WRITE_COUNTER__) ) );
 endmodule
