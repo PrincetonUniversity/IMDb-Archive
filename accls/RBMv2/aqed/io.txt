@@ -1,0 +1,25 @@
+24
+clk input 1
+conf_done input 1
+conf_num_hidden input 32
+conf_num_loops input 32
+conf_num_movies input 32
+conf_num_testusers input 32
+conf_num_users input 32
+conf_num_visible input 32
+data_in_data input 32
+data_in_ready output 1
+data_in_valid input 1
+data_out_data output 32
+data_out_ready input 1
+data_out_valid output 1
+done output 1
+rd_grant input 1
+rd_index output 32
+rd_length output 32
+rd_request output 1
+rst input 1
+wr_grant input 1
+wr_index output 32
+wr_length output 32
+wr_request output 1

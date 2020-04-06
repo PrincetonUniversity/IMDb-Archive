@@ -2,7 +2,10 @@
   "models"         : { "ILA"  : "m0" , "VERILOG" : "m1" },
     "state mapping"  : {
       "mem"            : "**MEM**mem", // external memory
-      "data"           : "m1.mem_0.mem_0", //"m1.mem_0.mem_0/mem_1", // ping-pong buffer ?
+      "data"           : [
+                          ["!m1.mem_0.rbm_0_data_A0[9]","m1.mem_0.mem_0"], 
+                          ["m1.mem_0.rbm_0_data_A0[9]", "m1.mem_0.mem_1"]], 
+                          // this is a ping-pong buffer
       "predict_result" : "m1.mem_6.mem",   // "m1.mem_6.mem",
       "init_done"      : "m1.acc_0.init_done",
       "done"           : "m1.acc_0.done",

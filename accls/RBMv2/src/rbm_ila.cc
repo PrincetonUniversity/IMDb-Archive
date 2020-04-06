@@ -102,10 +102,11 @@ RBM::RBM()
     // in the future we should
     // 1. wrap this API
     // 2. find a way to auto deduct such
-    model.AddSeqTran( InstrRef(NULL)    , model.instr("Reset")    , BoolConst(true) );
-    model.AddSeqTran( model.instr("Reset")     , model.instr("Configure"), BoolConst(true) );
-    model.AddSeqTran( model.instr("Reset")     , model.instr("Reset")    , BoolConst(true) );
-    model.AddSeqTran( model.instr("Configure") , model.instr("Reset")    , BoolConst(true) );
+    model.AddSeqTran( InstrRef(NULL)           , model.instr("Reset")     , BoolConst(true) );
+    model.AddSeqTran( model.instr("Reset")     , model.instr("Configure") , BoolConst(true) );
+    model.AddSeqTran( model.instr("Reset")     , model.instr("Reset")     , BoolConst(true) );
+    model.AddSeqTran( InstrRef(NULL)           , model.instr("Configure") , BoolConst(true) );
+    model.AddSeqTran( model.instr("Configure") , model.instr("Reset")     , BoolConst(true) );
     // no configure -> configure edge
 
 
