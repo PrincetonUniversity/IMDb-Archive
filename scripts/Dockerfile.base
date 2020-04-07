@@ -79,6 +79,6 @@ WORKDIR /root/workspace
 
 # configure files
 COPY --from=builder $BUILD_PREF $BUILD_PREF
-COPY --from=builder $BUILD_ROOT/ILAng/boilerplate/ ./simple/
+COPY --from=builder $BUILD_ROOT/ILAng/starter/ ./simple/
 
 RUN cp -r $BUILD_PREF/* /usr/
