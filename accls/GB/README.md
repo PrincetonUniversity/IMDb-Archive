@@ -1,25 +1,17 @@
-### Acknowledgement 
-Thanks to the Standford VLSI Research Group led by Prof Mark Horowitz for providing the example (https://github.com/jingpu/Halide-HLS.git).
+# Instruction-level abstraction (ILA) of the Gaussian Blur accelerator
 
-https://github.com/jingpu/Halide-HLS/blob/HLS/LICENSE.txt
+This is the ILA model of the [GB](https://github.com/jingpu/Halide-HLS.git) accelerator developed by the Stanford VLSI Research Group led by Prof. Mark Horowitz. 
+Check [LICENSE](https://github.com/jingpu/Halide-HLS/blob/HLS/LICENSE.txt) for further details.
 
-### Overview
-
-This is an example to demonstrate the capability of ILA in modeling at different levels of abstraction, and 
-to perform equivalence checking between the ILAs and between the ILA and the FSM. 
-
-### Directories
+## Directory structure
  
-* ila_spec_a: high-level ILA 
-* ila_spec_b: low-level ILA
-* Verilog: FSM model (high-level synthesized RTL implementation)
+-   `include/gb` contains header files for functions and macros (e.g., state name, bit-width, etc.)
+    -   `gb_config.h` defines xxx.
 
+-   `src` contains source files for functions to construct the ILA model
+    -   `high_*.cc` defines the high-level model ...
+    -   `low_*.cc` defines the low-level model ...
+    -   `util.cc` contains some helper functions
 
-The refinement relations for proving the equivalence are in:
-* scripts_a_b: high-level ILA v.s. low-level ILA
-* scripts_impl_a: high-level ILA v.s. FSM
-* scripts_impl_b: low-level ILA v.s. FSM
+-   `app` contains the `main.cc` for applications using the ILA model
 
-### Tools
-
-The verification is conducted via JasperGold, with the refinement written in SVA.
