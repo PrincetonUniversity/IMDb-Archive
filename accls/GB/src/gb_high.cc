@@ -90,7 +90,7 @@ InstrRef GbHigh::DefineWrInstr() {
   auto instr = model_.NewInstr("Write");
 
   instr.SetDecode((arg_1_TVALID == valid_t) & (arg_1_TREADY == ready_t) &
-                  (arg_0_TVALID == valid_t) & (arg_0_TREADY == ready_f));
+                  (arg_0_TVALID == valid_f) & (arg_0_TREADY == ready_f));
 
   // state updates
   instr.SetUpdate(arg_1_TREADY, ready_f);
