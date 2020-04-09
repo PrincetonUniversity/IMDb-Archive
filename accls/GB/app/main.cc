@@ -24,22 +24,19 @@
 
 // File: main.cc
 
-#include <gb/gb_top.h>
+#include <gb/gb_high.h>
 
-#include <fstream>
 #include <ilang/util/log.h>
 
 using namespace ilang;
 
 int main() {
-  // get the ILA model
-  auto gb = GetGbIla("gb");
+  SetToStdErr(1);
+  EnableDebug("GbHigh");
 
-  // example - export ILA to Verilog
-  ILA_INFO << "Export " << gb << " to gb.v";
-  std::ofstream fw("gb.v");
-  gb.ExportToVerilog(fw);
-  fw.close();
+  auto gb_high = GbHigh().get();
+  ILA_INFO << "#instr: " << gb_high.instr_num();
+  ILA_INFO << "#state: " << gb_high.state_num();
 
   return 0;
 }

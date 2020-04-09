@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # ==============================================================================
 # MIT License
 #
@@ -30,7 +28,7 @@ cmake_minimum_required(VERSION 3.9.6)
 # PROJECT
 # name version language
 # ---------------------------------------------------------------------------- #
-project(gb VERSION 0.1 LANGUAGES CXX)
+project(gb VERSION 1.0 LANGUAGES CXX)
 
 # ---------------------------------------------------------------------------- #
 # VARIABLE
@@ -46,7 +44,7 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 ##
 ## ilang
 ##
-find_package(ilang REQUIRED)
+find_package(ilang REQUIRED 1.0.0)
 
 # ---------------------------------------------------------------------------- #
 # TARGET
@@ -54,7 +52,7 @@ find_package(ilang REQUIRED)
 # ---------------------------------------------------------------------------- #
 add_executable(${MyTarget} 
   app/main.cc
-  src/gb_top.cc
+  src/gb_high.cc
 )
 
 target_include_directories(${MyTarget} PRIVATE include)

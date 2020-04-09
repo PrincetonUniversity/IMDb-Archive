@@ -22,34 +22,29 @@
 // SOFTWARE.
 // =============================================================================
 
-// File: gb_top.cc
+// File: gb_config.h
 
-#include <gb/gb_top.h>
+#ifndef GB_CONFIG_H__
+#define GB_CONFIG_H__
 
-#include <ilang/util/log.h>
+#include <ilang/ilang++.h>
 
 namespace ilang {
 
-Ila GetGbIla(const std::string& model_name) {
-  auto m = Ila(model_name);
+#define GB_DATA_SIZE 8
+#define GB_COUNT_SIZE 19
+#define GB_X_EXTEND 9
+#define GB_Y_EXTEND 9
+#define GB_IMG_X_SIZE 488
+#define GB_IMG_Y_SIZE 648
+#define GB_COL_ADDR_SIZE 9
+#define GB_ROW_ADDR_SIZE 10
+#define GB_WR_ADDR_SIZE 3
 
-  // define interface and architectural states
-  auto addr = m.NewBvInput("addr", 16);
-  auto data = m.NewBvInput("data", 8);
-  auto ctrl = m.NewBvState("ctrl", 8);
-  auto mode = m.NewBvState("mode", 8);
-
-  // define ILA valid function
-  m.SetValid(addr >= 0xFF00 & addr < 0xFF10);
-
-  // define instruction - decode and state update functions
-  auto instr_wr_ctrl = m.NewInstr("WrCtrl");
-  instr_wr_ctrl.SetDecode(addr == 0xFF00);
-  instr_wr_ctrl.SetUpdate(ctrl, Ite(data < 8, data, ctrl));
-
-  // TODO
-
-  return m;
-}
+#define GB_RAM_SIZE (GB_Y_EXTEND - 1)
+#define GB_SLICE_SIZE (GB_Y_EXTEND * GB_DATA_SIZE)
+#define GB_STENCIL_SIZE GB_X_EXTEND
 
 }; // namespace ilang
+
+#endif // GB_CONFIG_H__
