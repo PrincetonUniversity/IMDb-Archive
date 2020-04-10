@@ -34,6 +34,41 @@
       "ready signal": "#end_of_pipeline#", // && ( m1.l15_transducer_val || m1.l15.l15_noc1buffer_req_val )
       "start condition":
         ["$valid$","$decode$","m1.l15.pipeline.predecode_source_s1 == 2'd1" ]
+    }, 
+
+    {
+      "instruction" : "IFILL",
+      "ready signal": "#end_of_pipeline#", // && ( m1.l15_transducer_val || m1.l15.l15_noc1buffer_req_val )
+      "start condition":
+        ["$valid$","$decode$","m1.l15.pipeline.predecode_source_s1 == 2'd1" ]
+    }, 
+
+    {
+      "instruction" : "ICACHE_INVALIDATE",
+      "ready signal": "#end_of_pipeline#", // && ( m1.l15_transducer_val || m1.l15.l15_noc1buffer_req_val )
+      "start condition":
+        ["$valid$","$decode$","m1.l15.pipeline.predecode_source_s1 == 2'd1" ]
+    }, 
+
+    {
+      "instruction" : "DCACHE_INVALIDATE",
+      "ready signal": "#end_of_pipeline#", // && ( m1.l15_transducer_val || m1.l15.l15_noc1buffer_req_val )
+      "start condition":
+        ["$valid$","$decode$","m1.l15.pipeline.predecode_source_s1 == 2'd1" ]
+    }, 
+    
+    {
+      "instruction" : "INTERRUPT",
+      "ready signal": "#end_of_pipeline#", // && ( m1.l15_transducer_val || m1.l15.l15_noc1buffer_req_val )
+      "start condition":
+        ["$valid$","$decode$","m1.l15.pipeline.predecode_source_s1 == 2'd1" ]
+    }, 
+    
+    {
+      "instruction" : "INTERRUPT_BROADCAST",
+      "ready signal": "#end_of_pipeline#", // && ( m1.l15_transducer_val || m1.l15.l15_noc1buffer_req_val )
+      "start condition":
+        ["$valid$","$decode$","m1.l15.pipeline.predecode_source_s1 == 2'd1" ]
     }
 
   ],

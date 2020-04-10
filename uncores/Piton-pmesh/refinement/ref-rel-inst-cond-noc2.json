@@ -2,13 +2,44 @@
   "instructions": [
     {
       "instruction" : "INTERRUPT",
-      "ready signal": "#end_of_pipeline#", // && ( m1.l15_transducer_val || m1.l15.l15_noc1buffer_req_val )
-      "start condition":
-        ["$valid$","$decode$" , "m1.l15.pipeline.fetch_state_s1 == 3'd0"]
+      "ready signal": "#end_of_pipeline#"//, // && ( m1.l15_transducer_val || m1.l15.l15_noc1buffer_req_val )
+    },
+
+    {
+      "instruction" : "STORE_FWD",
+      "ready signal": "#end_of_pipeline#",
+      "start condition" : ["$valid$","$decode$", "(m1.l15.pipeline.fetch_state_s1 == 6 || m1.l15.pipeline.fetch_state_s1 == 0 || m1.l15.pipeline.fetch_state_s1 == 2  || m1.l15.pipeline.fetch_state_s1 == 3  || m1.l15.pipeline.fetch_state_s1 == 4)"]
+    },
+
+    {
+      "instruction" : "INV_FWD",
+      "ready signal": "#end_of_pipeline#",
+      "start condition" : ["$valid$","$decode$", "(m1.l15.pipeline.fetch_state_s1 == 6 || m1.l15.pipeline.fetch_state_s1 == 0 || m1.l15.pipeline.fetch_state_s1 == 2  || m1.l15.pipeline.fetch_state_s1 == 3  || m1.l15.pipeline.fetch_state_s1 == 4)"]
+    },
+
+    {
+      "instruction" : "LOAD_FWD",
+      "ready signal": "#end_of_pipeline#",
+      "start condition" : ["$valid$","$decode$", "(m1.l15.pipeline.fetch_state_s1 == 6 || m1.l15.pipeline.fetch_state_s1 == 0 || m1.l15.pipeline.fetch_state_s1 == 2  || m1.l15.pipeline.fetch_state_s1 == 3  || m1.l15.pipeline.fetch_state_s1 == 4)"]
+    },
+
+    {
+      "instruction" : "DATA_ACK",
+      "ready signal": "#end_of_pipeline#",
+      "start condition" : ["$valid$","$decode$", "(m1.l15.pipeline.fetch_state_s1 == 0 || m1.l15.pipeline.fetch_state_s1 == 5 )"]
+    },
+
+    {
+      "instruction" : "NODATA_ACK",
+      "ready signal": "#end_of_pipeline#",
+      "start condition" : ["$valid$","$decode$", "(m1.l15.pipeline.fetch_state_s1 == 0)"]
     }
+
   ],
   
-  "global invariants": []
+  "global invariants": [
+    "m1.l15.pipeline.fetch_state_s1 < 7"   
+  ]
 
 }
 

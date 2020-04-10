@@ -70,6 +70,18 @@ target_include_directories(${PMESHL15_TARGET}-pcx-verify PRIVATE include)
 
 target_link_libraries(${PMESHL15_TARGET}-pcx-verify ${PMESHL15_TARGET})
 
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${PMESHL15_TARGET}-pcx-verify-child
+  app/main-pcx-verify-child.cc
+)
+
+target_include_directories(${PMESHL15_TARGET}-pcx-verify-child PRIVATE include)
+
+target_link_libraries(${PMESHL15_TARGET}-pcx-verify-child ${PMESHL15_TARGET})
+
 
 # ---------------------------------------------------------------------------- #
 # TARGET

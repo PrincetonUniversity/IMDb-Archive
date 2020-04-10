@@ -28,7 +28,7 @@ void verifyPMeshL15(
       path_to_design_files,                                  // designs
       "l15_wrap",                                            // top_module_name
       RefrelPath + "ref-rel-var-map-pcx.json",                   // variable mapping
-      RefrelPath + "ref-rel-inst-cond-pcx.json",                 // conditions of start/ready
+      RefrelPath + "ref-rel-inst-cond-pcx-child.json",                 // conditions of start/ready
       OutputPath,                                            // output path
       model.get(),                                           // model
       VerilogVerificationTargetGenerator::backend_selector::COSA, // backend: COSA
@@ -72,8 +72,9 @@ int main() {
 
   // build the model
   PMESH_L15_PCX_ILA l15_ila_model;
+  auto child = l15_ila_model.model.child(0);
 
-  verifyPMeshL15(l15_ila_model.model, vtg_cfg, design_files);
+  verifyPMeshL15(child, vtg_cfg, design_files);
 
   return 0;
 }

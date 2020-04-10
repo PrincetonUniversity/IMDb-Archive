@@ -10,7 +10,7 @@ void verifyPMeshL15(
   const std::vector<std::string> & design_files
    ) {
   VerilogGeneratorBase::VlgGenConfig vlg_cfg;
-  vlg_cfg.pass_node_name = true;
+  vlg_cfg.pass_node_name = false;
 
   std::string RootPath    = "..";
   std::string VerilogPath = RootPath    + "/verilog/";
@@ -91,6 +91,7 @@ VerilogVerificationTargetGenerator::vtg_config_t SetConfiguration() {
   ret.CosaPath = "~/CoSA";
   ret.CosaGenTraceVcd = true;
   ret.CosaAddKeep = false;
+  ret.IteUnknownAutoIgnore = true;
 
   /// other configurations
   ret.PortDeclStyle = VlgVerifTgtGenBase::vtg_config_t::NEW;

@@ -176,6 +176,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
   auto L15_AMO_OP_MIN   = BvConst(0xa,AMO_OP_WIDTH);
   auto L15_AMO_OP_MINU  = BvConst(0xb,AMO_OP_WIDTH);
   auto L15_AMO_OP_CAS1  = BvConst(0xc,AMO_OP_WIDTH);
+  auto L15_AMO_OP_CAS2  = BvConst(0xd,AMO_OP_WIDTH); 
 
 
   // predecoder operations
@@ -191,6 +192,13 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
   auto L15_REQTYPE_AMO_MIN      = BvConst(44 , 6);
   auto L15_REQTYPE_AMO_MINU     = BvConst(45 , 6);
   auto L15_REQTYPE_CAS          = BvConst(0x4, 6);
+
+  // address type
+  auto L15_ADDR_TYPE_DATA_ACCESS      = BvConst(0xb0, 8);
+  auto L15_ADDR_TYPE_HMC_ACCESS       = BvConst(0xb2, 8); // todo
+  auto L15_ADDR_TYPE_LINE_FLUSH       = BvConst(0xb3, 8);
+  auto L15_ADDR_TYPE_HMC_FLUSH        = BvConst(0xb5, 8); // todo
+  auto L15_ADDR_TYPE_CONFIG_REGS      = BvConst(0xba, 8);
 
 
 // ------------------------------ DEFAULT VALUES ---------------------------------- //
@@ -232,6 +240,14 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
   auto default_noc3_with_data    = b0;                                    // unknown(BOOL_WIDTH)();
   auto default_noc3_fwdack_vector  = BvConst(0, FWD_SUBCACHELINE_VECTOR); // unknown(FWD_SUBCACHELINE_VECTOR)();
 
+  // ------------------------------ Conditions ---------------------------------- //
+  auto predecode_special_access_s1 = address(39,32);
+  auto predecode_is_pcx_config_asi_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_CONFIG_REGS;
+  auto predecode_is_pcx_diag_data_access_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_DATA_ACCESS;
+  auto predecode_is_pcx_diag_line_flush_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_LINE_FLUSH;
+  auto predecode_is_hmc_diag_access_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_HMC_ACCESS;
+  auto predecode_is_hmc_flush_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_HMC_FLUSH;
+
   // ------------------------------ INSTRUCTIONS ---------------------------------- //
 
   // L1.5 fetch function -- what corresponds to instructions on L1.5 PCX interface
@@ -266,7 +282,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetDecode( 
       ( rqtype == PCX_REQTYPE_LOAD) & (nc == 0) & (invalidate == 0)  & (fetch_state == L15_FETCH_STATE_NORMAL) &
         (predecode_is_pcx_config_asi_s1 == 0) & (predecode_is_pcx_diag_data_access_s1 == 0) &
-        (predecode_is_hmc_diag_access_s1 == 0) & (predecode_prefetch_bit_s1 == 0) );
+        (predecode_is_hmc_diag_access_s1 == 0) );
 
     auto MESI_state = Map( "address_to_mesi_map",  2, address ); // Use the map
     auto DATA_cache = Map( "address_to_data_map", 128, address ); // Use the map
@@ -320,7 +336,11 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
   {
     auto instr = model.NewInstr("STORE_normal");
 
-    instr.SetDecode( ( rqtype == PCX_REQTYPE_STORE) & (nc == 0) & (invalidate == 0)  & (fetch_state == L15_FETCH_STATE_NORMAL) );
+    instr.SetDecode( ( rqtype == PCX_REQTYPE_STORE) & (nc == 0) & (invalidate == 0)  & (fetch_state == L15_FETCH_STATE_NORMAL) &
+        (predecode_is_pcx_config_asi_s1 == 0) & (predecode_is_pcx_diag_data_access_s1 == 0) &
+        (predecode_is_hmc_diag_access_s1 == 0) & (predecode_is_pcx_diag_line_flush_s1 == 0) &
+        (predecode_is_hmc_flush_s1 == 0)
+        );
 
     auto MESI_state = Map( "address_to_mesi_map",  2, address ); // Use the map
     auto DATA_cache = Map( "address_to_data_map", 128, address ); // Use the map
@@ -384,7 +404,9 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     auto instr = model.NewInstr("LOAD_nc"); 
     // 656 L15_REQTYPE_LOAD_NC, it is the flush first
     // 1134
-    instr.SetDecode( ( rqtype == PCX_REQTYPE_LOAD) & (nc == 1) & (fetch_state == L15_FETCH_STATE_NORMAL) );
+    instr.SetDecode( ( rqtype == PCX_REQTYPE_LOAD) & (nc == 1) & (fetch_state == L15_FETCH_STATE_NORMAL) &
+        (predecode_is_pcx_config_asi_s1 == 0) & (predecode_is_pcx_diag_data_access_s1 == 0) &
+        (predecode_is_hmc_diag_access_s1 == 0)  );
 
     auto MESI_state = Map( "address_to_mesi_map",  MESI_WIDTH, address ); // Use the map
     auto DATA_cache = Map( "address_to_data_map", 128, address ); // Use the map
@@ -409,7 +431,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     // L15_CPX_GEN_INVALIDATION_IF_TAGCHECK_MES_AND_WAYMAP_VALID 3983
     instr.SetUpdate( l15_transducer_val                   , Ite( hit & wmt_compare_match_s3 , b1                , default_l15_transducer_val                    ));
     instr.SetUpdate( l15_transducer_returntype            , Ite( hit                        , CPX_RESTYPE_INVAL , default_l15_transducer_returntype             ));
-    instr.SetUpdate( l15_transducer_noncacheable          , Ite( hit                        , b0                , default_l15_transducer_noncacheable           ));
+    instr.SetUpdate( l15_transducer_noncacheable          , Ite( hit                        , b1                , default_l15_transducer_noncacheable           ));
     instr.SetUpdate( l15_transducer_atomic                , Ite( hit                        , b0                , default_l15_transducer_atomic                 ));
     instr.SetUpdate( l15_transducer_data_0                , Ite( hit                        , zero_data         , default_l15_transducer_data_0                 ));
     instr.SetUpdate( l15_transducer_data_1                , Ite( hit                        , zero_data         , default_l15_transducer_data_1                 ));
@@ -449,7 +471,10 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
 
     auto instr = model.NewInstr("STORE_nc"); // write_through L15_REQTYPE_WRITETHROUGH 684 1242
 
-    instr.SetDecode( ( rqtype == PCX_REQTYPE_STORE ) & (nc == 1) & (fetch_state == L15_FETCH_STATE_NORMAL) );
+    instr.SetDecode( ( rqtype == PCX_REQTYPE_STORE ) & (nc == 1) & (fetch_state == L15_FETCH_STATE_NORMAL) &
+        (predecode_is_pcx_config_asi_s1 == 0) & (predecode_is_pcx_diag_data_access_s1 == 0) &
+        (predecode_is_hmc_diag_access_s1 == 0) & (predecode_is_pcx_diag_line_flush_s1 == 0) &
+        (predecode_is_hmc_flush_s1 == 0) );
 
     //`define L15_INT_VEC_DIS 40'h9800000800
     auto predecode_int_vec_dis_s1 = (address(39,32) == BvConst(0x98,8) ) & (address(11,8) == BvConst(0x8,4) );
@@ -464,7 +489,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     // if interrupt    L15_NOC1_GEN_INTERRUPT_FWD   4347
     // if not inerrupt L15_NOC1_GEN_WRITEBACK_GUARD_IF_TAGCHECK_M 
     instr.SetUpdate( noc1_val          , Ite( mod | predecode_int_vec_dis_s1 , Ite(predecode_int_vec_dis_s1 , b1                             , b1                                ) , default_noc1_val          ));
-    instr.SetUpdate( noc1_address      , Ite( mod | predecode_int_vec_dis_s1 , Ite(predecode_int_vec_dis_s1 , address                        , address                           ) , default_noc1_address      ));
+    instr.SetUpdate( noc1_address      , Ite( mod | predecode_int_vec_dis_s1 , Ite(predecode_int_vec_dis_s1 , default_noc1_address           , address                           ) , default_noc1_address      ));
     instr.SetUpdate( noc1_noncacheable , Ite( mod | predecode_int_vec_dis_s1 , Ite(predecode_int_vec_dis_s1 , b1                             , b1                                ) , default_noc1_noncacheable ));
     instr.SetUpdate( noc1_size         , Ite( mod | predecode_int_vec_dis_s1 , Ite(predecode_int_vec_dis_s1 , size                           , size                              ) , default_noc1_size         ));
     instr.SetUpdate( noc1_threadid     , Ite( mod | predecode_int_vec_dis_s1 , Ite(predecode_int_vec_dis_s1 , threadid                       , threadid                          ) , default_noc1_threadid     ));
@@ -479,7 +504,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     // L15_CPX_GEN_INVALIDATION_IF_TAGCHECK_MES_AND_WAYMAP_VALID 3983
     instr.SetUpdate( l15_transducer_val                  , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , b1                                          , Ite(wmt_compare_match_s3                                   , b1                                              , b0) ) , default_l15_transducer_val ));
     instr.SetUpdate( l15_transducer_returntype           , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , CPX_RESTYPE_STORE_ACK                       , CPX_RESTYPE_INVAL )                                        , default_l15_transducer_returntype           ));
-    instr.SetUpdate( l15_transducer_noncacheable         , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_noncacheable         , b0                )                                        , default_l15_transducer_noncacheable         ));
+    instr.SetUpdate( l15_transducer_noncacheable         , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_noncacheable         , b1                )                                        , default_l15_transducer_noncacheable         ));
     instr.SetUpdate( l15_transducer_atomic               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_atomic               , b0                )                                        , default_l15_transducer_atomic               ));
     instr.SetUpdate( l15_transducer_data_0               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_0               , zero_data         )                                        , default_l15_transducer_data_0               ));
     instr.SetUpdate( l15_transducer_data_1               , Ite( hit | predecode_int_vec_dis_s1 , Ite( predecode_int_vec_dis_s1 , default_l15_transducer_data_1               , zero_data         )                                        , default_l15_transducer_data_1               ));
@@ -494,9 +519,9 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( noc3_type          , Ite( mod & ! predecode_int_vec_dis_s1 , L15_NOC3_REQTYPE_WRITEBACK , default_noc3_type          ));
     instr.SetUpdate( noc3_data_0        , Ite( mod & ! predecode_int_vec_dis_s1 , default_noc3_data_0        , default_noc3_data_0        ));
     instr.SetUpdate( noc3_data_1        , Ite( mod & ! predecode_int_vec_dis_s1 , default_noc3_data_1        , default_noc3_data_1        ));
-    instr.SetUpdate( noc3_mshrid        , Ite( mod & ! predecode_int_vec_dis_s1 , default_noc3_mshrid        , default_noc3_mshrid        ));
+    instr.SetUpdate( noc3_mshrid        , Ite( mod & ! predecode_int_vec_dis_s1 , L15_MSHR_ID_ST             , default_noc3_mshrid        ));
     instr.SetUpdate( noc3_threadid      , Ite( mod & ! predecode_int_vec_dis_s1 , default_noc3_threadid      , default_noc3_threadid      ));
-    instr.SetUpdate( noc3_address       , Ite( mod & ! predecode_int_vec_dis_s1 , default_noc3_address       , default_noc3_address       ));
+    instr.SetUpdate( noc3_address       , Ite( mod & ! predecode_int_vec_dis_s1 , address       , default_noc3_address       ));
     instr.SetUpdate( noc3_invalidate    , Ite( mod & ! predecode_int_vec_dis_s1 , default_noc3_invalidate    , default_noc3_invalidate    ));
     instr.SetUpdate( noc3_with_data     , Ite( mod & ! predecode_int_vec_dis_s1 , b1                         , default_noc3_with_data     ));
     instr.SetUpdate( noc3_fwdack_vector , Ite( mod & ! predecode_int_vec_dis_s1 , default_noc3_fwdack_vector , default_noc3_fwdack_vector ));
@@ -515,7 +540,20 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     auto instr = model.NewInstr("AMOs");
 
     // 704
-    instr.SetDecode( ( rqtype == PCX_REQTYPE_AMO ) & (amo_op != L15_AMO_OP_NONE) & (fetch_state == L15_FETCH_STATE_NORMAL) );
+    instr.SetDecode( ( rqtype == PCX_REQTYPE_AMO ) & (
+      (amo_op == L15_AMO_OP_LR  ) |
+      (amo_op == L15_AMO_OP_SC  ) |
+      (amo_op == L15_AMO_OP_SWAP) |
+      (amo_op == L15_AMO_OP_ADD ) |
+      (amo_op == L15_AMO_OP_AND ) |
+      (amo_op == L15_AMO_OP_OR  ) |
+      (amo_op == L15_AMO_OP_XOR ) |
+      (amo_op == L15_AMO_OP_MAX ) |
+      (amo_op == L15_AMO_OP_MAXU) |
+      (amo_op == L15_AMO_OP_MIN ) |
+      (amo_op == L15_AMO_OP_MINU) |
+      (amo_op == L15_AMO_OP_CAS1) ) &
+     (fetch_state == L15_FETCH_STATE_NORMAL) );
 
     instr.SetUpdate(fetch_state, L15_FETCH_STATE_PCX_WRITEBACK_DONE);
 
@@ -527,10 +565,10 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     // L15_NOC1_GEN_WRITEBACK_GUARD_IF_TAGCHECK_M 4347
     instr.SetUpdate( noc1_val          , Ite( mod , b1                               , default_noc1_val          ));
     instr.SetUpdate( noc1_address      , Ite( mod , address                          , default_noc1_address      ));
-    instr.SetUpdate( noc1_noncacheable , Ite( mod , b1                               , default_noc1_noncacheable ));
+    instr.SetUpdate( noc1_noncacheable , nc ); // really ?
     instr.SetUpdate( noc1_size         , Ite( mod , size                             , default_noc1_size         ));
     instr.SetUpdate( noc1_threadid     , Ite( mod , threadid                         , default_noc1_threadid     ));
-    instr.SetUpdate( noc1_mshrid       , Ite( mod , L15_MSHR_ID_ST                   , default_noc1_mshrid       ));
+    instr.SetUpdate( noc1_mshrid       , L15_MSHR_ID_LD );
     instr.SetUpdate( noc1_type         , Ite( mod , L15_NOC1_REQTYPE_WRITEBACK_GUARD , default_noc1_type         ));
     instr.SetUpdate( noc1_data_0       , Ite( mod , zero_data                        , default_noc1_data_0       ));
     instr.SetUpdate( noc1_data_1       , Ite( mod , zero_data                        , default_noc1_data_1       ));
@@ -546,7 +584,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( l15_transducer_data_2               , Ite( hit , zero_data                                 , default_l15_transducer_data_2               ));
     instr.SetUpdate( l15_transducer_data_3               , Ite( hit , zero_data                                 , default_l15_transducer_data_3               ));
     instr.SetUpdate( l15_transducer_inval_address_15_4   , Ite( hit , default_l15_transducer_inval_address_15_4 , default_l15_transducer_inval_address_15_4   ));
-    instr.SetUpdate( l15_transducer_inval_icache_all_way , Ite( hit , b1                                        , default_l15_transducer_inval_icache_all_way ));
+    instr.SetUpdate( l15_transducer_inval_icache_all_way , Ite( hit , b0                                        , default_l15_transducer_inval_icache_all_way ));
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , Ite( hit , b1                                        , default_l15_transducer_inval_dcache_inval   ));
     instr.SetUpdate( l15_transducer_threadid              , default_l15_transducer_threadid ) ;
     // L15_NOC3_GEN_WRITEBACK_IF_TAGCHECK_M_FROM_DCACHE
@@ -554,9 +592,9 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( noc3_type          , Ite( mod , L15_NOC3_REQTYPE_WRITEBACK , default_noc3_type          ));
     instr.SetUpdate( noc3_data_0        , Ite( mod , default_noc3_data_0        , default_noc3_data_0        ));
     instr.SetUpdate( noc3_data_1        , Ite( mod , default_noc3_data_1        , default_noc3_data_1        ));
-    instr.SetUpdate( noc3_mshrid        , Ite( mod , default_noc3_mshrid        , default_noc3_mshrid        ));
+    instr.SetUpdate( noc3_mshrid        , L15_MSHR_ID_LD);
     instr.SetUpdate( noc3_threadid      , Ite( mod , default_noc3_threadid      , default_noc3_threadid      ));
-    instr.SetUpdate( noc3_address       , Ite( mod , default_noc3_address       , default_noc3_address       ));
+    instr.SetUpdate( noc3_address       , address);
     instr.SetUpdate( noc3_invalidate    , Ite( mod , default_noc3_invalidate    , default_noc3_invalidate    ));
     instr.SetUpdate( noc3_with_data     , Ite( mod , b1                         , default_noc3_with_data     ));
     instr.SetUpdate( noc3_fwdack_vector , Ite( mod , default_noc3_fwdack_vector , default_noc3_fwdack_vector ));
@@ -592,7 +630,8 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     auto instr = model.NewInstr("ICACHE_INVALIDATE");
 
     // 665
-    instr.SetDecode( ( rqtype == PCX_REQTYPE_IFILL ) & ( invalidate == 1 )  & (fetch_state == L15_FETCH_STATE_NORMAL)  );
+    instr.SetDecode( ( rqtype == PCX_REQTYPE_IFILL ) &
+      ( invalidate == 1 )  & (fetch_state == L15_FETCH_STATE_NORMAL)  );
     // cpx L15_CPX_GEN_ICACHE_INVALIDATION : 3970
 
     // has the issue of L15_CPX_GEN_INTERRUPT
@@ -605,7 +644,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetUpdate( l15_transducer_data_2               , default_l15_transducer_data_2               );
     instr.SetUpdate( l15_transducer_data_3               , default_l15_transducer_data_3               );
     instr.SetUpdate( l15_transducer_inval_address_15_4   , default_l15_transducer_inval_address_15_4   );
-    instr.SetUpdate( l15_transducer_inval_icache_all_way , default_l15_transducer_inval_icache_all_way );
+    instr.SetUpdate( l15_transducer_inval_icache_all_way , b1 );
     instr.SetUpdate( l15_transducer_inval_dcache_inval   , default_l15_transducer_inval_dcache_inval   );
     instr.SetUpdate( l15_transducer_threadid              , default_l15_transducer_threadid ) ;
   }
@@ -614,7 +653,10 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     auto instr = model.NewInstr("DCACHE_INVALIDATE");
 
     // 657
-    instr.SetDecode( ( rqtype == PCX_REQTYPE_LOAD ) & ( invalidate == 1 ) & ( nc == 0 ) & (fetch_state == L15_FETCH_STATE_NORMAL)  );
+    instr.SetDecode( ( rqtype == PCX_REQTYPE_LOAD ) & ( invalidate == 1 ) &
+      (predecode_is_pcx_config_asi_s1 == 0) & (predecode_is_pcx_diag_data_access_s1 == 0) &
+      (predecode_is_hmc_diag_access_s1 == 0) &  ( nc == 0 ) & 
+      (fetch_state == L15_FETCH_STATE_NORMAL)  );
     // L15_REQTYPE_DCACHE_SELF_INVALIDATION
     // 1491
     // cpx : L15_CPX_GEN_DCACHE_INVALIDATION 3976
@@ -697,7 +739,9 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     { // the load non-cacheable
       auto instr = pcx_writeback.NewInstr( "LOAD_nc_writeback_done" );
 
-      instr.SetDecode( ( rqtype == PCX_REQTYPE_LOAD) & (nc == 1) );
+      instr.SetDecode( ( rqtype == PCX_REQTYPE_LOAD) & (nc == 1) &
+        (predecode_is_pcx_config_asi_s1 == 0) & (predecode_is_pcx_diag_data_access_s1 == 0) &
+        (predecode_is_hmc_diag_access_s1 == 0) );
       // 1162 
 
       // L15_NOC1_GEN_DATA_LD_REQUEST 4224
@@ -719,7 +763,15 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     { // the store non-cacheable
       auto instr = pcx_writeback.NewInstr( "STORE_nc_writeback_done" );
 
-      instr.SetDecode( ( rqtype == PCX_REQTYPE_STORE ) & (nc == 1) );
+      //`define L15_INT_VEC_DIS 40'h9800000800
+      auto predecode_int_vec_dis_s1 = (address(39,32) == BvConst(0x98,8) ) & (address(11,8) == BvConst(0x8,4) );
+
+      instr.SetDecode( ( rqtype == PCX_REQTYPE_STORE ) & (nc == 1) &
+        (predecode_is_pcx_config_asi_s1 == 0) & (predecode_is_pcx_diag_data_access_s1 == 0) &
+        (predecode_is_hmc_diag_access_s1 == 0) & (predecode_is_pcx_diag_line_flush_s1 == 0) &
+        (predecode_is_hmc_flush_s1 == 0) &
+        (predecode_int_vec_dis_s1 == 0) // this is actually an invariant on ILA, but we don't have such mechanism to figure it out
+        );
 
       // 1286
 
@@ -744,7 +796,19 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     { // the load non-cacheable
       auto instr = pcx_writeback.NewInstr( "AMOs_pcx_writeback_done" );
 
-      instr.SetDecode( rqtype == PCX_REQTYPE_AMO ); // 1450
+      instr.SetDecode( (rqtype == PCX_REQTYPE_AMO) & (
+      (amo_op == L15_AMO_OP_LR  ) |
+      (amo_op == L15_AMO_OP_SC  ) |
+      (amo_op == L15_AMO_OP_SWAP) |
+      (amo_op == L15_AMO_OP_ADD ) |
+      (amo_op == L15_AMO_OP_AND ) |
+      (amo_op == L15_AMO_OP_OR  ) |
+      (amo_op == L15_AMO_OP_XOR ) |
+      (amo_op == L15_AMO_OP_MAX ) |
+      (amo_op == L15_AMO_OP_MAXU) |
+      (amo_op == L15_AMO_OP_MIN ) |
+      (amo_op == L15_AMO_OP_MINU) |
+      (amo_op == L15_AMO_OP_CAS1) ) ); // 1450
       
       /*
                 decoder_mshr_allocation_type_s1 = `L15_MSHR_ID_LD;
@@ -763,9 +827,10 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
         Ite( amo_op == L15_AMO_OP_CAS1 , L15_NOC1_REQTYPE_CAS_REQUEST               ,
           default_noc1_type ))))))))));
       auto atm_noc1_data_1 = 
-        Ite( amo_op == L15_AMO_OP_SWAP , data_next , default_noc1_data_1);
+        Ite( amo_op == L15_AMO_OP_CAS1 , data_next , default_noc1_data_1);
+      auto no_noc1_reply = (amo_op == L15_AMO_OP_LR) | (amo_op == L15_AMO_OP_SC);
 
-      instr.SetUpdate( noc1_val          , b1                        );
+      instr.SetUpdate( noc1_val          , Ite(no_noc1_reply, b0 , b1));
       instr.SetUpdate( noc1_address      , address                   );
       instr.SetUpdate( noc1_noncacheable , default_noc1_noncacheable );
       instr.SetUpdate( noc1_size         , default_noc1_size         );

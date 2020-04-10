@@ -3,38 +3,38 @@
   "state mapping": { 
 
   "l15_noc1buffer_req_val"              : "m1.l15.pipeline.l15_noc1buffer_req_val",
-  "l15_noc1buffer_req_address"          : "m1.l15.pipeline.l15_noc1buffer_req_address",
-  "l15_noc1buffer_req_noncacheable"     : "m1.l15.pipeline.l15_noc1buffer_req_non_cacheable",
-  "l15_noc1buffer_req_size"             : "m1.l15.pipeline.l15_noc1buffer_req_size",
-  "l15_noc1buffer_req_threadid"         : "m1.l15.pipeline.l15_noc1buffer_req_threadid",
-  "l15_noc1buffer_req_mshrid"           : "m1.l15.pipeline.l15_noc1buffer_req_mshrid",
-  "l15_noc1buffer_req_type"             : "m1.l15.pipeline.l15_noc1buffer_req_type",
-  "l15_noc1buffer_req_data_0"           : "m1.l15.pipeline.l15_noc1buffer_req_data_0",
-  "l15_noc1buffer_req_data_1"           : "m1.l15.pipeline.l15_noc1buffer_req_data_1",
+  "l15_noc1buffer_req_address"          : [ ["__START__" , "m1.l15.pipeline.l15_noc1buffer_req_address"       ], ["__IEND__ & m1.l15.pipeline.l15_noc1buffer_req_val", "m1.l15.pipeline.l15_noc1buffer_req_address"      ]  ],
+  "l15_noc1buffer_req_noncacheable"     : [ ["__START__" , "m1.l15.pipeline.l15_noc1buffer_req_non_cacheable" ], ["__IEND__ & m1.l15.pipeline.l15_noc1buffer_req_val", "m1.l15.pipeline.l15_noc1buffer_req_non_cacheable"]  ],
+  "l15_noc1buffer_req_size"             : [ ["__START__" , "m1.l15.pipeline.l15_noc1buffer_req_size"          ], ["__IEND__ & m1.l15.pipeline.l15_noc1buffer_req_val", "m1.l15.pipeline.l15_noc1buffer_req_size"         ]  ],
+  "l15_noc1buffer_req_threadid"         : [ ["__START__" , "m1.l15.pipeline.l15_noc1buffer_req_threadid"      ], ["__IEND__ & m1.l15.pipeline.l15_noc1buffer_req_val", "m1.l15.pipeline.l15_noc1buffer_req_threadid"     ]  ],
+  "l15_noc1buffer_req_mshrid"           : [ ["__START__" , "m1.l15.pipeline.l15_noc1buffer_req_mshrid"        ], ["__IEND__ & m1.l15.pipeline.l15_noc1buffer_req_val", "m1.l15.pipeline.l15_noc1buffer_req_mshrid"       ]  ],
+  "l15_noc1buffer_req_type"             : [ ["__START__" , "m1.l15.pipeline.l15_noc1buffer_req_type"          ], ["__IEND__ & m1.l15.pipeline.l15_noc1buffer_req_val", "m1.l15.pipeline.l15_noc1buffer_req_type"         ]  ],
+  "l15_noc1buffer_req_data_0"           : [ ["__START__" , "m1.l15.pipeline.l15_noc1buffer_req_data_0"        ], ["__IEND__ & m1.l15.pipeline.l15_noc1buffer_req_val", "m1.l15.pipeline.l15_noc1buffer_req_data_0"       ]  ],
+  "l15_noc1buffer_req_data_1"           : [ ["__START__" , "m1.l15.pipeline.l15_noc1buffer_req_data_1"        ], ["__IEND__ & m1.l15.pipeline.l15_noc1buffer_req_val", "m1.l15.pipeline.l15_noc1buffer_req_data_1"       ]  ],
 
   "l15_noc3encoder_req_val"             : "m1.l15.pipeline.l15_noc3encoder_req_val",
-  "l15_noc3encoder_req_type"            : "m1.l15.pipeline.l15_noc3encoder_req_type",
-  "l15_noc3encoder_req_data_0"          : "m1.l15.pipeline.l15_noc3encoder_req_data_0",
-  "l15_noc3encoder_req_data_1"          : "m1.l15.pipeline.l15_noc3encoder_req_data_1",
-  "l15_noc3encoder_req_mshrid"          : "m1.l15.pipeline.l15_noc3encoder_req_mshrid",
-  "l15_noc3encoder_req_threadid"        : "m1.l15.pipeline.l15_noc3encoder_req_threadid",
-  "l15_noc3encoder_req_address"         : "m1.l15.pipeline.l15_noc3encoder_req_address",
-  "l15_noc3encoder_req_was_inval"       : "m1.l15.pipeline.l15_noc3encoder_req_was_inval",
-  "l15_noc3encoder_req_with_data"       : "m1.l15.pipeline.l15_noc3encoder_req_with_data",
-  "l15_noc3encoder_req_fwdack_vector"   : "m1.l15.pipeline.l15_noc3encoder_req_fwdack_vector",
+  "l15_noc3encoder_req_type"            : [ [ "__START__" , "m1.l15.pipeline.l15_noc3encoder_req_type"          ] , [ "__IEND__ & m1.l15.pipeline.l15_noc3encoder_req_val" , "m1.l15.pipeline.l15_noc3encoder_req_type"         ] ] ,
+  "l15_noc3encoder_req_data_0"          : [ [ "__START__" , "m1.l15.pipeline.l15_noc3encoder_req_data_0"        ] , [ "__IEND__ & m1.l15.pipeline.l15_noc3encoder_req_val" , "m1.l15.pipeline.l15_noc3encoder_req_data_0"       ] ] ,
+  "l15_noc3encoder_req_data_1"          : [ [ "__START__" , "m1.l15.pipeline.l15_noc3encoder_req_data_1"        ] , [ "__IEND__ & m1.l15.pipeline.l15_noc3encoder_req_val" , "m1.l15.pipeline.l15_noc3encoder_req_data_1"       ] ] ,
+  "l15_noc3encoder_req_mshrid"          : [ [ "__START__" , "m1.l15.pipeline.l15_noc3encoder_req_mshrid"        ] , [ "__IEND__ & m1.l15.pipeline.l15_noc3encoder_req_val" , "m1.l15.pipeline.l15_noc3encoder_req_mshrid"       ] ] ,
+  "l15_noc3encoder_req_threadid"        : [ [ "__START__" , "m1.l15.pipeline.l15_noc3encoder_req_threadid"      ] , [ "__IEND__ & m1.l15.pipeline.l15_noc3encoder_req_val" , "m1.l15.pipeline.l15_noc3encoder_req_threadid"     ] ] ,
+  "l15_noc3encoder_req_address"         : [ [ "__START__" , "m1.l15.pipeline.l15_noc3encoder_req_address"       ] , [ "__IEND__ & m1.l15.pipeline.l15_noc3encoder_req_val" , "m1.l15.pipeline.l15_noc3encoder_req_address"      ] ] ,
+  "l15_noc3encoder_req_was_inval"       : [ [ "__START__" , "m1.l15.pipeline.l15_noc3encoder_req_was_inval"     ] , [ "__IEND__ & m1.l15.pipeline.l15_noc3encoder_req_val" , "m1.l15.pipeline.l15_noc3encoder_req_was_inval"    ] ] ,
+  "l15_noc3encoder_req_with_data"       : [ [ "__START__" , "m1.l15.pipeline.l15_noc3encoder_req_with_data"     ] , [ "__IEND__ & m1.l15.pipeline.l15_noc3encoder_req_val" , "m1.l15.pipeline.l15_noc3encoder_req_with_data"    ] ] ,
+  "l15_noc3encoder_req_fwdack_vector"   : [ [ "__START__" , "m1.l15.pipeline.l15_noc3encoder_req_fwdack_vector" ] , [ "__IEND__ & m1.l15.pipeline.l15_noc3encoder_req_val" , "m1.l15.pipeline.l15_noc3encoder_req_fwdack_vector"] ] ,
 
   "l15_transducer_val"                  : "m1.l15_transducer_val",
-  "l15_transducer_threadid"             : "m1.l15_transducer_threadid",
-  "l15_transducer_returntype"           : "m1.l15_transducer_returntype",
-  "l15_transducer_noncacheable"         : "m1.l15_transducer_noncacheable",
-  "l15_transducer_atomic"               : "m1.l15_transducer_atomic",
-  "l15_transducer_data_0"               : "m1.l15_transducer_data_0",
-  "l15_transducer_data_1"               : "m1.l15_transducer_data_1",
-  "l15_transducer_data_2"               : "m1.l15_transducer_data_2",
-  "l15_transducer_data_3"               : "m1.l15_transducer_data_3",
-  "l15_transducer_inval_address_15_4"   : "m1.l15_transducer_inval_address_15_4",
-  "l15_transducer_inval_icache_all_way" : "m1.l15_transducer_inval_icache_all_way",
-  "l15_transducer_inval_dcache_inval"   : "m1.l15_transducer_inval_dcache_inval",
+  "l15_transducer_threadid"             : [ ["__START__" , "m1.l15_transducer_threadid"             ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_threadid"             ] ] ,
+  "l15_transducer_returntype"           : [ ["__START__" , "m1.l15_transducer_returntype"           ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_returntype"           ] ] ,
+  "l15_transducer_noncacheable"         : [ ["__START__" , "m1.l15_transducer_noncacheable"         ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_noncacheable"         ] ] ,
+  "l15_transducer_atomic"               : [ ["__START__" , "m1.l15_transducer_atomic"               ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_atomic"               ] ] ,
+  "l15_transducer_data_0"               : [ ["__START__" , "m1.l15_transducer_data_0"               ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_data_0"               ] ] ,
+  "l15_transducer_data_1"               : [ ["__START__" , "m1.l15_transducer_data_1"               ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_data_1"               ] ] ,
+  "l15_transducer_data_2"               : [ ["__START__" , "m1.l15_transducer_data_2"               ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_data_2"               ] ] ,
+  "l15_transducer_data_3"               : [ ["__START__" , "m1.l15_transducer_data_3"               ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_data_3"               ] ] ,
+  "l15_transducer_inval_address_15_4"   : [ ["__START__" , "m1.l15_transducer_inval_address_15_4"   ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_inval_address_15_4"   ] ] ,
+  "l15_transducer_inval_icache_all_way" : [ ["__START__" , "m1.l15_transducer_inval_icache_all_way" ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_inval_icache_all_way" ] ] ,
+  "l15_transducer_inval_dcache_inval"   : [ ["__START__" , "m1.l15_transducer_inval_dcache_inval"   ] , [ "__IEND__ & m1.l15_transducer_val", "m1.l15_transducer_inval_dcache_inval"   ] ] ,
 
   "fetch_state_s1" : [["__START__","m1.l15.pipeline.fetch_state_s1"],["__IEND__","#fetch_state_s1_write#"]],
 
@@ -44,7 +44,7 @@
   "thread_to_mshr_map_map_val"      : [["__START__","#thread_to_mshr_map_read#"], ["__IEND__", "{8{#thread_to_mshr_map_write#}}"]],
   "thread_to_mshr_ld_address_map_val":"#thread_to_mshr_ld_address_map_val#",
   "thread_to_mshr_st_address_map_val":"#thread_to_mshr_st_address_map_val#",
-  "thread_to_mshr_st_state_map_val": [["__START__","#thread_to_mshr_st_state_read#"], ["__IEND__", "#thread_to_mshr_st_state_write#"]], // you need to care about this
+  "thread_to_mshr_st_state_map_val": [["__START__","#thread_to_mshr_st_state_read#"], ["__IEND__", "m0.thread_to_mshr_st_state_map_val == {#thread_to_mshr_st_state_write#, #thread_to_mshr_st_state_write#}"]], // you need to care about this
   "thread_to_mshr_st_way_map_val":"#thread_to_mshr_st_way_map_val#",
   "thread_to_mshr_data_map_map_val" : "#thread_to_mshr_data_map_read#", // no one write to it
   "thread_to_mshr_control_map_val"  : "#thread_to_mshr_control_read#"
@@ -131,7 +131,9 @@
           "    else if (monitor_s1 && monitor_s2_nxt)",
           "        monitor_s1_already <= 1;",
           "end",
-          "always @(*) begin monitor_s2_nxt = m1.l15.pipeline.stall_s1 ? monitor_s2 : monitor_s1; end",
+          "always @(*) begin monitor_s2_nxt = ",
+          " monitor_s2 == 1'b0 ? (m1.l15.pipeline.stall_s1 ? monitor_s2 : monitor_s1) :",
+          "  (m1.l15.pipeline.stall_s2 ? 1'b1 : 1'b0) ; end",
           "always @(posedge clk) begin",
           "    if(rst) begin",
           "        monitor_s2 <= 0;",
@@ -143,7 +145,9 @@
           "            monitor_s2_already <= 1;",
           "    end",
           "end",
-          "always @(*) begin monitor_s3_nxt = m1.l15.pipeline.stall_s2 ? monitor_s3 : monitor_s2; end",
+          "always @(*) begin monitor_s3_nxt = ",
+          "  monitor_s3 == 1'b0 ? (m1.l15.pipeline.stall_s2 ? monitor_s3 : monitor_s2) : ",
+          "  (m1.l15.pipeline.stall_s3 ? 1'b1 : 1'b0); end",
           "always @(posedge clk) begin",
           "    if(rst) begin",
           "        monitor_s3 <= 0;",
@@ -173,8 +177,9 @@
           ["monitor_s3_nxt"      , 1 , "reg"]  ,
           ["monitor_s3_delay"    , 1 , "reg"]] ,
 
-      "refs" :["m1.l15.pipeline.val_s1", "m1.l15.pipeline.stall_s2", "m1.l15.pipeline.stall_s1" ]
+      "refs" :["m1.l15.pipeline.val_s1", "m1.l15.pipeline.stall_s3", "m1.l15.pipeline.stall_s2", "m1.l15.pipeline.stall_s1" ]
     },
+
 
     "mshr_tracker" : {
       "verilog":
@@ -319,17 +324,20 @@
 
   "functions":{
     "wmt_compare_match_s3" : [["#monitor_s3#","m1.l15.pipeline.wmt_compare_match_s3"]],
-    "lru_state_s3" : [["#monitor_s3#", "m1.l15.lru_state_s3"]],
-    "lru_way_address_s3" : [["#monitor_s3#","lru_way_address_s3"]],
+    "lru_state_s3" : [["#monitor_s3#", "m1.l15.pipeline.lru_state_s3"]],
+    "lru_way_address_s3" : [["#monitor_s3#","m1.l15.pipeline.lru_way_address_s3"]],
     "dcache_write_merge_mshr_noc2_s2" : [[
-      "#monitor_s2#", "m1.l15.dcache_write_merge_mshr_noc2_s2",  // result
-      "#monitor_s2#", "m1.l15.noc2decoder_l15_data_0",  
-      "#monitor_s2#", "m1.l15.noc2decoder_l15_data_1",  
-      "#monitor_s2#", "m1.l15.mshr_pipe_write_buffer_s2"
+      "#monitor_s2#", "m1.l15.pipeline.dcache_write_merge_mshr_noc2_s2",  // result
+      "#monitor_s2#", "m1.l15.pipeline.noc2decoder_l15_data_0",  
+      "#monitor_s2#", "m1.l15.pipeline.noc2decoder_l15_data_1",  
+      "#monitor_s2#", "m1.l15.pipeline.mshr_pipe_write_buffer_s2"
       ]]
   },
 
   // help maps the input
+  // the reason of using the following instead of the interface mapping
+  // is to get around of the noc2 buffer: we want the instruction after
+  // the buffer assemblying process
   "mapping control" : [
     "~( __START__ ) || ( m0.noc2decoder_l15_icache_type             == m1.l15.noc2decoder_l15_icache_type             ) ",
     "~( __START__ ) || ( m0.noc2decoder_l15_mshrid                  == m1.l15.noc2decoder_l15_mshrid                  ) ",

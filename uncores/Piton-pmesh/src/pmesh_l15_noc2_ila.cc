@@ -243,7 +243,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
   auto CPX_RESTYPE_FP               = BvConst(8,  CPX_RETURNTYPE_WIDTH);
   auto CPX_RESTYPE_FWD_REQ          = BvConst(10, CPX_RETURNTYPE_WIDTH);
   auto CPX_RESTYPE_FWD_REPLY        = BvConst(11, CPX_RETURNTYPE_WIDTH);
-  auto CPX_RESTYPE_ATOMIC_RES       = BvConst(13, CPX_RETURNTYPE_WIDTH);
+  auto CPX_RESTYPE_ATOMIC_RES       = BvConst(14, CPX_RETURNTYPE_WIDTH);
 
   auto L15_AMO_OP_NONE  = BvConst(0x0,AMO_OP_WIDTH); // width 4
   auto L15_AMO_OP_LR    = BvConst(0x1,AMO_OP_WIDTH); // width 4
@@ -385,7 +385,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
   auto default_noc3_address      = BvConst(0, ADDR_WIDTH);                // unknown(ADDR_WIDTH)();
   auto default_noc3_invalidate   = b0;                                    // unknown(BOOL_WIDTH)();
   auto default_noc3_with_data    = b0;                                    // unknown(BOOL_WIDTH)();
-  auto default_noc3_fwdack_vector  = BvConst(0, FWD_SUBCACHELINE_VECTOR); // unknown(FWD_SUBCACHELINE_VECTOR)();
+  auto default_noc3_fwdack_vector  = fwdack_vector; // unknown(FWD_SUBCACHELINE_VECTOR)();
 
 
   // ------------------------------ INSTRUCTIONS ---------------------------------- //
@@ -566,7 +566,7 @@ PMESH_L15_NOC2_ILA::PMESH_L15_NOC2_ILA()
       instr.SetUpdate( noc3_mshrid        , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , default_noc3_mshrid               , default_noc3_mshrid        ) , Ite(predecode_is_last_inval_s1 , default_noc3_mshrid        , default_noc3_mshrid     )   ) ) ;
       instr.SetUpdate( noc3_threadid      , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , default_noc3_threadid             , default_noc3_threadid      ) , Ite(predecode_is_last_inval_s1 , default_noc3_threadid      , default_noc3_threadid )   ) ) ;
       instr.SetUpdate( noc3_address       , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , predecode_address                 , default_noc3_address       ) , Ite(predecode_is_last_inval_s1 , predecode_address          , predecode_address           )   ) ) ;
-      instr.SetUpdate( noc3_invalidate    , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , default_noc3_invalidate           , default_noc3_invalidate    ) , Ite(predecode_is_last_inval_s1 , default_noc3_invalidate    , default_noc3_invalidate )   ) ) ;
+      instr.SetUpdate( noc3_invalidate    , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , default_noc3_invalidate           , default_noc3_invalidate    ) , Ite(predecode_is_last_inval_s1 , b1                         , b1 )   ) ) ;
       instr.SetUpdate( noc3_with_data     , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , default_noc3_with_data            , default_noc3_with_data     ) , Ite(predecode_is_last_inval_s1 , Ite(tagcheck_state_m_s3    , b1 , b0) , b1 ) )   ) ;
       instr.SetUpdate( noc3_fwdack_vector , Ite(icache_type == 1 , Ite(predecode_is_last_inval_s1 , default_noc3_fwdack_vector        , default_noc3_fwdack_vector ) , Ite(predecode_is_last_inval_s1 , default_noc3_fwdack_vector , default_noc3_fwdack_vector  )   ) ) ;
 
