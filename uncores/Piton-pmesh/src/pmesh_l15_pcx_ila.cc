@@ -192,6 +192,13 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
   auto L15_REQTYPE_AMO_MINU     = BvConst(45 , 6);
   auto L15_REQTYPE_CAS          = BvConst(0x4, 6);
 
+  // address type
+  auto L15_ADDR_TYPE_DATA_ACCESS      = BvConst(0xb0, 8);
+  auto L15_ADDR_TYPE_HMC_ACCESS       = BvConst(0xb2, 8); // todo
+  auto L15_ADDR_TYPE_LINE_FLUSH       = BvConst(0xb3, 8);
+  auto L15_ADDR_TYPE_HMC_FLUSH        = BvConst(0xb5, 8); // todo
+  auto L15_ADDR_TYPE_CONFIG_REGS      = BvConst(0xba, 8);
+
 
 // ------------------------------ DEFAULT VALUES ---------------------------------- //
 // noc1 default values : 4191
@@ -232,6 +239,14 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
   auto default_noc3_with_data    = b0;                                    // unknown(BOOL_WIDTH)();
   auto default_noc3_fwdack_vector  = BvConst(0, FWD_SUBCACHELINE_VECTOR); // unknown(FWD_SUBCACHELINE_VECTOR)();
 
+  // ------------------------------ Conditions ---------------------------------- //
+  auto predecode_special_access_s1 = address(39,32);
+  auto predecode_is_pcx_config_asi_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_CONFIG_REGS;
+  auto predecode_is_pcx_diag_data_access_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_DATA_ACCESS;
+  auto predecode_is_pcx_diag_line_flush_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_LINE_FLUSH;
+  auto predecode_is_hmc_diag_access_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_HMC_ACCESS;
+  auto predecode_is_hmc_flush_s1 = predecode_special_access_s1 == L15_ADDR_TYPE_HMC_FLUSH;
+
   // ------------------------------ INSTRUCTIONS ---------------------------------- //
 
   // L1.5 fetch function -- what corresponds to instructions on L1.5 PCX interface
@@ -266,7 +281,7 @@ PMESH_L15_PCX_ILA::PMESH_L15_PCX_ILA()
     instr.SetDecode( 
       ( rqtype == PCX_REQTYPE_LOAD) & (nc == 0) & (invalidate == 0)  & (fetch_state == L15_FETCH_STATE_NORMAL) &
         (predecode_is_pcx_config_asi_s1 == 0) & (predecode_is_pcx_diag_data_access_s1 == 0) &
-        (predecode_is_hmc_diag_access_s1 == 0) & (predecode_prefetch_bit_s1 == 0) );
+        (predecode_is_hmc_diag_access_s1 == 0) );
 
     auto MESI_state = Map( "address_to_mesi_map",  2, address ); // Use the map
     auto DATA_cache = Map( "address_to_data_map", 128, address ); // Use the map
