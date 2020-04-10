@@ -14,7 +14,8 @@ void verifyNibbler(
   VerilogVerificationTargetGenerator::vtg_config_t vtg_cfg,
   const std::vector<std::string> & design_files,
   const std::string & varmap,
-  const std::string & instcont
+  const std::string & instcont,
+  bool restore_inv
   ) {
   VerilogGeneratorBase::VlgGenConfig vlg_cfg; 
   vlg_cfg.pass_node_name = true;
@@ -63,7 +64,16 @@ void verifyNibbler(
       vlg_cfg); // verilog generator configuration
 
   std::vector<std::string> to_drop_states = {
+    "m1.ctrl.ir[31:0]",
+    "m1.ctrl.immed_Rhl[31:0]",
+    "m1.ctrl.cp0_status[31:0]",
+    "m1.dpath.pc_logic.pc[31:0]",
+    "m1.dpath.pc_logic.pc_plus4_shift_reg_Xhl[31:0]",
+    "m1.dpath.pc_logic.pc_shift_reg_Xhl[31:0]"
   }; // 
+
+  if (restore_inv)
+    vg.LoadInvariantsFromFile(OutputPath + "inv-syn-stage1.txt");
 
   unsigned ncegar = 0;
   std::vector<std::string> insts({
@@ -122,6 +132,7 @@ void verifyNibbler(
      std::cout << "#(cegar)=" << ncegar << std::endl;
 
     std::cout << "------------------- END of " << inst << "------------------- " << std::endl;
+    break; // just run for one instruction
   }
 }
 
@@ -142,6 +153,14 @@ int main(int argc, char **argv) {
     "param-Core.v"
   };
 
+  bool restore_inv = false;
+  for (int argi = 1; argi<argc; ++ argi) {
+    if (std::string(argv[argi]) == "restore") {
+      std::cout << "Will restore inv from file." << std::endl;
+      restore_inv = true;
+    }
+  }
+
   auto vtg_cfg = SetConfiguration();
   //auto vtg_cfg = HandleArguments(argc, argv);
 
@@ -149,7 +168,7 @@ int main(int argc, char **argv) {
   riscvILA_user nibbler;
   nibbler.addInstructions(); // 37 base integer instructions
 
-  verifyNibbler(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler-noinv.json");
+  verifyNibbler(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler-noinv.json", restore_inv);
 
   // riscvILA_user riscvILA(0);
   return 0;

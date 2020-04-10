@@ -194,10 +194,10 @@ int main(int argc, char **argv) {
   //auto vtg_cfg = HandleArguments(argc, argv);
 
   // build the model
-  riscvILA_user nibbler;
-  nibbler.addInstructions(); // 37 base integer instructions
+  riscvILA_user piccolo;
+  piccolo.addInstructions(); // 37 base integer instructions
 
-  verifyNibbler(nibbler.model, vtg_cfg, design_files, "varmap-nibbler.json", "instcond-nibbler.json", restore_inv);
+  verifyNibbler(piccolo.model, vtg_cfg, design_files, "varmap-piccolo.json", "instcond-piccolo.json", restore_inv);
 
 
   // riscvILA_user riscvILA(0);

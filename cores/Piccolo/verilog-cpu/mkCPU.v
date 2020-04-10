@@ -745,8 +745,8 @@ module mkCPU(CLK,
 
   // register stage3_rg_full
   reg stage3_rg_full;
-  reg stage3_rg_full$D_IN;
-  wire stage3_rg_full$EN;
+  reg stage3_rg_full__DOLLAR__D_IN;
+  wire stage3_rg_full__DOLLAR__EN;
 
   // register stage3_rg_stage3
   reg [103 : 0] stage3_rg_stage3;
@@ -2801,14 +2801,14 @@ module mkCPU(CLK,
 	  IF_stage2_rg_full_9_THEN_IF_stage2_rg_stage2_0_ETC___d120 or
 	  MUX_imem_rg_f3$write_1__SEL_1)
   case (1'b1)
-    WILL_FIRE_RL_stage3_rl_reset: stage3_rg_full$D_IN = 1'd0;
+    WILL_FIRE_RL_stage3_rl_reset: stage3_rg_full__DOLLAR__D_IN = 1'd0;
     WILL_FIRE_RL_rl_pipe:
-	stage3_rg_full$D_IN =
+	stage3_rg_full__DOLLAR__D_IN =
 	    IF_stage2_rg_full_9_THEN_IF_stage2_rg_stage2_0_ETC___d120 == 2'd2;
-    MUX_imem_rg_f3$write_1__SEL_1: stage3_rg_full$D_IN = 1'd0;
-    default: stage3_rg_full$D_IN = 1'b0 /* unspecified value */ ;
+    MUX_imem_rg_f3$write_1__SEL_1: stage3_rg_full__DOLLAR__D_IN = 1'd0;
+    default: stage3_rg_full__DOLLAR__D_IN = 1'b0 /* unspecified value */ ;
   endcase
-  assign stage3_rg_full$EN =
+  assign stage3_rg_full__DOLLAR__EN =
 	     WILL_FIRE_RL_rl_reset_complete && rg_run_on_reset ||
 	     WILL_FIRE_RL_rl_pipe ||
 	     WILL_FIRE_RL_stage3_rl_reset ;
@@ -4814,8 +4814,8 @@ module mkCPU(CLK,
 	if (stage2_rg_resetting$EN)
 	  stage2_rg_resetting <= `BSV_ASSIGNMENT_DELAY
 	      stage2_rg_resetting$D_IN;
-	if (stage3_rg_full$EN)
-	  stage3_rg_full <= `BSV_ASSIGNMENT_DELAY stage3_rg_full$D_IN;
+	if (stage3_rg_full__DOLLAR__EN)
+	  stage3_rg_full <= `BSV_ASSIGNMENT_DELAY stage3_rg_full__DOLLAR__D_IN;
       end
     if (imem_rg_cache_b16$EN)
       imem_rg_cache_b16 <= `BSV_ASSIGNMENT_DELAY imem_rg_cache_b16$D_IN;

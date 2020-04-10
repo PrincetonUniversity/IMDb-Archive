@@ -68,6 +68,32 @@ target_link_libraries(${RISCV_RV32I_TARGET}Exe_noreset ${RISCV_RV32I_TARGET})
 # TARGET
 # executable
 # ---------------------------------------------------------------------------- #
+add_executable(${RISCV_RV32I_TARGET}Exe_btor
+  app/main-btor.cc
+)
+
+target_include_directories(${RISCV_RV32I_TARGET}Exe_btor PRIVATE include)
+
+target_link_libraries(${RISCV_RV32I_TARGET}Exe_btor ${RISCV_RV32I_TARGET})
+
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${RISCV_RV32I_TARGET}Exe_noreset_btor
+  app/main-noreset-btor.cc
+)
+
+target_include_directories(${RISCV_RV32I_TARGET}Exe_noreset_btor PRIVATE include)
+
+target_link_libraries(${RISCV_RV32I_TARGET}Exe_noreset_btor ${RISCV_RV32I_TARGET})
+
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
 add_executable(${RISCV_RV32I_TARGET}Exe_invsyn_z3
   app/inv-syn-cegar.cc
 )
@@ -75,6 +101,19 @@ add_executable(${RISCV_RV32I_TARGET}Exe_invsyn_z3
 target_include_directories(${RISCV_RV32I_TARGET}Exe_invsyn_z3 PRIVATE include)
 
 target_link_libraries(${RISCV_RV32I_TARGET}Exe_invsyn_z3 ${RISCV_RV32I_TARGET})
+
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${RISCV_RV32I_TARGET}Exe_invsyn_abc
+  app/inv-syn-cegar-abc.cc
+)
+
+target_include_directories(${RISCV_RV32I_TARGET}Exe_invsyn_abc PRIVATE include)
+
+target_link_libraries(${RISCV_RV32I_TARGET}Exe_invsyn_abc ${RISCV_RV32I_TARGET})
 
 
 # ---------------------------------------------------------------------------- #
