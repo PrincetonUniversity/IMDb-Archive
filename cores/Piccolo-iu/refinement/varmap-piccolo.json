@@ -36,7 +36,30 @@
     "x30" : [["__START__" , "#regPull30#"] , ["__IEND__" , "m1.gpr_regfile.regfile.arr[30]"]] ,
     "x31" : [["__START__" , "#regPull31#"] , ["__IEND__" , "m1.gpr_regfile.regfile.arr[31]"]] ,
 
-    "mem"               : "**MEM**XRAM"
+    // memory part
+    "fetch_data" : [["__START__", "m1.near_mem$imem_instr"]], // fetch_data == rtl.fetch data -> instr same
+    "fetch_addr" : null,
+
+    "load_en" : [["__IEND__", "m0.load_en == (#mem_req_en# == 1'b1 && #mem_req_op# == 1'b0)"]], // used in other state mapping // ? && valid == ?
+    "load_addr" : [["__IEND__ && m0.load_en", "#mem_req_addr#" ]],
+    "load_data" : [["__START__ && (#mem_req_en# == 1'b1 && #mem_req_op# == 1'b0)", "#mem_req_rd_data#" ]], // size ??
+    "load_size" : [
+        ["__IEND__ && m0.load_en && m0.load_size == 1", "#mem_req_funct3# == 0 || #mem_req_funct3# == 4" ],
+        ["__IEND__ && m0.load_en && m0.load_size == 2", "#mem_req_funct3# == 1 || #mem_req_funct3# == 5" ],
+        ["__IEND__ && m0.load_en && m0.load_size == 4", "#mem_req_funct3# == 2 || #mem_req_funct3# == 6" ],
+        ["__IEND__ && m0.load_en && m0.load_size == 8", "#mem_req_funct3# == 3" ]
+      ], // map of the two ??
+
+    "store_en" : [["__IEND__", "m0.store_en == (#mem_req_en# == 1'b1 && #mem_req_op# == 1'b1)"]], // used in other state mapping
+    "store_addr" : [["__IEND__ && m0.store_en", "#mem_req_addr#" ]],
+    "store_data" : [["__IEND__ && m0.store_en", "#mem_req_wd_data#" ]], // size ??
+    "store_size" : [
+        ["__IEND__ && m0.store_en && m0.store_size == 1", "#mem_req_funct3# == 0 || #mem_req_funct3# == 4" ],
+        ["__IEND__ && m0.store_en && m0.store_size == 2", "#mem_req_funct3# == 1 || #mem_req_funct3# == 5" ],
+        ["__IEND__ && m0.store_en && m0.store_size == 4", "#mem_req_funct3# == 2 || #mem_req_funct3# == 6" ],
+        ["__IEND__ && m0.store_en && m0.store_size == 8", "#mem_req_funct3# == 3" ]
+        ]// map of the two ??
+// "mem"               : "**MEM**XRAM"
   },
 
   "interface mapping": {
@@ -223,6 +246,15 @@
   },
 
   "value-holder" : {
+
+    "mem_req_en"      : {"cond" : "#monitor_s1# && #monitor_s2_nxt#"    , "val" : "m1.near_mem$EN_dmem_req"                  , "width" : "auto"},
+    "mem_req_op"      : {"cond" : "#monitor_s1# && #monitor_s2_nxt#"    , "val" : "m1.near_mem$dmem_req_op"                  , "width" : "auto"},
+    "mem_req_addr"    : {"cond" : "#monitor_s1# && #monitor_s2_nxt#"    , "val" : "m1.near_mem$dmem_req_addr"                , "width" : "auto"},
+    "mem_req_rd_data" : {"cond" : "#monitor_s2# && #monitor_s3_nxt#"    , "val" : "m1.near_mem$dmem_word64[31:0]"            , "width" : 32}    ,
+    "mem_req_wd_data" : {"cond" : "#monitor_s1# && #monitor_s2_nxt#"    , "val" : "m1.near_mem$dmem_req_store_value[31:0]"   , "width" : 32}    ,
+    "mem_req_funct3"  : {"cond" : "#monitor_s1# && #monitor_s2_nxt#"    , "val" : "m1.near_mem$dmem_req_f3"                  , "width" : "auto"},
+
+
     "pc_after" : {
         "cond":"#monitor_s2#",
         "val":"m1.near_mem$imem_pc",
@@ -269,10 +301,11 @@
     "__VLG_I_timer_interrupt_req_set_not_clear == 0",
     "__VLG_I_nmi_req_set_not_clear == 0",
     "m0.pc[1:0] == 2'b00",
-    "m1.near_mem$imem_pc[1:0] == 2'b00"
+    "m1.near_mem$imem_pc[1:0] == 2'b00",
+    "(~#monitor_s2# || (m1.near_mem$dmem_exc == 0))" // no memory exception, not in this model
   ],
 
-  "mapping control" : [ "(~__START__) ||  (__IMEM_mem_0_rdata == m1.near_mem$imem_instr)",
+  "mapping control" : [ 
     "__pc_after_init__[1:0] == 2'b00",
     "pc_after[1:0] == 2'b00"
   ],
@@ -281,14 +314,6 @@
     "reset" : {
         "cycle": 1,
         "no-reset-after": true
-    },
-    "memory-ports" : {
-      "ren"   : "#monitor_s2# & m1.near_mem$dmem_valid",
-      "raddr" : "m1.near_mem$dmem_req_addr", // this is word address
-      "rdata" : "m1.near_mem$dmem_word64[31:0]",
-      "wen"   : "#monitor_s2# & m1.near_mem$dmem_req_op != 0",
-      "waddr" : "m1.near_mem$dmem_req_addr",
-      "wdata" : ""
     }
   }
 }

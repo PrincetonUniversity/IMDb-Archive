@@ -18,7 +18,7 @@ void verifyNibblerInstCosa(
   VerilogGeneratorBase::VlgGenConfig vlg_cfg;
   // vlg_cfg.pass_node_name = true;
   vtg_cfg.CosaAddKeep = false;
-  vtg_cfg.BtorGenericCmdline = "~/cosa2/cosa2 -v 1 -k 20 %btorfile%";
+  vtg_cfg.BtorGenericCmdline = "~/cosa2/cosa2 -v 1 -k 1000 %btorfile%";
   vtg_cfg.MemAbsReadAbstraction = true;
   //vtg_cfg.target_select = vtg_cfg.INST;
   //vtg_cfg.ForceInstCheckReset = true;

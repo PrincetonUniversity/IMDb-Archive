@@ -67,6 +67,18 @@ target_link_libraries(${RISCV_RV32I_TARGET}Exe_mem ${RISCV_RV32I_TARGET})
 # TARGET
 # executable
 # ---------------------------------------------------------------------------- #
+add_executable(${RISCV_RV32I_TARGET}Exe_mem_btor
+  app/main-mem-btor.cc
+)
+
+target_include_directories(${RISCV_RV32I_TARGET}Exe_mem_btor PRIVATE include)
+
+target_link_libraries(${RISCV_RV32I_TARGET}Exe_mem_btor ${RISCV_RV32I_TARGET})
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
 add_executable(${RISCV_RV32I_TARGET}Exe_noreset
   app/main-noreset.cc
 )
