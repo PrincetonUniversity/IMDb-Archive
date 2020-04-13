@@ -152,9 +152,39 @@
     {
       "instruction" : "JALR",
       "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "LW",
+      "ready signal" : "#end_of_pipeline#"// "start condition" : ["$decode$", "m1.ctrl.imemresp_val && m1.ctrl.imemresp_rdy == 1"]
+    },
+    {
+      "instruction" : "LH",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "LHU",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "LB",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "LBU",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SW",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SH",
+      "ready signal" : "#end_of_pipeline#"
+    },
+    {
+      "instruction" : "SB",
+      "ready signal" : "#end_of_pipeline#"
     }
-
-
 
   ]
 }
