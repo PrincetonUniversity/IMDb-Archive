@@ -5,6 +5,8 @@
 // `include "param-ShiftDemux.v"
 // `include "param-DeserializedReg.v"
 
+`define NOGCLK 1
+
 module param_PCComputation
 (
   input                 clk,
@@ -39,7 +41,16 @@ module param_PCComputation
   
   wire [31:0] pc_plus4_Xhl;
 
-  // wire pc_reg_clk_gated = clk;
+
+`ifdef NOGCLK
+  wire pc_reg_clk_gated = clk;
+
+  always @(posedge pc_reg_clk_gated) begin
+    if (pc_reg_clk_en)
+      pc <= pc_next;
+  end
+
+`else
   wire pc_reg_clk_gated;
   param_ClkEnBuf pc_reg_clk_gate
   (
@@ -51,6 +62,7 @@ module param_PCComputation
   always @(posedge pc_reg_clk_gated) begin
     pc <= pc_next;
   end
+`endif
 
   wire [31:0] pc_mux_out_Xhl = (pc_mux_sel_Xhl && b_use_imm_reg_Xhl) ? {alu_mux_out_Xhl, addr_reg_Xhl[(31-P_NBITS):0]} : pc_plus4_Xhl; 
   always @ (*)
@@ -121,10 +133,20 @@ module param_PCComputation
     end
   end
 
-  // Clock gating 
-  // wire pc_shift_reg_gated = clk;
-  wire pc_shift_reg_gated;
   wire pc_shift_gate_en = !(last_uop_Xhl || (!pc_plus4_mux_sel_Xhl && a_mux_sel_Xhl) || reset);
+  // Clock gating 
+`ifdef NOGCLK
+  wire pc_shift_reg_gated = clk;
+
+  always @(posedge pc_shift_reg_gated) begin
+    if (pc_shift_gate_en) begin
+      pc_shift_reg_Xhl <= pc_shift_reg_Xhl_next;
+      pc_plus4_shift_reg_Xhl <= pc_plus4_shift_reg_Xhl_next;
+    end
+  end
+
+`else
+  wire pc_shift_reg_gated;
   param_ClkEnBuf pc_shift_enable
   (
     .clk (pc_shift_reg_gated),
@@ -136,6 +158,8 @@ module param_PCComputation
     pc_shift_reg_Xhl <= pc_shift_reg_Xhl_next;
     pc_plus4_shift_reg_Xhl <= pc_plus4_shift_reg_Xhl_next;
   end
+`endif
+
   
   wire [P_NBITS-1:0] pc_bit_Xhl = pc_shift_reg_Xhl[P_NBITS-1:0];
   wire [P_NBITS-1:0] pc_plus4_bit_Xhl = pc_plus4_shift_reg_Xhl[P_NBITS-1:0];

@@ -54,6 +54,12 @@
   },
 
   "mapping control" : [ "__IMEM_mem_0_rdata == m1.ctrl.ir_next"
-  ]
+  ],
 
+  "annotation" : {
+    "reset" : {
+        "cycle": 10,
+        "no-reset-after": true
+    }
+  }
 }

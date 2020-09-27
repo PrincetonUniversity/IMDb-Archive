@@ -49,3 +49,16 @@ target_include_directories(${RISCV_RV32I_TARGET}Exe PRIVATE include)
 
 target_link_libraries(${RISCV_RV32I_TARGET}Exe ${RISCV_RV32I_TARGET})
 
+
+# ---------------------------------------------------------------------------- #
+# TARGET
+# executable
+# ---------------------------------------------------------------------------- #
+add_executable(${RISCV_RV32I_TARGET}Exe_cegar_z3
+  app/main-cegar-z3.cc
+)
+
+target_include_directories(${RISCV_RV32I_TARGET}Exe_cegar_z3 PRIVATE include)
+
+target_link_libraries(${RISCV_RV32I_TARGET}Exe_cegar_z3 ${RISCV_RV32I_TARGET})
+
