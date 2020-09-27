@@ -39,7 +39,9 @@
                         "(~ ( m0.cmd == 2 )) || ( m1.wr == 1)" , 
                         "(~ ( m0.cmd == 1 )) || ( m1.wr == 0)",
                         " m1.xram_addr ==  __MEM_XRAM_0_raddr ",
-                        " m1.xram_addr ==  __MEM_XRAM_0_waddr "
+                        " m1.xram_addr ==  __MEM_XRAM_0_waddr ",
+                        // for the 8051 soc, this now becomes an assumption
+                        "~(aes_reg_state == 2) || (aes_time_enough == 1)"
                       ],
 
   "functions":{
