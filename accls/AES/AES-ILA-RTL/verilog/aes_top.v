@@ -298,7 +298,7 @@ always @(posedge clk) begin
 	end
 end
 
-assign aes_time_enough = aes_time_counter >= 5'd10;
+assign aes_time_enough = aes_time_counter >= 5'd20;
 
 
 // Actual encryption happens here.
