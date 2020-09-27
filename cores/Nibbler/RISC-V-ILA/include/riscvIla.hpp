@@ -23,7 +23,6 @@ public:
   Ila model;
 
 private:
-
   ExprRef pc;
   ExprRef mem;
   std::vector<ExprRef> GPR; // R0-R31
